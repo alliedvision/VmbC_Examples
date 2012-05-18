@@ -1,22 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros" />
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir>$(SolutionDir)$(PlatformName)\$(Configuration)\</OutDir>
+    <IntDir>$(PlatformName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VCInstallDir)\include;..\..\..\..;..\..\..\..\Externals;..\..\..\..\Externals\GIK;..\..\..\..\Externals\GIK\Externals\LLK;..\..\..\..\Externals\GIK\Externals\tinyxml;..\..\..\..\VaImageTransform;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PreBuildEvent>
-      <Command>xcopy "Y:\SW-Devel\AHR-Build\Vimba\VaImageTransform\Include\*.*" "..\..\..\..\VaImageTransform\*.*" /Y /D
-xcopy "Y:\SW-Devel\AHR-Build\Vimba\VaImageTransform\$(Platform)\$(Configuration)\*.*" "$(OutDir)*.*" /Y /D</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup />
 </Project>
