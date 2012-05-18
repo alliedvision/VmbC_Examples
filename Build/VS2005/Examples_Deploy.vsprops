@@ -12,6 +12,6 @@
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalLibraryDirectories="$(VIMBA_HOME)VimbaC\Lib\Win$(PlatformArchitecture)"
+		AdditionalLibraryDirectories="$(VIMBA_HOME)\VimbaC\Lib\Win$(PlatformArchitecture)"
 	/>
 </VisualStudioPropertySheet>
