@@ -130,37 +130,14 @@ VmbError_t PrintFeatureIncrement(VmbHandle_t aHandle,const char* aLabel,VmbFeatu
         case VmbFeatureDataInt:
         {
             VmbInt64_t lValue;
-            bool      lGotIt;
             
-            if(!(lError = VmbFeatureIntIncrementQuery(aHandle,aLabel,&lGotIt,&lValue)))
-            {
-                if(lGotIt)
-                    printf("\tincrement\t\t= %lld\n",lValue);      
-                else
-                    printf("\tincrement\t\t= none\n");
-            }
+            if(!(lError = VmbFeatureIntIncrementQuery(aHandle,aLabel,&lValue)))
+                printf("\tincrement\t\t= %lld\n",lValue);      
             else
                 printf("\tincrement\t\t= FAILED (%d)\n",lError); 
                 
             break;     
         }
-        case VmbFeatureDataFloat:
-        { 
-            double lValue;
-            bool   lGotIt;
-            
-            if(!(lError = VmbFeatureFloatIncrementQuery(aHandle,aLabel,&lGotIt,&lValue)))
-            {
-                if(lGotIt)
-                    printf("\tincrement\t\t= %lf\n",lValue); 
-                else
-                    printf("\tincrement\t\t= none\n");     
-            }
-            else
-                printf("\tincrement\t\t= FAILED (%d)\n",lError);            
-        
-            break;
-        }          
         default:        
             printf("\tincrement\t\t= n/a\n");  
     }
