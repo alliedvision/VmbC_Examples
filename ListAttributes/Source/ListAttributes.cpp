@@ -238,7 +238,7 @@ void PrintFeatureImpact(VmbHandle_t aHandle,const VmbFeatureInfo_t* aInfo)
         VmbFeatureInfo_t lFeatures[256];
         VmbUint32_t      lFound;
 
-        printf("\tselectedFeatures\t= ");
+        printf("\taffectedFeatures\t= ");
 
         if(!VmbAffectedFeaturesList(aHandle,aInfo->name,lFeatures,256,&lFound,sizeof(VmbFeatureInfo_t)))
             for(VmbUint32_t i=0;i<lFound;i++)
