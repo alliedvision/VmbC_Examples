@@ -3,8 +3,8 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="Examples"
-	OutputDirectory="..\..\..\..\Bin\Win$(PlatformArchitecture)\"
-	IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+	OutputDirectory="$(PlatformName)\$(ConfigurationName)\"
+	IntermediateDirectory="$(PlatformName)\$(ConfigurationName)\"
 	>
 	<Tool
 		Name="VCCLCompilerTool"
