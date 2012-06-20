@@ -12,5 +12,8 @@
     <Link>
       <AdditionalLibraryDirectories>$(VIMBA_HOME)\VimbaC\Lib\Win$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(VIMBA_HOME)\VimbaC\Bin\Win$(PlatformArchitecture)\*.*" "$(SolutionDir)$(Platform)\$(Configuration)\" /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
 </Project>
