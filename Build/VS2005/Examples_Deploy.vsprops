@@ -14,4 +14,8 @@
 		Name="VCLinkerTool"
 		AdditionalLibraryDirectories="$(VIMBA_HOME)\VimbaC\Lib\Win$(PlatformArchitecture)"
 	/>
+	<Tool
+		Name="VCPostBuildEventTool"
+		CommandLine="xcopy &quot;$(VIMBA_HOME)\VimbaC\Bin\Win$(PlatformArchitecture)\*.*&quot; &quot;$(SolutionDir)$(Platform)\$(Configuration)\&quot; /Y"
+	/>
 </VisualStudioPropertySheet>
