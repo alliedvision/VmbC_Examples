@@ -16,6 +16,6 @@
 	/>
 	<Tool
 		Name="VCPostBuildEventTool"
-		CommandLine="xcopy &quot;$(VIMBA_HOME)\VimbaC\Bin\Win$(PlatformArchitecture)\*.*&quot; &quot;$(SolutionDir)$(Platform)\$(Configuration)\&quot; /Y"
+		CommandLine="xcopy &quot;$(VIMBA_HOME)\VimbaC\Bin\Win$(PlatformArchitecture)\*.*&quot; &quot;$(TargetDir)&quot; /Y"
 	/>
 </VisualStudioPropertySheet>
