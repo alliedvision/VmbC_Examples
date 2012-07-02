@@ -321,7 +321,7 @@ void doStuff(int argc,char **argv)
             printf("failed to open the camera ... \n");  
     } 
     else
-        ListAllFeaturesInfo(gSystemHandle);     
+        ListAllFeaturesInfo(gVimbaHandle);     
        
 }
 
@@ -329,7 +329,7 @@ int main(int argc,char **argv)
 {
     if(VmbStartup() == VmbErrorSuccess)
     {   
-        VmbFeatureCommandRun(gSystemHandle,"GeVDiscoveryAllAuto");
+        VmbFeatureCommandRun(gVimbaHandle,"GeVDiscoveryAllAuto");
 
         Sleep(500);
         
