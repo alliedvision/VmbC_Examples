@@ -240,7 +240,7 @@ void PrintFeatureImpact(VmbHandle_t aHandle,const VmbFeatureInfo_t* aInfo)
 
         printf("\taffectedFeatures\t= ");
 
-        if(!VmbAffectedFeaturesList(aHandle,aInfo->name,lFeatures,256,&lFound,sizeof(VmbFeatureInfo_t)))
+        if(!VmbFeatureListAffected(aHandle,aInfo->name,lFeatures,256,&lFound,sizeof(VmbFeatureInfo_t)))
             for(VmbUint32_t i=0;i<lFound;i++)
                 printf("%s ",lFeatures[i].name);  
 
@@ -291,12 +291,11 @@ void ListAllFeaturesInfo(VmbHandle_t aHandle)
         printf("failed to retreive list of features\n"); 
 }
 
-void doStuff(int argc,char **argv)
+bool doStuffWithCamera(int argc,char **argv)
 {
-    if(argc == 2)
-    {
         VmbHandle_t lHandle = NULL;
         int        lTries  = 0;   
+    bool        lDone   = false;   
         
         printf("waiting for camera ...\n"); 
           
@@ -316,13 +315,44 @@ void doStuff(int argc,char **argv)
             VmbCameraClose(lHandle);
             
             printf("camera closed\n");
+        
+        lDone = true;
         }
         else
             printf("failed to open the camera ... \n");  
+        
+    return lDone;         
+}
+
+bool doStuffWithInterface(int argc,char **argv)
+{
+    VmbHandle_t lHandle = NULL;
+    int         lTries  = 0;  
+    bool        lDone   = false;    
+    
+    printf("waiting for interface ...\n"); 
+      
+    while(lTries++ < 4 && VmbInterfaceOpen(argv[1],&lHandle))
+        Sleep(250);
+    
+    if(lHandle)
+    {
+        printf("interface opened!!\n");
+        
+        ListAllFeaturesInfo(lHandle);
+                    
+        printf("closing the interface!\n");
+        
+        VmbInterfaceClose(lHandle);
+        
+        printf("interface closed\n");
+        
+        lDone = true;
     } 
     else
-        ListAllFeaturesInfo(gVimbaHandle);     
+        printf("failed to open the interface ... \n");
        
+    return lDone;               
 }
 
 int main(int argc,char **argv)
@@ -333,7 +363,11 @@ int main(int argc,char **argv)
 
         Sleep(500);
         
-        doStuff(argc,argv);
+        if(argc < 2)
+            ListAllFeaturesInfo(gVimbaHandle);
+        else
+            if(!doStuffWithInterface(argc,argv))
+                doStuffWithCamera(argc,argv);
 
         VmbShutdown();
     }
