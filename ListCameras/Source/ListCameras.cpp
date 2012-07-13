@@ -8,7 +8,7 @@
 void ListCameras()
 {
     VmbError_t err = VmbStartup();                                                      // Initialize the Vimba API
-    Sleep( 200 );                                                                       // We need to wait a little until Vimba has come to life
+    Sleep( 400 );                                                                       // We need to wait a little until Vimba has come to life
     VmbCameraInfo_t *pCameras = NULL;                                                   // A list of camera details
     VmbUint32_t nCount = 0;                                                             // Number of found cameras
     bool bIsGigE = false;                                                               // GigE transport layer present
