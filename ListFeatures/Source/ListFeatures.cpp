@@ -1,11 +1,11 @@
 #include <iostream>
 #include <windows.h>
 
-#include <ListCameras.h>
+#include <ListFeatures.h>
 
 #include <VimbaC/Include/VimbaC.h>
 
-void ListCameras()
+void ListFeatures()
 {
     VmbError_t err = VmbStartup();                                                      // Initialize the Vimba API
     Sleep( 200 );                                                                       // We need to wait a little until Vimba has come to life
