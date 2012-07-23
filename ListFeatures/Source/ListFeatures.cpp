@@ -110,11 +110,11 @@ void ListFeatures( const char *pStrID )
                     {
                         for ( VmbUint32_t i=0; i<nCount; ++i )
                         {
-                            std::cout << "/// Feature Name: " << pFeatures[i].name << std::endl;
-                            std::cout << "/// Display Name: " << ( NULL == pFeatures[i].displayName ? "[Not set]" : pFeatures[i].displayName ) << std::endl;
-                            std::cout << "/// Tooltip: " << ( NULL == pFeatures[i].tooltip ? "[Not set]" : pFeatures[i].tooltip ) << std::endl;
-                            std::cout << "/// Description: " << ( NULL == pFeatures[i].description ? "[Not set]" : pFeatures[i].description ) << std::endl;
-                            std::cout << "/// SNFC Namespace: " << ( NULL == pFeatures[i].sfncNamespace ? "[Not set]" : pFeatures[i].sfncNamespace ) << std::endl;
+                            std::cout << "/// Feature Name: " << ( NULL == pFeatures[i].name ? "" : pFeatures[i].name ) << std::endl;
+                            std::cout << "/// Display Name: " << ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName ) << std::endl;
+                            std::cout << "/// Tooltip: " << ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip ) << std::endl;
+                            std::cout << "/// Description: " << ( NULL == pFeatures[i].description ? "" : pFeatures[i].description ) << std::endl;
+                            std::cout << "/// SNFC Namespace: " << ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace ) << std::endl;
                             std::cout << "/// Value: ";
 
                             switch ( pFeatures[i].featureDataType )
