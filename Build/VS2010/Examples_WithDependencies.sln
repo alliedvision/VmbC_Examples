@@ -11,12 +11,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gik", "..\..\..\Externals\G
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llk", "..\..\..\Externals\GIK\Externals\LLK\Build\VS2010\llk.vcxproj", "{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\Externals\GIK\Externals\tinyxml\tinyxml_lib_vs2010.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListCameras", "..\..\ListCameras\Build\VS2010\ListCameras.vcxproj", "{04D4FDC0-8E02-460B-B0EE-56AE872EC010}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01} = {8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\Externals\GIK\Externals\tinyxml\Build\VS2010\tinyxml.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,14 +50,6 @@ Global
 		{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}.Release|Win32.Build.0 = Release|Win32
 		{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}.Release|x64.ActiveCfg = Release|x64
 		{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}.Release|x64.Build.0 = Release|x64
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|Win32.Build.0 = Debug|Win32
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|x64.ActiveCfg = Debug|x64
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|x64.Build.0 = Debug|x64
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.ActiveCfg = Release|Win32
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.Build.0 = Release|Win32
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|x64.ActiveCfg = Release|x64
-		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|x64.Build.0 = Release|x64
 		{04D4FDC0-8E02-460B-B0EE-56AE872EC010}.Debug|Win32.ActiveCfg = Debug|Win32
 		{04D4FDC0-8E02-460B-B0EE-56AE872EC010}.Debug|Win32.Build.0 = Debug|Win32
 		{04D4FDC0-8E02-460B-B0EE-56AE872EC010}.Debug|x64.ActiveCfg = Debug|x64
@@ -66,6 +58,14 @@ Global
 		{04D4FDC0-8E02-460B-B0EE-56AE872EC010}.Release|Win32.Build.0 = Release|Win32
 		{04D4FDC0-8E02-460B-B0EE-56AE872EC010}.Release|x64.ActiveCfg = Release|x64
 		{04D4FDC0-8E02-460B-B0EE-56AE872EC010}.Release|x64.Build.0 = Release|x64
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|Win32.Build.0 = Debug|Win32
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|x64.ActiveCfg = Debug|x64
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Debug|x64.Build.0 = Debug|x64
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.ActiveCfg = Release|Win32
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.Build.0 = Release|Win32
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|x64.ActiveCfg = Release|x64
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
