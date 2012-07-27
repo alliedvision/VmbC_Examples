@@ -1,5 +1,5 @@
-#ifndef AVT_VIMBA_EXAMPLES_LISTFEATURES
-#define AVT_VIMBA_EXAMPLES_LISTFEATURES
+#ifndef LISTFEATURES
+#define LISTFEATURES
 
 void ListFeatures( const char *pStrID );
 
