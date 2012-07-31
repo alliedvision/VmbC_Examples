@@ -10,7 +10,6 @@ int _tmain( int argc, _TCHAR* argv[] )
     std::cout << "//////////////////////////////////////////" << std::endl << std::endl;
     
     ListCameras();
-
-    std::cout << std::endl << "Press any key to exit";
-    return getchar();
+    
+    return 0;
 }
