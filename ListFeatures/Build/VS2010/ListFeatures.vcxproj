@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{04D4FDC0-8E02-460B-B0EE-56AE872EC010}</ProjectGuid>
+    <ProjectGuid>{C2EDC41C-046B-4913-9182-9E939CD070D6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ListFeatures</RootNamespace>
   </PropertyGroup>

@@ -1,11 +1,11 @@
 #include <iostream>
 #include <windows.h>
 
-#include <SyncronousGrab.h>
+#include <SynchronousGrab.h>
 
 #include <VimbaC/Include/VimbaC.h>
 
-VmbError_t SyncronousGrab( char* pCameraID, char* pFileName )
+VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
 {
 	VmbError_t			err = VmbStartup();															// Initialize the Vimba API
     VmbCameraInfo_t	   *pCameras = NULL;															// A list of camera details

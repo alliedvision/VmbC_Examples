@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <SyncronousGrab.h>
+#include <SynchronousGrab.h>
 
 bool StartsWith(const char *pString, const char *pStart)
 {
@@ -29,7 +29,7 @@ bool StartsWith(const char *pString, const char *pStart)
 int main( int argc, char* argv[] )
 {
     std::cout << "/////////////////////////////////////////////" << std::endl;
-    std::cout << "/// AVT Vimba API Syncronous Grab Example ///" << std::endl;
+    std::cout << "/// AVT Vimba API Synchronous Grab Example ///" << std::endl;
     std::cout << "/////////////////////////////////////////////" << std::endl << std::endl;
     
     VmbError_t err = VmbErrorSuccess;
@@ -108,19 +108,19 @@ int main( int argc, char* argv[] )
     //Print out help and end program
     if ( true == bPrintHelp )
     {
-        std::cout << "Usage: SyncronousGrab.exe [CameraID] [/h] [/f:FileName]" << std::endl;
+        std::cout << "Usage: SynchronousGrab.exe [CameraID] [/h] [/f:FileName]" << std::endl;
         std::cout << "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)" << std::endl;
         std::cout << "              /h          Print out help" << std::endl;
         std::cout << "              /f:FileName File name for operation" << std::endl;
-        std::cout << "                          (default is \"SyncronousGrab.bmp\" if not specified)" << std::endl;
+        std::cout << "                          (default is \"SynchronousGrab.bmp\" if not specified)" << std::endl;
     }
 
 	if ( NULL == pFileName )
 	{
-		pFileName = "SyncronousGrab.bmp";
+		pFileName = "SynchronousGrab.bmp";
 	}
 
-    err = SyncronousGrab( pCameraID, pFileName );
+    err = SynchronousGrab( pCameraID, pFileName );
 
 	return err;
 }
