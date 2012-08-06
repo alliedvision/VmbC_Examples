@@ -28,17 +28,17 @@ bool StartsWith(const char *pString, const char *pStart)
 
 int main( int argc, char* argv[] )
 {
-    std::cout << "/////////////////////////////////////////////" << std::endl;
+    std::cout << "//////////////////////////////////////////////" << std::endl;
     std::cout << "/// AVT Vimba API Synchronous Grab Example ///" << std::endl;
-    std::cout << "/////////////////////////////////////////////" << std::endl << std::endl;
+    std::cout << "//////////////////////////////////////////////" << std::endl << std::endl;
     
     VmbError_t err = VmbErrorSuccess;
 
-	char *pCameraID = NULL;
+    char *pCameraID = NULL;
     char *pFileName = NULL;
     bool bPrintHelp = false;
 
-	//////////////////////
+    //////////////////////
     //Parse command line//
     //////////////////////
 
@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
 
         if(pParameter[0] == '/')
         {
-			if(StartsWith(pParameter, "/f:"))
+            if(StartsWith(pParameter, "/f:"))
             {
                 if(NULL != pFileName)
                 {
@@ -80,7 +80,7 @@ int main( int argc, char* argv[] )
 
                 bPrintHelp = true;
             }
-			else
+            else
             {
                 err = VmbErrorBadParameter;
                 break;
@@ -115,12 +115,12 @@ int main( int argc, char* argv[] )
         std::cout << "                          (default is \"SynchronousGrab.bmp\" if not specified)" << std::endl;
     }
 
-	if ( NULL == pFileName )
-	{
-		pFileName = "SynchronousGrab.bmp";
-	}
+    if ( NULL == pFileName )
+    {
+        pFileName = "SynchronousGrab.bmp";
+    }
 
     err = SynchronousGrab( pCameraID, pFileName );
 
-	return err;
+    return err;
 }
