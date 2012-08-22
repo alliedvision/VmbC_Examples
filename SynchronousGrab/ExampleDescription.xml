@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Example Index="3" Id="C_SynchronousGrab" Title="SynchronousGrab" Language="C" Category="Examples" >
+	<Description>Console application showing how to grab an image synchronously from a given camera and writing it to a file.</Description>
+	<Image>Images/C_SynchronousGrab.png</Image>
+	<Executable>VimbaC/Examples/Bin/Win32/SynchronousGrab.exe</Executable>
+	<ProjectFile>
+		<Text>Microsoft Visual Studio 2010 Solution</Text>
+		<Link>VimbaC/Examples/SynchronousGrab/Build/VS2010/SynchronousGrab.sln</Link>
+	</ProjectFile>
+</Example>
