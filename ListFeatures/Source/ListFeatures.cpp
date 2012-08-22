@@ -8,7 +8,6 @@
 void ListFeatures( const char *pStrID )
 {
     VmbError_t err = VmbStartup();                                                       // Initialize the Vimba API
-    Sleep( 200 );                                                                        // We need to wait a little until Vimba has come to life
     VmbHandle_t hCamera = NULL;                                                          // A handle to our camera
     bool bIsGigE = false;                                                                // GigE transport layer present
     VmbFeatureInfo_t *pFeatures = NULL;                                                  // A list of static details of camera features
