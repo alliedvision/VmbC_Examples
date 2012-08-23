@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Example Index="2" Id="C_ListFeatures" Title="ListFeatures" Language="C" Category="Examples" >
-	<Description>Console application to list features of a given camera.</Description>
-	<Image>Images/C_ListFeatures.png</Image>
-	<Executable>VimbaC/Examples/Bin/Win32/ListFeatures.exe</Executable>
-	<ProjectFile>
-		<Text>Microsoft Visual Studio 2010 Solution</Text>
-		<Link>VimbaC/Examples/ListFeatures/Build/VS2010/ListFeatures.sln</Link>
-	</ProjectFile>
+  <Description>Console application to list features of a given camera.</Description>
+  <Application>
+    <Screenshot>VimbaC/Examples/ListFeatures/Screenshot.png</Screenshot>
+    <Executable>VimbaC/Examples/Bin/Win32/ListFeatures.exe</Executable>
+  </Application>
+  <ProjectFile>
+    <Text>Microsoft Visual Studio 2010 Solution</Text>
+    <Link>VimbaC/Examples/ListFeatures/Build/VS2010/ListFeatures.sln</Link>
+  </ProjectFile>
 </Example>

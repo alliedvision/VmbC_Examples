@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Example Index="1" Id="C_ListCameras" Title="ListCameras" Language="C" Category="Examples" >
-	<Description>Console application to list cameras currently connected to the system.</Description>
-	<Image>Images/C_ListCameras.png</Image>
-	<Executable>VimbaC/Examples/Bin/Win32/ListCameras.exe</Executable>
-	<ProjectFile>
-		<Text>Microsoft Visual Studio 2010 Solution</Text>
-		<Link>VimbaC/Examples/ListCameras/Build/VS2010/ListCameras.sln</Link>
-	</ProjectFile>
+  <Description>Console application to list cameras currently connected to the system.</Description>
+  <Application>
+    <Screenshot>VimbaC/Examples/ListCameras/Screenshot.png</Screenshot>
+    <Executable>VimbaC/Examples/Bin/Win32/ListCameras.exe</Executable>
+  </Application>
+  <ProjectFile>
+    <Text>Microsoft Visual Studio 2010 Solution</Text>
+    <Link>VimbaC/Examples/ListCameras/Build/VS2010/ListCameras.sln</Link>
+  </ProjectFile>
 </Example>
