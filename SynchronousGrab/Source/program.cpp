@@ -114,13 +114,15 @@ int main( int argc, char* argv[] )
         std::cout << "              /f:FileName File name for operation" << std::endl;
         std::cout << "                          (default is \"SynchronousGrab.bmp\" if not specified)" << std::endl;
     }
+	else
+	{
+		if ( NULL == pFileName )
+		{
+			pFileName = "SynchronousGrab.bmp";
+		}
 
-    if ( NULL == pFileName )
-    {
-        pFileName = "SynchronousGrab.bmp";
-    }
-
-    err = SynchronousGrab( pCameraID, pFileName );
+		err = SynchronousGrab( pCameraID, pFileName );
+	}
 
     return err;
 }

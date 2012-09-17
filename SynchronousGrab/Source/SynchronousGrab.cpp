@@ -143,11 +143,18 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
 
             }
 
-            err = VmbCameraClose ( cameraHandle );													// Close Vimba
-            if ( VmbErrorSuccess != err )
-            {
-                std::cout << "Could not close camera. Error code: " << err << std::endl;
-            }
+			if ( VmbErrorSuccess != err )
+			{
+				VmbCameraClose ( cameraHandle );
+			}
+			else
+			{
+				err = VmbCameraClose ( cameraHandle );
+				if ( VmbErrorSuccess != err )
+				{
+					std::cout << "Could not close camera. Error code: " << err << std::endl;
+				}
+			}
         }
         else
         {
@@ -182,6 +189,7 @@ HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
         case VmbPixelFormatMono8:
             nBitCount = 8;
             break;
+        case VmbPixelFormatRgb8:
         case VmbPixelFormatBgr8:
             nBitCount = 24;
             break;
@@ -196,7 +204,7 @@ HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
         HBITMAP memBM =  CreateBitmap( pFrame->width, pFrame->height, 1, nBitCount, NULL );  
 
         SelectObject ( memDC, memBM );
-        SetTextColor ( memDC, RGB ( 0, 0, 255 ) );
+        //SetTextColor ( memDC, RGB ( 0, 0, 255 ) );
 
         PBITMAPINFO pbi = CreateBitmapInfoStruct( memBM );
         if ( NULL == pbi )
