@@ -68,7 +68,7 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
                                 cameraAccessMode, &cameraHandle );									// Open camera
         if ( VmbErrorSuccess == err )
         {				
-            VmbInt64_t nPayloadSize;
+			VmbInt64_t nPayloadSize;
             err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );					// Evaluate frame size	
             if ( VmbErrorSuccess == err )
             {
@@ -203,9 +203,6 @@ HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
         // create bitmap
         HBITMAP memBM =  CreateBitmap( pFrame->width, pFrame->height, 1, nBitCount, NULL );  
 
-        SelectObject ( memDC, memBM );
-        //SetTextColor ( memDC, RGB ( 0, 0, 255 ) );
-
         PBITMAPINFO pbi = CreateBitmapInfoStruct( memBM );
         if ( NULL == pbi )
         {
@@ -263,7 +260,7 @@ PBITMAPINFO CreateBitmapInfoStruct ( HBITMAP hBmp )
 
     pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 
     pbmi->bmiHeader.biWidth = bmp.bmWidth; 
-    pbmi->bmiHeader.biHeight = bmp.bmHeight; 
+    pbmi->bmiHeader.biHeight = -bmp.bmHeight; 
     pbmi->bmiHeader.biPlanes = bmp.bmPlanes; 
     pbmi->bmiHeader.biBitCount = bmp.bmBitsPixel; 
     if (cClrBits < 24) 
@@ -274,8 +271,8 @@ PBITMAPINFO CreateBitmapInfoStruct ( HBITMAP hBmp )
 
     // Compute the number of bytes in the array of color 
     // indices and store the result in biSizeImage. 
-    pbmi->bmiHeader.biSizeImage = ((pbmi->bmiHeader.biWidth * cClrBits +31) & ~31) /8
-                                  * pbmi->bmiHeader.biHeight; 
+    pbmi->bmiHeader.biSizeImage = ((bmp.bmWidth * cClrBits +31) & ~31) /8
+                                  * bmp.bmHeight; 
 
     // Set biClrImportant to 0, indicating that all of the 
     // device colors are important. 
