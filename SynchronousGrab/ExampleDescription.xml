@@ -3,11 +3,11 @@
 <Example Index="3" Id="C_SynchronousGrab" Title="SynchronousGrab" Language="C" Category="Examples" >
   <Description>Console application showing how to grab an image synchronously from a given camera and writing it to a file.</Description>
   <Application>
-    <Screenshot>VimbaC/SynchronousGrab/Screenshot.png</Screenshot>
-    <Executable>VimbaC/Bin/Win32/SynchronousGrab.exe</Executable>
+    <Screenshot>VimbaC_Examples/SynchronousGrab/Screenshot.png</Screenshot>
+    <Executable>VimbaC_Examples/Bin/Win32/SynchronousGrab.exe</Executable>
   </Application>
   <ProjectFile>
     <Text>Microsoft Visual Studio 2010 Solution</Text>
-    <Link>VimbaC/SynchronousGrab/Build/VS2010/SynchronousGrab.sln</Link>
+    <Link>VimbaC_Examples/SynchronousGrab/Build/VS2010/SynchronousGrab.sln</Link>
   </ProjectFile>
 </Example>
