@@ -33,167 +33,184 @@
 
 #include <VimbaC/Include/VimbaC.h>
 
+using namespace std;
+
 VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
 {
-    VmbError_t			err = VmbStartup();															// Initialize the Vimba API
-    VmbCameraInfo_t	   *pCameras = NULL;															// A list of camera details
-    VmbUint32_t			nCount = 0;																	// Number of found cameras
-    bool				bIsGigE = false;															// GigE transport layer present
-    VmbUint32_t			nTimeout = 2000;															// Timeout for Grab
+    VmbError_t          err = VmbStartup(); // Initialize the Vimba API
+    VmbCameraInfo_t     *pCameras = NULL;   // A list of camera details
+    VmbUint32_t         nCount = 0;         // Number of found cameras
+    bool                bIsGigE = false;    // GigE transport layer present
+    VmbUint32_t         nTimeout = 2000;    // Timeout for Grab
 
 
     if ( VmbErrorSuccess == err )
     {
-        err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );						// Is Vimba connected to a GigE transport layer?
+        // Is Vimba connected to a GigE transport layer?
+        err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );
         if (    VmbErrorSuccess == err
              && true == bIsGigE )
         {
-            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");						// Send discovery packets to GigE cameras
+            // Send discovery packets to GigE cameras
+            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");
             if ( VmbErrorSuccess == err )
             {
-                Sleep( 200 );																		// And wait for them to return
+                Sleep( 200 );
             }
             else
             {
-                std::cout << "Could not ping GigE cameras over the network. Reason: " << err << std::endl << std::endl;
+                cout << "Could not ping GigE cameras over the network. Reason: " << err << endl << endl;
             }
         }
         else
         {
-            std::cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << std::endl << std::endl;
+            cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << endl << endl;
         }        
 
-        if ( NULL == pCameraID )																	
+        if ( NULL == pCameraID )                                                                    
         {
-            err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );								// Get the amount of known cameras
+            // Get the amount of known cameras
+            err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );
             if (    VmbErrorSuccess == err
                  && 0 < nCount )
             {
                 pCameras = new VmbCameraInfo_t[ nCount ];
                 if ( NULL != pCameras )
                 {
-                    err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );			// Query all static details of all known cameras
-                                                                                                    // without having to open the cameras
+                    // Query all static details of all known cameras without having to open the cameras
+                    err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );
                     if ( VmbErrorSuccess != err )
                     {
-                        std::cout << "Could not allocate camera list." << std::endl;
+                        cout << "Could not allocate camera list." << endl;
                     }
                 }
                 else
                 {
-                    std::cout << "Could not allocate camera list." << std::endl;
+                    cout << "Could not allocate camera list." << endl;
                 }
             }
             else
             {
-                std::cout << "Could not list cameras or no cameras present. Error code: " << err << std::endl;
+                cout << "Could not list cameras or no cameras present. Error code: " << err << endl;
             }
         }
 
         VmbAccessMode_t cameraAccessMode = VmbAccessModeFull;
-        VmbHandle_t		cameraHandle = NULL;
-        err = VmbCameraOpen(	pCameraID ? pCameraID : pCameras[0].cameraIdString,
-                                cameraAccessMode, &cameraHandle );									// Open camera
+        VmbHandle_t        cameraHandle = NULL;
+        if (NULL == pCameraID)
+        {
+            pCameraID = (char*)pCameras[0].cameraIdString;
+        }
+
+        // Open camera
+        err = VmbCameraOpen(    pCameraID, cameraAccessMode, &cameraHandle );
         if ( VmbErrorSuccess == err )
-        {				
-			VmbInt64_t nPayloadSize;
-            err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );					// Evaluate frame size	
+        {
+            cout << "Camera ID: " << pCameraID << endl << endl;
+
+            VmbInt64_t nPayloadSize;
+            // Evaluate frame size
+            err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );
             if ( VmbErrorSuccess == err )
             {
                 VmbFrame_t Frame;
 
                 VmbUint32_t nSizeOfFrame = (VmbUint32_t)nPayloadSize;
                     
-                Frame.buffer		= new char [ nSizeOfFrame ];
-                Frame.bufferSize	= nSizeOfFrame;
+                Frame.buffer        = new char [ nSizeOfFrame ];
+                Frame.bufferSize    = nSizeOfFrame;
 
-                err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );	// Announce Frame
+                // Announce Frame
+                err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
                 if ( VmbErrorSuccess == err )
                 {
                     err = VmbCaptureStart( cameraHandle );
                     if ( VmbErrorSuccess == err )
                     {
-                        err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );					// Queue Frame
+                        // Queue Frame
+                        err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );
                         if ( VmbErrorSuccess == err )
                         {
                             err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
                             if ( VmbErrorSuccess == err )
                             {
-                                err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );		// Capture frame
+                                // Capture frame
+                                err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
                                 if ( VmbErrorSuccess == err )
                                 {
                                     CreateImageFile( &Frame, pFileName );
                                 }
                                 else
                                 {
-                                    std::cout << "Could not	capture frame. Error code: " << err << std::endl;
+                                    cout << "Could not capture frame. Error code: " << err << endl;
                                 }
 
                                 err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
                                 if ( VmbErrorSuccess != err )
                                 {
-                                    std::cout << "Could not	stop acquisition. Error code: " << err << std::endl;
+                                    cout << "Could not stop acquisition. Error code: " << err << endl;
                                 }
                             }
                             else
                             {
-                                std::cout << "Could not	start acquisition. Error code: " << err << std::endl;
+                                cout << "Could not start acquisition. Error code: " << err << endl;
                             }
                         }
                         else
                         {
-                            std::cout << "Could not	queue frame. Error code: " << err << std::endl;
+                            cout << "Could not queue frame. Error code: " << err << endl;
                         }
 
                         err = VmbCaptureEnd( cameraHandle );
                         if ( VmbErrorSuccess != err )
                         {
-                            std::cout << "Could not	end capture . Error code: " << err << std::endl;
+                            cout << "Could not end capture . Error code: " << err << endl;
                         }
                     }
                     else
                     {
-                        std::cout << "Could not	start capture. Error code: " << err << std::endl;
+                        cout << "Could not start capture. Error code: " << err << endl;
                     }
 
-                    err = VmbFrameRevoke( cameraHandle, &Frame );									// Revoke frame
+                    // Revoke frame
+                    err = VmbFrameRevoke( cameraHandle, &Frame );
                     if ( VmbErrorSuccess != err )
                     {
-                        std::cout << "Could not revoke frame. Error code: " << err << std::endl;
+                        cout << "Could not revoke frame. Error code: " << err << endl;
                     }
                 }
                 else
                 {
-                    std::cout << "Could not announce frame. Error code: " << err << std::endl;
+                    cout << "Could not announce frame. Error code: " << err << endl;
                 }
 
                 delete ( Frame.buffer );
 
             }
 
-			if ( VmbErrorSuccess != err )
-			{
-				VmbCameraClose ( cameraHandle );
-			}
-			else
-			{
-				err = VmbCameraClose ( cameraHandle );
-				if ( VmbErrorSuccess != err )
-				{
-					std::cout << "Could not close camera. Error code: " << err << std::endl;
-				}
-			}
+            if ( VmbErrorSuccess != err )
+            {
+                VmbCameraClose ( cameraHandle );
+            }
+            else
+            {
+                err = VmbCameraClose ( cameraHandle );
+                if ( VmbErrorSuccess != err )
+                {
+                    cout << "Could not close camera. Error code: " << err << endl;
+                }
+            }
         }
         else
         {
-            std::cout << "Could not open camera. Error code: " << err << std::endl;
+            cout << "Could not open camera. Error code: " << err << endl;
         }
 
-        VmbShutdown();																					
+        VmbShutdown();                                                                                    
     }
     else
     {
-        std::cout << "Could not start system. Error code: " << err << std::endl;
+        cout << "Could not start system. Error code: " << err << endl;
     }
 
     return err;
@@ -222,7 +239,6 @@ HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
             nBitCount = 24;
             break;
         default:
-            std::cout << "Pixel Format can not be displayed. Pixel Format: " << pFrame->pixelFormat << std::endl;
             break;
     }
 
@@ -324,7 +340,7 @@ PBITMAPINFO CreateBitmapInfoStruct ( HBITMAP hBmp )
 HANDLE CreateRawFile ( LPTSTR pszFile, const VmbFrame_t* pFrame )
 {
     HANDLE hf;                  // file handle 
-    DWORD dwBytesWritten;		// bytes written
+    DWORD dwBytesWritten;        // bytes written
 
     // Create the .BMP file. 
     hf = CreateFile (   pszFile, 
@@ -337,20 +353,20 @@ HANDLE CreateRawFile ( LPTSTR pszFile, const VmbFrame_t* pFrame )
 
     if (hf == INVALID_HANDLE_VALUE)
     {
-        std::cout << "Could not create raw file." << std::endl;
+        cout << "Could not create raw file." << endl;
         return hf;
     }
 
     if ( !WriteFile ( hf, (LPSTR) pFrame->buffer, (int) pFrame->bufferSize, (LPDWORD) &dwBytesWritten, NULL ) ) 
     {
-        std::cout << "Could not write raw data." << std::endl;
+        cout << "Could not write raw data." << endl;
         return FALSE;
     }
 
     // Close the .RAW file. 
     if ( !CloseHandle(hf) ) 
     {
-        std::cout << "Could not close raw file." << std::endl;
+        cout << "Could not close raw file." << endl;
         return FALSE;
     }
 
@@ -366,14 +382,14 @@ HANDLE CreateBitmapFile ( LPTSTR pszFile, PBITMAPINFO pbi, const VmbFrame_t* pFr
     DWORD dwTotal;              // total count of bytes 
     DWORD cb;                   // incremental count of bytes 
     BYTE *hp;                   // byte pointer 
-    DWORD dwBytesWritten;		// bytes written	 
+    DWORD dwBytesWritten;        // bytes written     
 
     pbih = (PBITMAPINFOHEADER) pbi; 
     lpBits = (LPBYTE) GlobalAlloc ( GMEM_FIXED, pbih->biSizeImage );
 
     if (!lpBits)
     {
-        std::cout << "Could not allocate memory for bitmap file." << std::endl;
+        cout << "Could not allocate memory for bitmap file." << endl;
         return FALSE;
     }
 
@@ -388,7 +404,7 @@ HANDLE CreateBitmapFile ( LPTSTR pszFile, PBITMAPINFO pbi, const VmbFrame_t* pFr
 
     if (hf == INVALID_HANDLE_VALUE)
     {
-        std::cout << "Could not create bitmap file." << std::endl;
+        cout << "Could not create bitmap file." << endl;
         return hf;
     }
 
@@ -404,14 +420,14 @@ HANDLE CreateBitmapFile ( LPTSTR pszFile, PBITMAPINFO pbi, const VmbFrame_t* pFr
     // Copy the BITMAPFILEHEADER into the .BMP file. 
     if ( !WriteFile ( hf, (LPVOID) &hdr, sizeof(BITMAPFILEHEADER), (LPDWORD) &dwBytesWritten,  NULL ) ) 
     {
-        std::cout << "Could not write bitmap file header." << std::endl;
+        cout << "Could not write bitmap file header." << endl;
         return hf;
     }
 
     // Copy the BITMAPINFOHEADER and RGBQUAD array into the file. 
     if ( !WriteFile ( hf, (LPVOID) pbih, sizeof(BITMAPINFOHEADER)+ pbih->biClrUsed * sizeof (RGBQUAD), (LPDWORD) &dwBytesWritten, ( NULL) ) )
     {
-        std::cout << "Could not write bitmap info header." << std::endl;
+        cout << "Could not write bitmap info header." << endl;
         return FALSE;
     }
 
@@ -421,14 +437,14 @@ HANDLE CreateBitmapFile ( LPTSTR pszFile, PBITMAPINFO pbi, const VmbFrame_t* pFr
 
     if ( !WriteFile ( hf, (LPSTR) pFrame->buffer, (int) pFrame->bufferSize, (LPDWORD) &dwBytesWritten, NULL ) ) 
     {
-        std::cout << "Could not write bitmap data." << std::endl;
+        cout << "Could not write bitmap data." << endl;
         return FALSE;
     }
 
     // Close the .BMP file. 
     if ( !CloseHandle(hf) ) 
     {
-        std::cout << "Could not close bitmap file." << std::endl;
+        cout << "Could not close bitmap file." << endl;
         return FALSE;
     }
 
@@ -436,7 +452,7 @@ HANDLE CreateBitmapFile ( LPTSTR pszFile, PBITMAPINFO pbi, const VmbFrame_t* pFr
     HGLOBAL hgl = GlobalFree ( (HGLOBAL)lpBits );
     if ( NULL != hgl )
     {
-        std::cout << "Could not free memory for bitmap file." << std::endl;
+        cout << "Could not free memory for bitmap file." << endl;
     }
 
     return hf;

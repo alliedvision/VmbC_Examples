@@ -30,6 +30,8 @@
 
 #include <SynchronousGrab.h>
 
+using namespace std;
+
 bool StartsWith(const char *pString, const char *pStart)
 {
     if(NULL == pString)
@@ -56,9 +58,9 @@ bool StartsWith(const char *pString, const char *pStart)
 
 int main( int argc, char* argv[] )
 {
-    std::cout << "//////////////////////////////////////////////" << std::endl;
-    std::cout << "/// AVT Vimba API Synchronous Grab Example ///" << std::endl;
-    std::cout << "//////////////////////////////////////////////" << std::endl << std::endl;
+    cout << "//////////////////////////////////////////////" << endl;
+    cout << "/// AVT Vimba API Synchronous Grab Example ///" << endl;
+    cout << "//////////////////////////////////////////////" << endl << endl;
     
     VmbError_t err = VmbErrorSuccess;
 
@@ -129,28 +131,28 @@ int main( int argc, char* argv[] )
     //Write out an error if we could not parse the command line
     if ( VmbErrorBadParameter == err )
     {
-        std::cout << "Invalid parameters!" << std::endl << std::endl;
+        cout << "Invalid parameters!" << endl << endl;
         bPrintHelp = true;
     }
 
     //Print out help and end program
     if ( true == bPrintHelp )
     {
-        std::cout << "Usage: SynchronousGrab.exe [CameraID] [/h] [/f:FileName]" << std::endl;
-        std::cout << "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)" << std::endl;
-        std::cout << "              /h          Print out help" << std::endl;
-        std::cout << "              /f:FileName File name for operation" << std::endl;
-        std::cout << "                          (default is \"SynchronousGrab.bmp\" if not specified)" << std::endl;
+        cout << "Usage: SynchronousGrab.exe [CameraID] [/h] [/f:FileName]" << endl;
+        cout << "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)" << endl;
+        cout << "              /h          Print out help" << endl;
+        cout << "              /f:FileName File name for operation" << endl;
+        cout << "                          (default is \"SynchronousGrab.bmp\" if not specified)" << endl;
     }
-	else
-	{
-		if ( NULL == pFileName )
-		{
-			pFileName = "SynchronousGrab.bmp";
-		}
+    else
+    {
+        if ( NULL == pFileName )
+        {
+            pFileName = "SynchronousGrab.bmp";
+        }
 
-		err = SynchronousGrab( pCameraID, pFileName );
-	}
+        err = SynchronousGrab( pCameraID, pFileName );
+    }
 
     return err;
 }
