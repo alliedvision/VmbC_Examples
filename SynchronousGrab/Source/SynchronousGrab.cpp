@@ -222,12 +222,6 @@ HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
     HDC             hDC;
     WCHAR           wFileName   [ MAX_PATH ];
 
-    MultiByteToWideChar ( CP_ACP, 0L, pFileName, lstrlenA(pFileName) + 1, wFileName, MAX_PATH );
-    
-    hDC = GetDC ( NULL );
-
-    HDC memDC = CreateCompatibleDC ( hDC );
-
     UINT nBitCount = 0;
     switch ( pFrame->pixelFormat)
     {
@@ -241,6 +235,42 @@ HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
         default:
             break;
     }
+    
+    // Change file extension to .dat
+    size_t length = strlen(pFileName);
+    char* pFile = NULL;
+    pFile = new char [length];
+    strcpy(pFile, pFileName);
+    char *pExt = strrchr((char*)pFile, '.');
+    if ( !nBitCount )
+    {
+        if (pExt != NULL)
+        {
+            strcpy(pExt, ".dat");
+        }
+        else
+        {
+            strcat((char*)pFile, ".dat");
+        }
+    }
+    else
+    {
+        if (pExt != NULL)
+        {
+            strcpy(pExt, ".bmp");
+        }
+        else
+        {
+            strcat((char*)pFile, ".bmp");
+        }
+    }
+
+
+    MultiByteToWideChar ( CP_ACP, 0L, pFile, lstrlenA(pFile) + 1, wFileName, MAX_PATH );
+    
+    hDC = GetDC ( NULL );
+
+    HDC memDC = CreateCompatibleDC ( hDC );
 
     if ( nBitCount )
     {
@@ -342,7 +372,6 @@ HANDLE CreateRawFile ( LPTSTR pszFile, const VmbFrame_t* pFrame )
     HANDLE hf;                  // file handle 
     DWORD dwBytesWritten;        // bytes written
 
-    // Create the .BMP file. 
     hf = CreateFile (   pszFile, 
                         GENERIC_READ | GENERIC_WRITE, 
                         (DWORD) 0, 

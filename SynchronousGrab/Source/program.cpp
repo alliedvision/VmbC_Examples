@@ -142,7 +142,7 @@ int main( int argc, char* argv[] )
         cout << "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)" << endl;
         cout << "              /h          Print out help" << endl;
         cout << "              /f:FileName File name for operation" << endl;
-        cout << "                          (default is \"SynchronousGrab.bmp\" if not specified)" << endl;
+        cout << "                          (default \"SynchronousGrab.bmp/.dat\" if not specified)" << endl;
     }
     else
     {
