@@ -27,7 +27,12 @@
 =============================================================================*/
 
 #include <iostream>
-#include <windows.h>
+
+#ifdef WIN32
+    #include <windows.h>
+#else
+    #include <sys/time.h>
+#endif
 
 #include <ListCameras.h>
 
@@ -49,7 +54,13 @@ void ListCameras()
             err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");           // Send discovery packets to GigE cameras
             if ( VmbErrorSuccess == err )
             {
-                Sleep( 200 );                                                           // And wait for them to return
+                
+                // And wait for them to return
+#ifdef WIN32
+                ::Sleep(200);
+#else
+                ::usleep(200 * 1000);
+#endif
             }
             else
             {
