@@ -25,12 +25,11 @@
 
 =============================================================================*/
 
-#include <tchar.h>
 #include <iostream>
 
 #include <ListFeatures.h>
 
-int _tmain( int argc, _TCHAR* argv[] )
+int main( int argc, char* argv[] )
 {
     std::cout << std::endl;
     std::cout << "///////////////////////////////////////////" << std::endl;
