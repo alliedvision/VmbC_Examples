@@ -81,7 +81,7 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
                     err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );
                     if ( VmbErrorSuccess != err )
                     {
-                        cout << "Could not allocate camera list." << endl;
+                        cout << "Could not list cameras. Error code: " << err << endl;
                     }
                 }
                 else
