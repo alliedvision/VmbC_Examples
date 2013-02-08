@@ -27,7 +27,11 @@
 =============================================================================*/
 
 #include <iostream>
-#include <windows.h>
+#ifdef WIN32
+    #include <windows.h>
+#else
+    #include <sys/time.h>
+#endif
 
 #include <SynchronousGrab.h>
 
@@ -35,7 +39,7 @@
 
 using namespace std;
 
-VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
+VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
 {
     VmbError_t          err = VmbStartup(); // Initialize the Vimba API
     VmbCameraInfo_t     *pCameras = NULL;   // A list of camera details
@@ -55,7 +59,12 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
             err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");
             if ( VmbErrorSuccess == err )
             {
-                Sleep( 200 );
+                // And wait for them to return
+#ifdef WIN32
+                ::Sleep(200);
+#else
+                ::usleep(200 * 1000);
+#endif
             }
             else
             {
@@ -67,7 +76,7 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
             cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << endl << endl;
         }        
 
-        if ( NULL == pCameraID )                                                                    
+        if ( NULL == pCameraID )
         {
             // Get the amount of known cameras
             err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );
@@ -96,109 +105,127 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
         }
 
         VmbAccessMode_t cameraAccessMode = VmbAccessModeFull;
-        VmbHandle_t        cameraHandle = NULL;
-        if (NULL == pCameraID)
+        VmbHandle_t cameraHandle = NULL;
+        if ( NULL == pCameraID )
         {
-            pCameraID = (char*)pCameras[0].cameraIdString;
+            pCameraID = pCameras[0].cameraIdString;
         }
 
         // Open camera
-        err = VmbCameraOpen(    pCameraID, cameraAccessMode, &cameraHandle );
+        err = VmbCameraOpen( pCameraID, cameraAccessMode, &cameraHandle );
         if ( VmbErrorSuccess == err )
         {
             cout << "Camera ID: " << pCameraID << endl << endl;
 
-            VmbInt64_t nPayloadSize;
-            // Evaluate frame size
-            err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );
+            // Set pixel format. For the sake of simplicity we only support Mono and RGB in this example.
+            err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "RGB8Packed" );
+            if ( VmbErrorSuccess != err )
+            {
+                // Fall back to Mono
+                err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "Mono8" );
+            }
+            // Read back pixel format
+            const char* pPixelFormat;
+            VmbFeatureEnumGet( cameraHandle, "PixelFormat", &pPixelFormat );
+
             if ( VmbErrorSuccess == err )
             {
-                VmbFrame_t Frame;
-
-                VmbUint32_t nSizeOfFrame = (VmbUint32_t)nPayloadSize;
-                    
-                Frame.buffer        = new char [ nSizeOfFrame ];
-                Frame.bufferSize    = nSizeOfFrame;
-
-                // Announce Frame
-                err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
+                VmbInt64_t nPayloadSize;
+                // Evaluate frame size
+                err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );
                 if ( VmbErrorSuccess == err )
                 {
-                    err = VmbCaptureStart( cameraHandle );
+                    VmbFrame_t Frame;
+
+                    VmbUint32_t nSizeOfFrame = (VmbUint32_t)nPayloadSize;
+
+                    Frame.buffer        = new char [ nSizeOfFrame ];
+                    Frame.bufferSize    = nSizeOfFrame;
+
+                    // Announce Frame
+                    err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
                     if ( VmbErrorSuccess == err )
                     {
-                        // Queue Frame
-                        err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );
+                        // Start Capture Engine
+                        err = VmbCaptureStart( cameraHandle );
                         if ( VmbErrorSuccess == err )
                         {
-                            err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
+                            // Queue Frame
+                            err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );
                             if ( VmbErrorSuccess == err )
                             {
-                                // Capture frame
-                                err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
+                                // Start Acquisition
+                                err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
                                 if ( VmbErrorSuccess == err )
                                 {
-                                    CreateImageFile( &Frame, pFileName );
+                                    // Capture one frame synchronously
+                                    err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
+                                    if ( VmbErrorSuccess == err )
+                                    {
+                                        err = SaveBitmapToFile( cameraHandle, &Frame, pPixelFormat, pFileName );
+                                        if ( VmbErrorSuccess != err )
+                                        {
+                                            cout << "Could not save bitmap to file. Error code: " << err << endl;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        cout << "Could not capture frame. Error code: " << err << endl;
+                                    }
+
+                                    // Stop Acquisition
+                                    err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
+                                    if ( VmbErrorSuccess != err )
+                                    {
+                                        cout << "Could not stop acquisition. Error code: " << err << endl;
+                                    }
                                 }
                                 else
                                 {
-                                    cout << "Could not capture frame. Error code: " << err << endl;
-                                }
-
-                                err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
-                                if ( VmbErrorSuccess != err )
-                                {
-                                    cout << "Could not stop acquisition. Error code: " << err << endl;
+                                    cout << "Could not start acquisition. Error code: " << err << endl;
                                 }
                             }
                             else
                             {
-                                cout << "Could not start acquisition. Error code: " << err << endl;
+                                cout << "Could not queue frame. Error code: " << err << endl;
+                            }
+
+                            // Stop Capture Engine
+                            err = VmbCaptureEnd( cameraHandle );
+                            if ( VmbErrorSuccess != err )
+                            {
+                                cout << "Could not end capture . Error code: " << err << endl;
                             }
                         }
                         else
                         {
-                            cout << "Could not queue frame. Error code: " << err << endl;
+                            cout << "Could not start capture. Error code: " << err << endl;
                         }
 
-                        err = VmbCaptureEnd( cameraHandle );
+                        // Revoke frame
+                        err = VmbFrameRevoke( cameraHandle, &Frame );
                         if ( VmbErrorSuccess != err )
                         {
-                            cout << "Could not end capture . Error code: " << err << endl;
+                            cout << "Could not revoke frame. Error code: " << err << endl;
                         }
                     }
                     else
                     {
-                        cout << "Could not start capture. Error code: " << err << endl;
+                        cout << "Could not announce frame. Error code: " << err << endl;
                     }
 
-                    // Revoke frame
-                    err = VmbFrameRevoke( cameraHandle, &Frame );
-                    if ( VmbErrorSuccess != err )
-                    {
-                        cout << "Could not revoke frame. Error code: " << err << endl;
-                    }
+                    delete ( Frame.buffer );
                 }
-                else
-                {
-                    cout << "Could not announce frame. Error code: " << err << endl;
-                }
-
-                delete ( Frame.buffer );
-
-            }
-
-            if ( VmbErrorSuccess != err )
-            {
-                VmbCameraClose ( cameraHandle );
             }
             else
             {
-                err = VmbCameraClose ( cameraHandle );
-                if ( VmbErrorSuccess != err )
-                {
-                    cout << "Could not close camera. Error code: " << err << endl;
-                }
+                cout << "Could not set pixel format to either RGB or Mono. Error code: " << err << endl;
+            }
+
+            err = VmbCameraClose ( cameraHandle );
+            if ( VmbErrorSuccess != err )
+            {
+                cout << "Could not close camera. Error code: " << err << endl;
             }
         }
         else
@@ -206,7 +233,7 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
             cout << "Could not open camera. Error code: " << err << endl;
         }
 
-        VmbShutdown();                                                                                    
+        VmbShutdown();
     }
     else
     {
@@ -216,273 +243,96 @@ VmbError_t SynchronousGrab( char* pCameraID, char* pFileName )
     return err;
 }
 
-HANDLE CreateImageFile ( const VmbFrame_t* pFrame, const char* pFileName )
+VmbError_t SaveBitmapToFile( VmbHandle_t hCamera, VmbFrame_t* pFrame, const char *pPixelFormat, const char* pFileName )
 {
-    HANDLE          hFile       = INVALID_HANDLE_VALUE;
-    HDC             hDC;
-    WCHAR           wFileName   [ MAX_PATH ];
-
-    UINT nBitCount = 0;
-    switch ( pFrame->pixelFormat)
+    if (    NULL == pFrame
+         || NULL == pFileName )
     {
-        case VmbPixelFormatMono8:
-            nBitCount = 8;
-            break;
-        case VmbPixelFormatRgb8:
-        case VmbPixelFormatBgr8:
-            nBitCount = 24;
-            break;
-        default:
-            break;
+        return VmbErrorBadParameter;
     }
-    
-    // Change file extension to .dat
-    size_t length = strlen(pFileName);
-    char* pFile = NULL;
-    pFile = new char [length];
-    strcpy(pFile, pFileName);
-    char *pExt = strrchr((char*)pFile, '.');
-    if ( !nBitCount )
+
+    VmbUint32_t nWidthFactor = 1;
+    if ( 0 == strcmp("RGB8Packed", pPixelFormat) )
     {
-        if (pExt != NULL)
+        // An RGB image is three times wider than mono
+        nWidthFactor = 3;
+
+        // RGB -> BGR (needed for bitmap)
+        unsigned char* pCur = (unsigned char*)pFrame->buffer;
+        unsigned long px;
+        for (VmbUint32_t i=0; i<pFrame->width*pFrame->height; ++i, pCur+=3)
         {
-            strcpy(pExt, ".dat");
+            px = 0;
+            // Create a 4 Byte structure to hold ABGR (we don't use A)
+            px = (pCur[0] << 16) | (pCur[1] << 8) | (pCur[2]);
+            // Erase A and swap B & R to obtain RGB
+            px = (px & 0x00000000) | ((px & 0xFF0000) >> 16) | (px & 0x00FF00) | ((px & 0x0000FF) << 16);
+            // Write back to buffer
+            pCur[0] = (unsigned char)((px & 0xFF0000) >> 16);
+            pCur[1] = (unsigned char)((px & 0x00FF00) >> 8);
+            pCur[2] = (unsigned char)(px & 0x0000FF);
         }
-        else
-        {
-            strcat((char*)pFile, ".dat");
-        }
+    }
+
+    FILE *file;
+    int filesize = 54 + pFrame->imageSize;
+
+    // Create the bitmap header
+    char fileHeader[14] = { 'B','M',                // Default
+                            0,0,0,0,                // Size
+                            0,0,0,0,                // Reserved
+                            54,0,0,0 };             // Offset to image content
+    char infoHeader[40] = { 40,0,0,0,               // Size of info header
+                            0,0,0,0,                // Width
+                            0,0,0,0,                // Height
+                            1,0,                    // Default
+                            8 * nWidthFactor, 0 };  // bpp
+
+    // Bitmap size
+    fileHeader[2] = (char)(filesize);
+    fileHeader[3] = (char)(filesize >> 8);
+    fileHeader[4] = (char)(filesize >> 16);
+    fileHeader[5] = (char)(filesize >> 24);
+
+    // Width and height (height has to be negative for a top down image)
+    infoHeader[4] = (char)( pFrame->width);
+    infoHeader[5] = (char)( pFrame->width >> 8 );
+    infoHeader[6] = (char)( pFrame->width >> 16 );
+    infoHeader[7] = (char)( pFrame->width >> 24 );
+    infoHeader[8] = (char)( -(long)pFrame->height );
+    infoHeader[9] = (char)( -(long)pFrame->height >> 8 );
+    infoHeader[10] = (char)( -(long)pFrame->height >> 16 );
+    infoHeader[11] = (char)( -(long)pFrame->height >> 24 );
+
+    // Write header to file
+    file = fopen(pFileName,"wb");
+    fwrite( fileHeader, 1, 14, file );
+    fwrite( infoHeader, 1, 40, file );
+
+    // Bitmap padding always is a multiple of four Bytes. If data is not we need to pad with zeros.
+    int nPadSize = (pFrame->width * nWidthFactor) % 4;
+    if ( 0 == nPadSize )
+    {
+        fwrite( pFrame->buffer, 1, pFrame->imageSize, file );
     }
     else
     {
-        if (pExt != NULL)
+        unsigned char* pCur = (unsigned char*)pFrame->buffer;
+        unsigned char* pPad = new unsigned char[nPadSize*nWidthFactor];
+        for ( int i=0; i<nPadSize; ++i )
         {
-            strcpy(pExt, ".bmp");
+            pPad[i] = 0;
         }
-        else
+
+        for ( VmbUint32_t y=0; y<pFrame->height; ++y )
         {
-            strcat((char*)pFile, ".bmp");
-        }
-    }
-
-
-    MultiByteToWideChar ( CP_ACP, 0L, pFile, lstrlenA(pFile) + 1, wFileName, MAX_PATH );
-    
-    hDC = GetDC ( NULL );
-
-    HDC memDC = CreateCompatibleDC ( hDC );
-
-    if ( nBitCount )
-    {
-        // create bitmap
-        HBITMAP memBM =  CreateBitmap( pFrame->width, pFrame->height, 1, nBitCount, NULL );  
-
-        PBITMAPINFO pbi = CreateBitmapInfoStruct( memBM );
-        if ( NULL == pbi )
-        {
-            return pbi;
-        }
-        hFile = CreateBitmapFile ( wFileName, pbi, pFrame );
-    }
-    else
-    {
-        hFile = CreateRawFile ( wFileName, pFrame );  
-    }
-    return hFile;
-}
-
-PBITMAPINFO CreateBitmapInfoStruct ( HBITMAP hBmp )
-{ 
-    BITMAP bmp; 
-    PBITMAPINFO pbmi; 
-    WORD    cClrBits; 
-
-    // Retrieve the bitmap color format, width, and height. 
-    if (!GetObject(hBmp, sizeof(BITMAP), (LPSTR)&bmp)) 
-    {        
-        return NULL;
-    } 
-
-    // Convert the color format to a count of bits. 
-    cClrBits = (WORD)(bmp.bmPlanes * bmp.bmBitsPixel); 
-    if (cClrBits == 1) 
-        cClrBits = 1; 
-    else if (cClrBits <= 4) 
-        cClrBits = 4; 
-    else if (cClrBits <= 8) 
-        cClrBits = 8; 
-    else if (cClrBits <= 16) 
-        cClrBits = 16; 
-    else if (cClrBits <= 24) 
-        cClrBits = 24; 
-    else cClrBits = 32; 
-
-    // Allocate memory for the BITMAPINFO structure. (This structure 
-    // contains a BITMAPINFOHEADER structure and an array of RGBQUAD 
-    // data structures.) 
-    if (cClrBits != 24) 
-    {
-        pbmi = (PBITMAPINFO) LocalAlloc ( LPTR, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * ( (size_t)1 << cClrBits) ); 
-    }
-    // There is no RGBQUAD array for the 24-bit-per-pixel format. 
-    else 
-    {
-        pbmi = (PBITMAPINFO) LocalAlloc ( LPTR, sizeof(BITMAPINFOHEADER) ); 
-    }
-
-    // Initialize the fields in the BITMAPINFO structure. 
-
-    pbmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 
-    pbmi->bmiHeader.biWidth = bmp.bmWidth; 
-    pbmi->bmiHeader.biHeight = -bmp.bmHeight; 
-    pbmi->bmiHeader.biPlanes = bmp.bmPlanes; 
-    pbmi->bmiHeader.biBitCount = bmp.bmBitsPixel; 
-    if (cClrBits < 24) 
-        pbmi->bmiHeader.biClrUsed = (1<<cClrBits); 
-
-    // If the bitmap is not compressed, set the BI_RGB flag. 
-    pbmi->bmiHeader.biCompression = BI_RGB; 
-
-    // Compute the number of bytes in the array of color 
-    // indices and store the result in biSizeImage. 
-    pbmi->bmiHeader.biSizeImage = ((bmp.bmWidth * cClrBits +31) & ~31) /8
-                                  * bmp.bmHeight; 
-
-    // Set biClrImportant to 0, indicating that all of the 
-    // device colors are important. 
-    pbmi->bmiHeader.biClrImportant = pbmi->bmiHeader.biClrUsed;
-
-    // mono bitmap
-    if ( 8 == cClrBits )
-    {
-        for( int i = 1; i < (int)pbmi->bmiHeader.biClrUsed; ++i )
-        {
-            pbmi->bmiColors[i].rgbBlue      = (BYTE) i;
-            pbmi->bmiColors[i].rgbGreen     = (BYTE) i;
-            pbmi->bmiColors[i].rgbRed       = (BYTE) i;
-            pbmi->bmiColors[i].rgbReserved  = (BYTE)(pbmi->bmiHeader.biClrUsed - 1);
+            fwrite( pCur, 1, pFrame->width * nWidthFactor, file );
+            fwrite( pPad, 1, nPadSize, file );
+            pCur += pFrame->width * nWidthFactor;
         }
     }
 
-    return pbmi; 
-} 
+    fclose( file );
 
-HANDLE CreateRawFile ( LPTSTR pszFile, const VmbFrame_t* pFrame )
-{
-    HANDLE hf;                  // file handle 
-    DWORD dwBytesWritten;        // bytes written
-
-    hf = CreateFile (   pszFile, 
-                        GENERIC_READ | GENERIC_WRITE, 
-                        (DWORD) 0, 
-                        NULL, 
-                        CREATE_ALWAYS, 
-                        FILE_ATTRIBUTE_NORMAL, 
-                        (HANDLE) NULL ); 
-
-    if (hf == INVALID_HANDLE_VALUE)
-    {
-        cout << "Could not create raw file." << endl;
-        return hf;
-    }
-
-    if ( !WriteFile ( hf, (LPSTR) pFrame->buffer, (int) pFrame->bufferSize, (LPDWORD) &dwBytesWritten, NULL ) ) 
-    {
-        cout << "Could not write raw data." << endl;
-        return FALSE;
-    }
-
-    // Close the .RAW file. 
-    if ( !CloseHandle(hf) ) 
-    {
-        cout << "Could not close raw file." << endl;
-        return FALSE;
-    }
-
-    return hf;
-}
-
-HANDLE CreateBitmapFile ( LPTSTR pszFile, PBITMAPINFO pbi, const VmbFrame_t* pFrame ) 
-{ 
-    HANDLE hf;                  // file handle 
-    BITMAPFILEHEADER hdr;       // bitmap file-header 
-    PBITMAPINFOHEADER pbih;     // bitmap info-header 
-    LPBYTE lpBits;              // memory pointer 
-    DWORD dwTotal;              // total count of bytes 
-    DWORD cb;                   // incremental count of bytes 
-    BYTE *hp;                   // byte pointer 
-    DWORD dwBytesWritten;        // bytes written     
-
-    pbih = (PBITMAPINFOHEADER) pbi; 
-    lpBits = (LPBYTE) GlobalAlloc ( GMEM_FIXED, pbih->biSizeImage );
-
-    if (!lpBits)
-    {
-        cout << "Could not allocate memory for bitmap file." << endl;
-        return FALSE;
-    }
-
-    // Create the .BMP file. 
-    hf = CreateFile (   pszFile, 
-                        GENERIC_READ | GENERIC_WRITE, 
-                        (DWORD) 0, 
-                        NULL, 
-                        CREATE_ALWAYS, 
-                        FILE_ATTRIBUTE_NORMAL, 
-                        (HANDLE) NULL ); 
-
-    if (hf == INVALID_HANDLE_VALUE)
-    {
-        cout << "Could not create bitmap file." << endl;
-        return hf;
-    }
-
-    hdr.bfType = 0x4d42;        // 0x42 = "B" 0x4d = "M" 
-    // Compute the size of the entire file. 
-    hdr.bfSize = (DWORD) (sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof(RGBQUAD) + pbih->biSizeImage); 
-    hdr.bfReserved1 = 0; 
-    hdr.bfReserved2 = 0; 
-
-    // Compute the offset to the array of color indices. 
-    hdr.bfOffBits = (DWORD) sizeof(BITMAPFILEHEADER) + pbih->biSize + pbih->biClrUsed * sizeof (RGBQUAD); 
-
-    // Copy the BITMAPFILEHEADER into the .BMP file. 
-    if ( !WriteFile ( hf, (LPVOID) &hdr, sizeof(BITMAPFILEHEADER), (LPDWORD) &dwBytesWritten,  NULL ) ) 
-    {
-        cout << "Could not write bitmap file header." << endl;
-        return hf;
-    }
-
-    // Copy the BITMAPINFOHEADER and RGBQUAD array into the file. 
-    if ( !WriteFile ( hf, (LPVOID) pbih, sizeof(BITMAPINFOHEADER)+ pbih->biClrUsed * sizeof (RGBQUAD), (LPDWORD) &dwBytesWritten, ( NULL) ) )
-    {
-        cout << "Could not write bitmap info header." << endl;
-        return FALSE;
-    }
-
-    // Copy the array of color indices into the .BMP file. 
-    dwTotal = cb = pbih->biSizeImage; 
-    hp = lpBits; 
-
-    if ( !WriteFile ( hf, (LPSTR) pFrame->buffer, (int) pFrame->bufferSize, (LPDWORD) &dwBytesWritten, NULL ) ) 
-    {
-        cout << "Could not write bitmap data." << endl;
-        return FALSE;
-    }
-
-    // Close the .BMP file. 
-    if ( !CloseHandle(hf) ) 
-    {
-        cout << "Could not close bitmap file." << endl;
-        return FALSE;
-    }
-
-    // Free memory. 
-    HGLOBAL hgl = GlobalFree ( (HGLOBAL)lpBits );
-    if ( NULL != hgl )
-    {
-        cout << "Could not free memory for bitmap file." << endl;
-    }
-
-    return hf;
+    return VmbErrorSuccess;
 }
