@@ -33,6 +33,4 @@
 
 VmbError_t SynchronousGrab ( const char* pCameraID, char* pFileName );
 
-VmbError_t SaveBitmapToFile( VmbHandle_t hCamera, VmbFrame_t* pFrame, const char* pPixelFormat, const char* pFileName );
-
 #endif

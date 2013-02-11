@@ -27,6 +27,7 @@
 =============================================================================*/
 
 #include <iostream>
+#include <fstream>
 #ifdef WIN32
     #include <windows.h>
 #else
@@ -38,6 +39,8 @@
 #include <VimbaC/Include/VimbaC.h>
 
 using namespace std;
+
+VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char* pPixelFormat, const char* pFileName );
 
 VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
 {
@@ -162,7 +165,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
                                     err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        err = SaveBitmapToFile( cameraHandle, &Frame, pPixelFormat, pFileName );
+                                        err = SaveBitmapToFile( &Frame, pPixelFormat, pFileName );
                                         if ( VmbErrorSuccess != err )
                                         {
                                             cout << "Could not save bitmap to file. Error code: " << err << endl;
@@ -243,24 +246,30 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
     return err;
 }
 
-VmbError_t SaveBitmapToFile( VmbHandle_t hCamera, VmbFrame_t* pFrame, const char *pPixelFormat, const char* pFileName )
+VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char *pPixelFormat, const char* pFileName )
 {
     if (    NULL == pFrame
-         || NULL == pFileName )
+         || NULL == pFileName
+         || 0 == pFrame->imageSize )
     {
         return VmbErrorBadParameter;
     }
 
-    VmbUint32_t nWidthFactor = 1;
+    if ( VmbErrorSuccess != pFrame->receiveStatus )
+    {
+        return pFrame->receiveStatus;
+    }
+
+    VmbUint32_t nNumColors = 1;
     if ( 0 == strcmp("RGB8Packed", pPixelFormat) )
     {
         // An RGB image is three times wider than mono
-        nWidthFactor = 3;
+        nNumColors = 3;
 
         // RGB -> BGR (needed for bitmap)
         unsigned char* pCur = (unsigned char*)pFrame->buffer;
         unsigned long px;
-        for (VmbUint32_t i=0; i<pFrame->width*pFrame->height; ++i, pCur+=3)
+        for ( VmbUint32_t i=0; i<pFrame->width*pFrame->height; ++i, pCur+=3 )
         {
             px = 0;
             // Create a 4 Byte structure to hold ABGR (we don't use A)
@@ -274,7 +283,6 @@ VmbError_t SaveBitmapToFile( VmbHandle_t hCamera, VmbFrame_t* pFrame, const char
         }
     }
 
-    FILE *file;
     int filesize = 54 + pFrame->imageSize;
 
     // Create the bitmap header
@@ -286,53 +294,59 @@ VmbError_t SaveBitmapToFile( VmbHandle_t hCamera, VmbFrame_t* pFrame, const char
                             0,0,0,0,                // Width
                             0,0,0,0,                // Height
                             1,0,                    // Default
-                            8 * nWidthFactor, 0 };  // bpp
+                            8 * nNumColors, 0 };  // bpp
 
-    // Bitmap size
+    // Bitmap file size
     fileHeader[2] = (char)(filesize);
     fileHeader[3] = (char)(filesize >> 8);
     fileHeader[4] = (char)(filesize >> 16);
     fileHeader[5] = (char)(filesize >> 24);
 
-    // Width and height (height has to be negative for a top down image)
-    infoHeader[4] = (char)( pFrame->width);
-    infoHeader[5] = (char)( pFrame->width >> 8 );
-    infoHeader[6] = (char)( pFrame->width >> 16 );
-    infoHeader[7] = (char)( pFrame->width >> 24 );
-    infoHeader[8] = (char)( -(long)pFrame->height );
-    infoHeader[9] = (char)( -(long)pFrame->height >> 8 );
-    infoHeader[10] = (char)( -(long)pFrame->height >> 16 );
-    infoHeader[11] = (char)( -(long)pFrame->height >> 24 );
+    // Width, height (has to be negative for a top down image) and image size
+    infoHeader[ 4] = (char)(pFrame->width);
+    infoHeader[ 5] = (char)(pFrame->width >> 8);
+    infoHeader[ 6] = (char)(pFrame->width >> 16);
+    infoHeader[ 7] = (char)(pFrame->width >> 24);
+    infoHeader[ 8] = (char)(-(long)pFrame->height);
+    infoHeader[ 9] = (char)(-(long)pFrame->height >> 8);
+    infoHeader[10] = (char)(-(long)pFrame->height >> 16);
+    infoHeader[11] = (char)(-(long)pFrame->height >> 24);
+    infoHeader[20] = (char)(pFrame->imageSize);
+    infoHeader[21] = (char)(pFrame->imageSize >> 8);
+    infoHeader[22] = (char)(pFrame->imageSize >> 16);
+    infoHeader[23] = (char)(pFrame->imageSize >> 24);
 
-    // Write header to file
-    file = fopen(pFileName,"wb");
-    fwrite( fileHeader, 1, 14, file );
-    fwrite( infoHeader, 1, 40, file );
+    std::ofstream   file;
+    file.open( pFileName );
+    file.write( fileHeader, 14 );
+    file.write( infoHeader, 40 );
 
     // Bitmap padding always is a multiple of four Bytes. If data is not we need to pad with zeros.
-    int nPadSize = (pFrame->width * nWidthFactor) % 4;
+    int nPadSize = (pFrame->width * nNumColors) % 4;
     if ( 0 == nPadSize )
     {
-        fwrite( pFrame->buffer, 1, pFrame->imageSize, file );
+        file.write( (const char*)pFrame->buffer, pFrame->imageSize );
     }
     else
     {
+        nPadSize = (4 - nPadSize) * nNumColors;
         unsigned char* pCur = (unsigned char*)pFrame->buffer;
-        unsigned char* pPad = new unsigned char[nPadSize*nWidthFactor];
-        for ( int i=0; i<nPadSize; ++i )
-        {
-            pPad[i] = 0;
-        }
+        unsigned char* pPad = new unsigned char[nPadSize];
+        memset( pPad, 0, nPadSize );
 
         for ( VmbUint32_t y=0; y<pFrame->height; ++y )
         {
-            fwrite( pCur, 1, pFrame->width * nWidthFactor, file );
-            fwrite( pPad, 1, nPadSize, file );
-            pCur += pFrame->width * nWidthFactor;
+            // Write a single row of colored pixels
+            file.write( (const char*)pCur, pFrame->width*nNumColors );
+            // Write padding pixels
+            file.write( (const char*)pPad, nPadSize );
+
+            pCur += pFrame->width * nNumColors;
         }
     }
 
-    fclose( file );
+    file.flush();
+    file.close();
 
     return VmbErrorSuccess;
 }
