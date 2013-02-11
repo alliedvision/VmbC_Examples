@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstring>
 #ifdef WIN32
     #include <windows.h>
 #else
@@ -217,7 +218,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
                         cout << "Could not announce frame. Error code: " << err << endl;
                     }
 
-                    delete ( Frame.buffer );
+                    delete (const char*)Frame.buffer;
                 }
             }
             else

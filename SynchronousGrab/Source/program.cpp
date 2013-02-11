@@ -27,6 +27,7 @@
 =============================================================================*/
 
 #include <iostream>
+#include <cstring>
 
 #include <SynchronousGrab.h>
 
