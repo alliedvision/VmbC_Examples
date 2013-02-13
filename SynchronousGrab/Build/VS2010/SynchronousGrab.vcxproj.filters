@@ -7,6 +7,9 @@
     <ClCompile Include="..\..\Source\program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Bitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -20,6 +23,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\SynchronousGrab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Bitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

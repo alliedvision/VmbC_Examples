@@ -36,12 +36,13 @@
 #endif
 
 #include <SynchronousGrab.h>
+#include <Bitmap.h>
 
 #include <VimbaC/Include/VimbaC.h>
 
-using namespace std;
+VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char *pPixelFormat, const char* pFileName );
 
-VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char* pPixelFormat, const char* pFileName );
+using namespace std;
 
 VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
 {
@@ -80,6 +81,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
             cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << endl << endl;
         }
 
+        // If no camera ID was provided use the first camera found
         if ( NULL == pCameraID )
         {
             // Get the amount of known cameras
@@ -98,6 +100,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
                     }
                     else
                     {
+                        // Use the first camera
                         pCameraID = pCameras[0].cameraIdString;
                     }
                 }
@@ -142,11 +145,8 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
                     if ( VmbErrorSuccess == err )
                     {
                         VmbFrame_t Frame;
-
-                        VmbUint32_t nSizeOfFrame = (VmbUint32_t)nPayloadSize;
-
-                        Frame.buffer        = new char [ nSizeOfFrame ];
-                        Frame.bufferSize    = nSizeOfFrame;
+                        Frame.buffer        = new char [ (VmbUint32_t)nPayloadSize ];
+                        Frame.bufferSize    = (VmbUint32_t)nPayloadSize;
 
                         // Announce Frame
                         err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
@@ -168,11 +168,39 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
                                         err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
                                         if ( VmbErrorSuccess == err )
                                         {
-                                            // Save captured image in bitmap and write to disk
-                                            err = SaveBitmapToFile( &Frame, pPixelFormat, pFileName );
-                                            if ( VmbErrorSuccess != err )
+                                            // Convert the captured frame to a bitmap and save to disk
+                                            if ( VmbFrameStatusComplete == Frame.receiveStatus )
                                             {
-                                                cout << "Could not save bitmap to file. Error code: " << err << endl;
+                                                AVTBitmap b;
+                                                b.bufferSize = Frame.imageSize;
+                                                b.width = Frame.width;
+                                                b.height = Frame.height;
+                                                // We only support Mono and RGB in this example
+                                                if ( 0 == strcmp( "RGB8Packed", pPixelFormat ))
+                                                {
+                                                    b.colorCode = ColorCodeRGB24;
+                                                }
+                                                else
+                                                {
+                                                    b.colorCode = ColorCodeMono8;
+                                                }
+
+                                                // Create the bitmap
+                                                if ( false == CreateBitmap( b, Frame.buffer ))
+                                                {
+                                                    cout << "Could not create bitmap." << endl;
+                                                }
+                                                else
+                                                {
+                                                    // Save the bitmap
+                                                    WriteBitmapToFile( b, pFileName );
+                                                    // Release the bitmap's buffer
+                                                    ReleaseBitmap( b );
+                                                }
+                                            }
+                                            else
+                                            {
+                                                cout << "Frame not successfully received. Error code: " << Frame.receiveStatus << endl;
                                             }
                                         }
                                         else
@@ -248,108 +276,4 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
     }
 
     return err;
-}
-
-VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char *pPixelFormat, const char* pFileName )
-{
-    if (    NULL == pFrame
-         || NULL == pFileName
-         || 0 == pFrame->imageSize )
-    {
-        return VmbErrorBadParameter;
-    }
-
-    if ( VmbErrorSuccess != pFrame->receiveStatus )
-    {
-        return pFrame->receiveStatus;
-    }
-
-    VmbUint32_t nNumColors = 1;
-    if ( 0 == strcmp("RGB8Packed", pPixelFormat) )
-    {
-        nNumColors = 3;
-
-        // RGB -> BGR (needed for bitmap)
-        unsigned char* pCur = (unsigned char*)pFrame->buffer;
-        unsigned long px;
-        for ( VmbUint32_t i=0; i<pFrame->width*pFrame->height; ++i, pCur+=3 )
-        {
-            px = 0;
-            // Create a 4 Byte structure to hold ABGR (we don't use A)
-            px = (pCur[0] << 16) | (pCur[1] << 8) | (pCur[2]);
-            // Erase A and swap B & R to obtain RGB
-            px = (px & 0x00000000) | ((px & 0xFF0000) >> 16) | (px & 0x00FF00) | ((px & 0x0000FF) << 16);
-            // Write back to buffer
-            pCur[0] = (unsigned char)((px & 0xFF0000) >> 16);
-            pCur[1] = (unsigned char)((px & 0x00FF00) >> 8);
-            pCur[2] = (unsigned char)(px & 0x0000FF);
-        }
-    }
-
-    int filesize = 54 + pFrame->imageSize;
-
-    // Create the bitmap header
-    char fileHeader[14] = { 'B','M',                // Default
-                            0,0,0,0,                // Size
-                            0,0,0,0,                // Reserved
-                            54,0,0,0 };             // Offset to image content
-    char infoHeader[40] = { 40,0,0,0,               // Size of info header
-                            0,0,0,0,                // Width
-                            0,0,0,0,                // Height
-                            1,0,                    // Default
-                            8 * nNumColors, 0 };    // bpp
-
-    // Bitmap file size
-    fileHeader[2] = (char)(filesize);
-    fileHeader[3] = (char)(filesize >> 8);
-    fileHeader[4] = (char)(filesize >> 16);
-    fileHeader[5] = (char)(filesize >> 24);
-
-    // Width, height (has to be negative for a top down image) and image size
-    infoHeader[ 4] = (char)(pFrame->width);
-    infoHeader[ 5] = (char)(pFrame->width >> 8);
-    infoHeader[ 6] = (char)(pFrame->width >> 16);
-    infoHeader[ 7] = (char)(pFrame->width >> 24);
-    infoHeader[ 8] = (char)(-(long)pFrame->height);
-    infoHeader[ 9] = (char)(-(long)pFrame->height >> 8);
-    infoHeader[10] = (char)(-(long)pFrame->height >> 16);
-    infoHeader[11] = (char)(-(long)pFrame->height >> 24);
-    infoHeader[20] = (char)(pFrame->imageSize);
-    infoHeader[21] = (char)(pFrame->imageSize >> 8);
-    infoHeader[22] = (char)(pFrame->imageSize >> 16);
-    infoHeader[23] = (char)(pFrame->imageSize >> 24);
-
-    std::ofstream file;
-    file.open( pFileName );
-    file.write( fileHeader, 14 );
-    file.write( infoHeader, 40 );
-
-    // Bitmap padding always is a multiple of four Bytes. If data is not we need to pad with zeros.
-    int nPadSize = (pFrame->width * nNumColors) % 4;
-    if ( 0 == nPadSize )
-    {
-        file.write( (const char*)pFrame->buffer, pFrame->imageSize );
-    }
-    else
-    {
-        nPadSize = (4 - nPadSize) * nNumColors;
-        unsigned char* pCur = (unsigned char*)pFrame->buffer;
-        unsigned char* pPad = new unsigned char[nPadSize];
-        memset( pPad, 0, nPadSize );
-
-        for ( VmbUint32_t y=0; y<pFrame->height; ++y )
-        {
-            // Write a single row of colored pixels
-            file.write( (const char*)pCur, pFrame->width*nNumColors );
-            // Write padding pixels
-            file.write( (const char*)pPad, nPadSize );
-
-            pCur += pFrame->width * nNumColors;
-        }
-    }
-
-    file.flush();
-    file.close();
-
-    return VmbErrorSuccess;
 }
