@@ -66,7 +66,7 @@ int main( int argc, char* argv[] )
     VmbError_t err = VmbErrorSuccess;
 
     char *pCameraID = NULL;
-    char *pFileName = NULL;
+    const char *pFileName = NULL;
     bool bPrintHelp = false;
 
     //////////////////////

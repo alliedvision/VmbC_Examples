@@ -44,7 +44,7 @@ VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char *pPixelFormat, const
 
 using namespace std;
 
-VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
+VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
 {
     VmbError_t          err = VmbStartup(); // Initialize the Vimba API
     VmbCameraInfo_t     *pCameras = NULL;   // A list of camera details
@@ -57,23 +57,25 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
     {
         // Is Vimba connected to a GigE transport layer?
         err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );
-        if (    VmbErrorSuccess == err
-             && true == bIsGigE )
+        if ( VmbErrorSuccess == err )
         {
-            // Send discovery packets to GigE cameras
-            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");
-            if ( VmbErrorSuccess == err )
+            if( true == bIsGigE )
             {
-                // And wait for them to return
+                // Send discovery packets to GigE cameras
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");
+                if ( VmbErrorSuccess == err )
+                {
+                    // And wait for them to return
 #ifdef WIN32
-                ::Sleep(200);
+                    ::Sleep(200);
 #else
-                ::usleep(200 * 1000);
+                    ::usleep(200 * 1000);
 #endif
-            }
-            else
-            {
-                cout << "Could not ping GigE cameras over the network. Reason: " << err << endl << endl;
+                }
+                else
+                {
+                    cout << "Could not ping GigE cameras over the network. Reason: " << err << endl << endl;
+                }
             }
         }
         else
@@ -194,6 +196,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, char* pFileName )
                                                 {
                                                     // Save the bitmap
                                                     WriteBitmapToFile( b, pFileName );
+                                                    cout << "Bitmap successfully written to file \"" << pFileName << "\"." << endl;
                                                     // Release the bitmap's buffer
                                                     ReleaseBitmap( b );
                                                 }

@@ -36,8 +36,7 @@
 
 bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
 {
-    if (    NULL == rBitmap.buffer
-         || 0 == rBitmap.bufferSize
+    if (    0 == rBitmap.bufferSize
          || 0 == rBitmap.width
          || 0 == rBitmap.height )
     {
@@ -122,7 +121,7 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
                 px = px | (pCurSrc[0] << 16) | (pCurSrc[1] << 8) | pCurSrc[2];
                 // Due to endianess ARGB is stored as BGRA 
                 // and we only have to write the first three Bytes
-                memcpy( pCurBitmapBuf, &px, 24 );
+                memcpy( pCurBitmapBuf, &px, 3 );
             }
             // Add padding at the end of each row
             memset( pCurBitmapBuf, 0, nPadLength );
@@ -163,14 +162,15 @@ void ReleaseBitmap( AVTBitmap& rBitmap )
     if (    NULL != rBitmap.buffer
          && 0 < rBitmap.bufferSize )
     {
-        delete rBitmap.buffer;
+        delete [] (unsigned char*)rBitmap.buffer;
+        rBitmap.buffer = NULL;
     }
 }
 
-void WriteBitmapToFile( AVTBitmap bitmap, const char* pFileName )
+void WriteBitmapToFile( const AVTBitmap &rBitmap, const char* pFileName )
 {
     FILE *file;
     file = fopen(pFileName, "wb");
-    fwrite(bitmap.buffer, 1, bitmap.bufferSize, file );
+    fwrite(rBitmap.buffer, 1, rBitmap.bufferSize, file );
     fclose(file);
 }

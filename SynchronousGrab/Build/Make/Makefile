@@ -26,7 +26,8 @@ LIB_DIRS			= $(PROJECT_ROOT_DIR)/../../Build/Make/$(BIN_DIR)
 
 DEFINES				=
 
-OBJ_FILES			= $(OBJ_DIR)/SynchronousGrab.o \
+OBJ_FILES			= $(OBJ_DIR)/Bitmap.o \
+				  $(OBJ_DIR)/SynchronousGrab.o \
 				  $(OBJ_DIR)/program.o
 
 DEPENDENCIES			= $(VIMBAC_BIN)

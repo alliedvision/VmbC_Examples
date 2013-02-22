@@ -48,23 +48,25 @@ void ListCameras()
     if ( VmbErrorSuccess == err )
     {
         err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
-        if (    VmbErrorSuccess == err
-             && true == bIsGigE )
+        if ( VmbErrorSuccess == err )
         {
-            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");           // Send discovery packets to GigE cameras
-            if ( VmbErrorSuccess == err )
+            if( true == bIsGigE )
             {
-                
-                // And wait for them to return
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");           // Send discovery packets to GigE cameras
+                if ( VmbErrorSuccess == err )
+                {
+                    
+                    // And wait for them to return
 #ifdef WIN32
-                ::Sleep(200);
+                    ::Sleep(200);
 #else
-                ::usleep(200 * 1000);
+                    ::usleep(200 * 1000);
 #endif
-            }
-            else
-            {
-                std::cout << "Could not ping GigE cameras over the network. Reason: " << err << std::endl << std::endl;
+                }
+                else
+                {
+                    std::cout << "Could not ping GigE cameras over the network. Reason: " << err << std::endl << std::endl;
+                }
             }
         }
         else

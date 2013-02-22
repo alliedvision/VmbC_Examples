@@ -51,6 +51,6 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer );
 
 void ReleaseBitmap( AVTBitmap& rBitmap );
 
-void WriteBitmapToFile( AVTBitmap bitmap, const char* pFileName );
+void WriteBitmapToFile( const AVTBitmap &rBitmap, const char* pFileName );
 
 #endif

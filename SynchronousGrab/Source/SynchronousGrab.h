@@ -31,6 +31,6 @@
 
 #include <VimbaC/Include/VimbaC.h>
 
-VmbError_t SynchronousGrab ( const char* pCameraID, char* pFileName );
+VmbError_t SynchronousGrab ( const char* pCameraID, const char* pFileName );
 
 #endif
