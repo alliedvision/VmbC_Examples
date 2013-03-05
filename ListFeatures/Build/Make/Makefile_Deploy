@@ -2,6 +2,7 @@ PROJECT_NAME            = ListFeatures
 
 PROJECT_DIR             = ../..
 EXAMPLES_DIR            = $(PROJECT_DIR)/..
+VIMBASDK_DIR			= $(EXAMPLES_DIR)/../..
 MAKE_INCLUDE_DIR        = $(CURDIR)/$(EXAMPLES_DIR)/Build/Make
 
 include $(MAKE_INCLUDE_DIR)/Common.mk

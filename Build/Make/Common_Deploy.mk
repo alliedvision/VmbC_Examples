@@ -20,5 +20,3 @@ CP              = cp
 
 #Release compile flags
 COMMON_CFLAGS   = -O3
-
-VIMBASDK_DIR    = $(EXAMPLES_DIR)/../..
