@@ -18,11 +18,12 @@ SOURCE_DIR			= $(PROJECT_ROOT_DIR)/Source
 INCLUDE_DIRS			= $(SOURCE_DIR) \
 				  $(PROJECT_ROOT_DIR)/../..
 
-VIMBAC_BIN			= $(PROJECT_ROOT_DIR)/../../Build/Make/dynamic/$(PROJECT_DIR)/$(DYNAMIC_PREFIX)VimbaC$(DYNAMIC_SUFFIX)
+VIMBAC_FILE			= $(DYNAMIC_PREFIX)VimbaC$(DYNAMIC_SUFFIX)
+VIMBAC_BIN			= $(BIN_DIR)/$(VIMBAC_FILE)
 
 LIBS				= VimbaC
 
-LIB_DIRS			= $(PROJECT_ROOT_DIR)/../../Build/Make/dynamic/$(PROJECT_DIR)
+LIB_DIRS			= $(BIN_DIR)
 
 DEFINES				=
 
@@ -37,10 +38,10 @@ $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(OBJ_DIR)
 	$(call MACRO_CXX,$@,$<,$(INCLUDE_DIRS),$(DEFINES))
 
 $(BIN_PATH): $(DEPENDENCIES) $(OBJ_FILES) $(BIN_DIR)
-	$(call MACRO_LINK_$(call MACRO_TOUPPER,$(OUTPUT)),$(BIN_PATH),$(OBJ_FILES),$(LIBS),$(LIB_DIRS))
+	$(call MACRO_LINK_$(call MACRO_TOUPPER,$(OUTPUT)),$(BIN_PATH),$(OBJ_FILES),$(LIBS),$(LIB_DIRS),,,'$$ORIGIN')
 
 clean:
-	$(call MACRO_RM,$(OBJ_FILES) $(BIN_PATH))
+	$(call MACRO_RM,$(OBJ_FILES) $(BIN_PATH) $(BIN_DIR)/$(VIMBAC_FILE))
 	$(call MACRO_RMDIR,$(OBJ_DIR) $(BIN_DIR))
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/../../Build/Make,clean)
 
@@ -50,5 +51,8 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	$(call MACRO_MKDIR,$(BIN_DIR))
 
-$(VIMBAC_BIN):
+$(PROJECT_ROOT_DIR)/../../Build/Make/dynamic/$(PROJECT_DIR)/$(VIMBAC_FILE):
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/../../Build/Make)
+
+$(VIMBAC_BIN): $(PROJECT_ROOT_DIR)/../../Build/Make/dynamic/$(PROJECT_DIR)/$(VIMBAC_FILE) $(BIN_DIR)
+	$(call MACRO_CP,$(PROJECT_ROOT_DIR)/../../Build/Make/dynamic/$(PROJECT_DIR)/$(VIMBAC_FILE),$(VIMBAC_BIN))

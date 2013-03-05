@@ -1,0 +1,3 @@
+VIMBACPP_LIBS   = -lVimbaCPP
+
+VimbaCPP:
