@@ -37,7 +37,9 @@ MAKE            = make
 CP              = cp
 
 #Debug compile flags
-#COMMON_CFLAGS  = -O0 -g
+#CONFIG_CFLAGS  = -O0 -g
 
 #Release compile flags
-COMMON_CFLAGS   = -O3
+CONFIG_CFLAGS   = -O3
+
+COMMON_CFLAGS   = $(CONFIG_CFLAGS) -fPIC
