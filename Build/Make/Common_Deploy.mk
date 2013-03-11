@@ -1,9 +1,30 @@
+UNAME		= $(shell uname -m)
+
+ifeq ($(UNAME),i386)
+AUTOWORDSIZE	= 32
+endif
+ifeq ($(UNAME),i486)
+AUTOWORDSIZE	= 32
+endif
+ifeq ($(UNAME),i586)
+AUTOWORDSIZE	= 32
+endif
+ifeq ($(UNAME),i686)
+AUTOWORDSIZE	= 32
+endif
+ifeq ($(UNAME),x86_64)
+AUTOWORDSIZE	= 64
+endif
+ifeq ($(UNAME),amd64)
+AUTOWORDSIZE	= 64
+endif
+
 #Possible word sizes: 32, 64
-WORDSIZE        = 32
+WORDSIZE        = $(AUTOWORDSIZE)
 
 ifneq ($(WORDSIZE),32)
 ifneq ($(WORDSIZE),64)
-$(error Invalid word size specified)
+$(error Invalid word size set)
 endif
 endif
 
@@ -16,7 +37,7 @@ MAKE            = make
 CP              = cp
 
 #Debug compile flags
-#COMMON_CFLAGS   = -O0 -g
+#COMMON_CFLAGS  = -O0 -g
 
 #Release compile flags
 COMMON_CFLAGS   = -O3
