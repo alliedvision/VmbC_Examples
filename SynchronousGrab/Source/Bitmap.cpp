@@ -60,8 +60,14 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
         nPadLength = ALIGNMENT_SIZE - nPadLength;
     }
 
-    unsigned char* pBitmapBuffer = new unsigned char[ BMP_HEADER_SIZE + rBitmap.bufferSize + (nPadLength * rBitmap.height) ];
-    unsigned long nFileSize = BMP_HEADER_SIZE + rBitmap.bufferSize + (nPadLength * rBitmap.height);
+    unsigned long nPaletteSize = 0;
+	if ( ColorCodeRGB24 != rBitmap.colorCode )
+    {
+		nPaletteSize = 256;
+	}
+	
+    unsigned char* pBitmapBuffer = new unsigned char[ BMP_HEADER_SIZE + nPaletteSize * 4 + rBitmap.bufferSize + (nPadLength * rBitmap.height) ];
+    unsigned long nFileSize = BMP_HEADER_SIZE + nPaletteSize * 4 + rBitmap.bufferSize + (nPadLength * rBitmap.height);
 
     // Create the bitmap header
     char fileHeader[14] = { 'B','M',                // Default
@@ -95,6 +101,16 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     infoHeader[21] = (char)(rBitmap.bufferSize >> 8);
     infoHeader[22] = (char)(rBitmap.bufferSize >> 16);
     infoHeader[23] = (char)(rBitmap.bufferSize >> 24);
+	// Palette size
+	infoHeader[32] = (char)(nPaletteSize);
+	infoHeader[33] = (char)(nPaletteSize >> 8);
+	infoHeader[34] = (char)(nPaletteSize >> 16);
+	infoHeader[35] = (char)(nPaletteSize >> 24);
+	// Used colors
+	infoHeader[36] = (char)(nPaletteSize);
+	infoHeader[37] = (char)(nPaletteSize >> 8);
+	infoHeader[38] = (char)(nPaletteSize >> 16);
+	infoHeader[39] = (char)(nPaletteSize >> 24);
 
     // Write header
     unsigned char* pCurBitmapBuf = pBitmapBuffer;
@@ -102,6 +118,14 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     pCurBitmapBuf += 14;
     memcpy( pCurBitmapBuf, infoHeader, 40 );
     pCurBitmapBuf += 40;
+	for(unsigned long i = 0; i < nPaletteSize; i++)
+	{
+		pCurBitmapBuf[0] = (char)(i);
+		pCurBitmapBuf[1] = (char)(i);
+		pCurBitmapBuf[2] = (char)(i);
+		pCurBitmapBuf[3] = 0;
+		pCurBitmapBuf += 4;
+	}
 
     // RGB -> BGR (a Windows bitmap is BGR)
     if ( ColorCodeRGB24 == rBitmap.colorCode )
