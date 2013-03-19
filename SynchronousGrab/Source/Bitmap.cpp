@@ -141,13 +141,14 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
             for (   unsigned long y=0;
                     y<rBitmap.height;
                     ++y,
-                    pCurSrc += rBitmap.width * nNumColors,
-                    pCurBitmapBuf += rBitmap.width * nNumColors )
+                    pCurSrc += rBitmap.width * nNumColors )
             {
                 // Write a single row of colored pixels
                 memcpy( pCurBitmapBuf, pCurSrc, rBitmap.width * nNumColors );
+		pCurBitmapBuf += rBitmap.width * nNumColors;
                 // Write padding pixels
                 memset( pCurBitmapBuf, 0, nPadLength );
+		pCurBitmapBuf += nPadLength;
             }
         }
     }
