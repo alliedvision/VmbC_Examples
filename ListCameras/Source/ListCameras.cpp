@@ -31,7 +31,7 @@
 #ifdef WIN32
     #include <windows.h>
 #else
-    #include <sys/time.h>
+    #include <unistd.h>
 #endif
 
 #include <ListCameras.h>
