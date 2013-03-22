@@ -63,9 +63,9 @@ void ListFeatures( const char *pStrID )
                 {
                     // And wait for them to return
 #ifdef WIN32
-                    ::Sleep(200);
+                    ::Sleep( 200 );
 #else
-                    ::usleep(200 * 1000);
+                    ::usleep( 200 * 1000 );
 #endif
                 }
                 else
