@@ -58,7 +58,7 @@ void ListFeatures( const char *pStrID )
         {
             if( true == bIsGigE )
             {
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");           // Send discovery packets to GigE cameras
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
                 if ( VmbErrorSuccess == err )
                 {
                     // And wait for them to return
@@ -77,7 +77,7 @@ void ListFeatures( const char *pStrID )
         else
         {
             std::cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << std::endl << std::endl;
-        }        
+        }
 
         if ( NULL == pStrID )                                                           // If no ID was provided use the first camera
         {

@@ -128,136 +128,159 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
             {
                 cout << "Camera ID: " << pCameraID << endl << endl;
 
-                // Set pixel format. For the sake of simplicity we only support Mono and RGB in this example.
-                err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "RGB8Packed" );
-                if ( VmbErrorSuccess != err )
+                // Set the GeV packet size to the highest possible value
+                // (In this example we do not test whether this cam actually is a GigE cam)
+                if ( VmbErrorSuccess == VmbFeatureCommandRun( cameraHandle, "GVSPAdjustPacketSize" ))
                 {
-                    // Fall back to Mono
-                    err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "Mono8" );
+                    bool bIsCommandDone = false;
+                    do
+                    {
+                        if ( VmbErrorSuccess != VmbFeatureCommandIsDone(    cameraHandle,
+                                                                            "GVSPAdjustPacketSize",
+                                                                            &bIsCommandDone ))
+                        {
+                            break;
+                        }
+                    } while ( false == bIsCommandDone );
                 }
-                // Read back pixel format
-                const char* pPixelFormat;
-                VmbFeatureEnumGet( cameraHandle, "PixelFormat", &pPixelFormat );
 
                 if ( VmbErrorSuccess == err )
                 {
-                    VmbInt64_t nPayloadSize;
-                    // Evaluate frame size
-                    err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );
+                    // Set pixel format. For the sake of simplicity we only support Mono and RGB in this example.
+                    err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "RGB8Packed" );
+                    if ( VmbErrorSuccess != err )
+                    {
+                        // Fall back to Mono
+                        err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "Mono8" );
+                    }
+                    // Read back pixel format
+                    const char* pPixelFormat;
+                    VmbFeatureEnumGet( cameraHandle, "PixelFormat", &pPixelFormat );
+
                     if ( VmbErrorSuccess == err )
                     {
-                        VmbFrame_t Frame;
-                        Frame.buffer        = new char [ (VmbUint32_t)nPayloadSize ];
-                        Frame.bufferSize    = (VmbUint32_t)nPayloadSize;
-
-                        // Announce Frame
-                        err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
+                        VmbInt64_t nPayloadSize;
+                        // Evaluate frame size
+                        err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );
                         if ( VmbErrorSuccess == err )
                         {
-                            // Start Capture Engine
-                            err = VmbCaptureStart( cameraHandle );
+                            VmbFrame_t Frame;
+                            Frame.buffer        = new char [ (VmbUint32_t)nPayloadSize ];
+                            Frame.bufferSize    = (VmbUint32_t)nPayloadSize;
+
+                            // Announce Frame
+                            err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
                             if ( VmbErrorSuccess == err )
                             {
-                                // Queue Frame
-                                err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );
+                                // Start Capture Engine
+                                err = VmbCaptureStart( cameraHandle );
                                 if ( VmbErrorSuccess == err )
                                 {
-                                    // Start Acquisition
-                                    err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
+                                    // Queue Frame
+                                    err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        // Capture one frame synchronously
-                                        err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
+                                        // Start Acquisition
+                                        err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
                                         if ( VmbErrorSuccess == err )
                                         {
-                                            // Convert the captured frame to a bitmap and save to disk
-                                            if ( VmbFrameStatusComplete == Frame.receiveStatus )
+                                            // Capture one frame synchronously
+                                            err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
+                                            if ( VmbErrorSuccess == err )
                                             {
-                                                AVTBitmap b;
-                                                b.bufferSize = Frame.imageSize;
-                                                b.width = Frame.width;
-                                                b.height = Frame.height;
-                                                // We only support Mono and RGB in this example
-                                                if ( 0 == strcmp( "RGB8Packed", pPixelFormat ))
+                                                // Convert the captured frame to a bitmap and save to disk
+                                                if ( VmbFrameStatusComplete == Frame.receiveStatus )
                                                 {
-                                                    b.colorCode = ColorCodeRGB24;
-                                                }
-                                                else
-                                                {
-                                                    b.colorCode = ColorCodeMono8;
-                                                }
+                                                    AVTBitmap b;
+                                                    b.bufferSize = Frame.imageSize;
+                                                    b.width = Frame.width;
+                                                    b.height = Frame.height;
+                                                    // We only support Mono and RGB in this example
+                                                    if ( 0 == strcmp( "RGB8Packed", pPixelFormat ))
+                                                    {
+                                                        b.colorCode = ColorCodeRGB24;
+                                                    }
+                                                    else
+                                                    {
+                                                        b.colorCode = ColorCodeMono8;
+                                                    }
 
-                                                // Create the bitmap
-                                                if ( false == CreateBitmap( b, Frame.buffer ))
-                                                {
-                                                    cout << "Could not create bitmap." << endl;
+                                                    // Create the bitmap
+                                                    if ( false == CreateBitmap( b, Frame.buffer ))
+                                                    {
+                                                        cout << "Could not create bitmap." << endl;
+                                                    }
+                                                    else
+                                                    {
+                                                        // Save the bitmap
+                                                        WriteBitmapToFile( b, pFileName );
+                                                        cout << "Bitmap successfully written to file \"" << pFileName << "\"." << endl;
+                                                        // Release the bitmap's buffer
+                                                        ReleaseBitmap( b );
+                                                    }
                                                 }
                                                 else
                                                 {
-                                                    // Save the bitmap
-                                                    WriteBitmapToFile( b, pFileName );
-                                                    cout << "Bitmap successfully written to file \"" << pFileName << "\"." << endl;
-                                                    // Release the bitmap's buffer
-                                                    ReleaseBitmap( b );
+                                                    cout << "Frame not successfully received. Error code: " << Frame.receiveStatus << endl;
                                                 }
                                             }
                                             else
                                             {
-                                                cout << "Frame not successfully received. Error code: " << Frame.receiveStatus << endl;
+                                                cout << "Could not capture frame. Error code: " << err << endl;
+                                            }
+
+                                            // Stop Acquisition
+                                            err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
+                                            if ( VmbErrorSuccess != err )
+                                            {
+                                                cout << "Could not stop acquisition. Error code: " << err << endl;
                                             }
                                         }
                                         else
                                         {
-                                            cout << "Could not capture frame. Error code: " << err << endl;
-                                        }
-
-                                        // Stop Acquisition
-                                        err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
-                                        if ( VmbErrorSuccess != err )
-                                        {
-                                            cout << "Could not stop acquisition. Error code: " << err << endl;
+                                            cout << "Could not start acquisition. Error code: " << err << endl;
                                         }
                                     }
                                     else
                                     {
-                                        cout << "Could not start acquisition. Error code: " << err << endl;
+                                        cout << "Could not queue frame. Error code: " << err << endl;
+                                    }
+
+                                    // Stop Capture Engine
+                                    err = VmbCaptureEnd( cameraHandle );
+                                    if ( VmbErrorSuccess != err )
+                                    {
+                                        cout << "Could not end capture . Error code: " << err << endl;
                                     }
                                 }
                                 else
                                 {
-                                    cout << "Could not queue frame. Error code: " << err << endl;
+                                    cout << "Could not start capture. Error code: " << err << endl;
                                 }
 
-                                // Stop Capture Engine
-                                err = VmbCaptureEnd( cameraHandle );
+                                // Revoke frame
+                                err = VmbFrameRevoke( cameraHandle, &Frame );
                                 if ( VmbErrorSuccess != err )
                                 {
-                                    cout << "Could not end capture . Error code: " << err << endl;
+                                    cout << "Could not revoke frame. Error code: " << err << endl;
                                 }
                             }
                             else
                             {
-                                cout << "Could not start capture. Error code: " << err << endl;
+                                cout << "Could not announce frame. Error code: " << err << endl;
                             }
 
-                            // Revoke frame
-                            err = VmbFrameRevoke( cameraHandle, &Frame );
-                            if ( VmbErrorSuccess != err )
-                            {
-                                cout << "Could not revoke frame. Error code: " << err << endl;
-                            }
+                            delete (const char*)Frame.buffer;
                         }
-                        else
-                        {
-                            cout << "Could not announce frame. Error code: " << err << endl;
-                        }
-
-                        delete (const char*)Frame.buffer;
+                    }
+                    else
+                    {
+                        cout << "Could not set pixel format to either RGB or Mono. Error code: " << err << endl;
                     }
                 }
                 else
                 {
-                    cout << "Could not set pixel format to either RGB or Mono. Error code: " << err << endl;
+                    cout << "Could not adjust packet size. Error code: " << err << endl;
                 }
 
                 err = VmbCameraClose ( cameraHandle );

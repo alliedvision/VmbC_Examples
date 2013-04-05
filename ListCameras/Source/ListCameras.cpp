@@ -52,7 +52,7 @@ void ListCameras()
         {
             if( true == bIsGigE )
             {
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");           // Send discovery packets to GigE cameras
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
                 if ( VmbErrorSuccess == err )
                 {
                     
@@ -72,7 +72,7 @@ void ListCameras()
         else
         {
             std::cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << std::endl << std::endl;
-        }        
+        }
 
         err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );                     // Get the amount of known cameras
         if (    VmbErrorSuccess == err
