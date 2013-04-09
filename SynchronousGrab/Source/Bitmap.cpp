@@ -61,12 +61,12 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     }
 
     unsigned long nPaletteSize = 0;
-	if ( ColorCodeRGB24 != rBitmap.colorCode )
+    if ( ColorCodeRGB24 != rBitmap.colorCode )
     {
-		nPaletteSize = 256;
-	}
-	
-	unsigned long nHeaderSize = BMP_HEADER_SIZE + nPaletteSize * 4;
+        nPaletteSize = 256;
+    }
+    
+    unsigned long nHeaderSize = BMP_HEADER_SIZE + nPaletteSize * 4;
     unsigned char* pBitmapBuffer = new unsigned char[ nHeaderSize + rBitmap.bufferSize + (nPadLength * rBitmap.height) ];
     unsigned long nFileSize = nHeaderSize + rBitmap.bufferSize + (nPadLength * rBitmap.height);
 
@@ -74,7 +74,7 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     char fileHeader[14] = { 'B','M',                // Default
                             0,0,0,0,                // File size
                             0,0,0,0,                // Reserved
-                            0,0,0,0 };             // Offset to image content
+                            0,0,0,0 };              // Offset to image content
     char infoHeader[40] = { 40,0,0,0,               // Size of info header
                             0,0,0,0,                // Width
                             0,0,0,0,                // Height
@@ -86,7 +86,7 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     fileHeader[3] = (char)(nFileSize >> 8);
     fileHeader[4] = (char)(nFileSize >> 16);
     fileHeader[5] = (char)(nFileSize >> 24);
-	// Offset to image content
+    // Offset to image content
     fileHeader[10] = (char)(nHeaderSize);
     fileHeader[11] = (char)(nHeaderSize >> 8);
     fileHeader[12] = (char)(nHeaderSize >> 16);
@@ -107,16 +107,16 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     infoHeader[21] = (char)(rBitmap.bufferSize >> 8);
     infoHeader[22] = (char)(rBitmap.bufferSize >> 16);
     infoHeader[23] = (char)(rBitmap.bufferSize >> 24);
-	// Palette size
-	infoHeader[32] = (char)(nPaletteSize);
-	infoHeader[33] = (char)(nPaletteSize >> 8);
-	infoHeader[34] = (char)(nPaletteSize >> 16);
-	infoHeader[35] = (char)(nPaletteSize >> 24);
-	// Used colors
-	infoHeader[36] = (char)(nPaletteSize);
-	infoHeader[37] = (char)(nPaletteSize >> 8);
-	infoHeader[38] = (char)(nPaletteSize >> 16);
-	infoHeader[39] = (char)(nPaletteSize >> 24);
+    // Palette size
+    infoHeader[32] = (char)(nPaletteSize);
+    infoHeader[33] = (char)(nPaletteSize >> 8);
+    infoHeader[34] = (char)(nPaletteSize >> 16);
+    infoHeader[35] = (char)(nPaletteSize >> 24);
+    // Used colors
+    infoHeader[36] = (char)(nPaletteSize);
+    infoHeader[37] = (char)(nPaletteSize >> 8);
+    infoHeader[38] = (char)(nPaletteSize >> 16);
+    infoHeader[39] = (char)(nPaletteSize >> 24);
 
     // Write header
     unsigned char* pCurBitmapBuf = pBitmapBuffer;
@@ -124,14 +124,14 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     pCurBitmapBuf += 14;
     memcpy( pCurBitmapBuf, infoHeader, 40 );
     pCurBitmapBuf += 40;
-	for(unsigned long i = 0; i < nPaletteSize; i++)
-	{
-		pCurBitmapBuf[0] = (char)(i);
-		pCurBitmapBuf[1] = (char)(i);
-		pCurBitmapBuf[2] = (char)(i);
-		pCurBitmapBuf[3] = 0;
-		pCurBitmapBuf += 4;
-	}
+    for(unsigned long i = 0; i < nPaletteSize; i++)
+    {
+        pCurBitmapBuf[0] = (char)(i);
+        pCurBitmapBuf[1] = (char)(i);
+        pCurBitmapBuf[2] = (char)(i);
+        pCurBitmapBuf[3] = 0;
+        pCurBitmapBuf += 4;
+    }
 
     // RGB -> BGR (a Windows bitmap is BGR)
     if ( ColorCodeRGB24 == rBitmap.colorCode )
@@ -175,10 +175,10 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
             {
                 // Write a single row of colored pixels
                 memcpy( pCurBitmapBuf, pCurSrc, rBitmap.width * nNumColors );
-		        pCurBitmapBuf += rBitmap.width * nNumColors;
+                pCurBitmapBuf += rBitmap.width * nNumColors;
                 // Write padding pixels
                 memset( pCurBitmapBuf, 0, nPadLength );
-		        pCurBitmapBuf += nPadLength;
+                pCurBitmapBuf += nPadLength;
             }
         }
     }
