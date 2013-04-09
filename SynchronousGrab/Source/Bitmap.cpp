@@ -74,7 +74,7 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
     char fileHeader[14] = { 'B','M',                // Default
                             0,0,0,0,                // File size
                             0,0,0,0,                // Reserved
-                            54,0,0,0 };             // Offset to image content
+                            0,0,0,0 };             // Offset to image content
     char infoHeader[40] = { 40,0,0,0,               // Size of info header
                             0,0,0,0,                // Width
                             0,0,0,0,                // Height
@@ -175,10 +175,10 @@ bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer )
             {
                 // Write a single row of colored pixels
                 memcpy( pCurBitmapBuf, pCurSrc, rBitmap.width * nNumColors );
-		pCurBitmapBuf += rBitmap.width * nNumColors;
+		        pCurBitmapBuf += rBitmap.width * nNumColors;
                 // Write padding pixels
                 memset( pCurBitmapBuf, 0, nPadLength );
-		pCurBitmapBuf += nPadLength;
+		        pCurBitmapBuf += nPadLength;
             }
         }
     }
