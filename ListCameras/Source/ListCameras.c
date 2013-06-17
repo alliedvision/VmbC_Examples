@@ -26,7 +26,7 @@
 
 =============================================================================*/
 
-#include <iostream>
+#include <stdio.h>
 
 #ifdef WIN32
     #include <windows.h>
@@ -42,15 +42,15 @@ void ListCameras()
 {
     VmbError_t err = VmbStartup();                                                      // Initialize the Vimba API
     VmbCameraInfo_t *pCameras = NULL;                                                   // A list of camera details
-    VmbUint32_t nCount = 0;                                                             // Number of found cameras
-    bool bIsGigE = false;                                                               // GigE transport layer present
+    VmbUint32_t i = 0, nCount = 0;                                                      // Number of found cameras
+    VmbBool_t bIsGigE = 0;                                                              // GigE transport layer present
 
     if ( VmbErrorSuccess == err )
     {
         err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
         if ( VmbErrorSuccess == err )
         {
-            if( true == bIsGigE )
+            if( bIsGigE )
             {
                 err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
                 if ( VmbErrorSuccess == err )
@@ -58,57 +58,57 @@ void ListCameras()
                     
                     // And wait for them to return
 #ifdef WIN32
-                    ::Sleep(200);
+                    Sleep( 200 );
 #else
-                    ::usleep(200 * 1000);
+                    usleep( 200 * 1000 );
 #endif
                 }
                 else
                 {
-                    std::cout << "Could not ping GigE cameras over the network. Reason: " << err << std::endl << std::endl;
+                    printf( "Could not ping GigE cameras over the network. Reason: %d\n", err );
                 }
             }
         }
         else
         {
-            std::cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << std::endl << std::endl;
+            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %d\n\n", err);
         }
 
         err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );                     // Get the amount of known cameras
         if (    VmbErrorSuccess == err
              && 0 < nCount )
         {
-            std::cout << "Cameras found: " << nCount << std::endl << std::endl;
+            printf( "Cameras found: %d\n\n", nCount );
         
-            pCameras = new VmbCameraInfo_t[ nCount ];
+            pCameras = (VmbCameraInfo_t*)malloc( sizeof *pCameras * nCount);
             if ( NULL != pCameras )
             {
                 err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );    // Query all static details of all known cameras
                                                                                         // Without having to open the cameras
-                for ( VmbUint32_t i=0; i<nCount; ++i )                                  // And print them out
+                for ( i=0; i<nCount; ++i )                                              // And print them out
                 {
-                    std::cout << "/// Camera Name: " << pCameras[i].cameraName << \
-                    std::endl << "/// Model Name: " << pCameras[i].modelName << \
-                    std::endl << "/// Camera ID: " << pCameras[i].cameraIdString << \
-                    std::endl << "/// Serial Number: " << pCameras[i].serialString << \
-                    std::endl << "/// @ Interface ID: " << pCameras[i].interfaceIdString << \
-                    std::endl << std::endl;
+                    printf( "/// Camera Name: %s\n/// Model Name: %s\n/// Camera ID: %s\n/// Serial Number: %s\n/// @ Interface ID: %s\n\n\n",
+                             pCameras[i].cameraName,
+                             pCameras[i].modelName,
+                             pCameras[i].cameraIdString,
+                             pCameras[i].serialString,
+                             pCameras[i].interfaceIdString);
                 }
             }
             else
             {
-                std::cout << "Could not allocate camera list." << std::endl;
+                printf("Could not allocate camera list.\n");
             }
         }
         else
         {
-            std::cout << "Could not list cameras or no cameras present. Error code: " << err << std::endl;
+            printf( "Could not list cameras or no cameras present. Error code: %d\n", err );
         }
         
         VmbShutdown();                                                                  // Close Vimba
     }
     else
     {
-        std::cout << "Could not start system. Error code: " << err << std::endl;
+        printf( "Could not start system. Error code: %d\n", err );
     }
 }

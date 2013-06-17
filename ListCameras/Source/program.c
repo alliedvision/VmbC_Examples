@@ -25,19 +25,19 @@
 
 =============================================================================*/
 
-#include <iostream>
+#include <stdio.h>
 
 #include <ListCameras.h>
 
 int main( int argc, char* argv[] )
 {
-    std::cout << "//////////////////////////////////////////" << std::endl;
-    std::cout << "/// AVT Vimba API List Cameras Example ///" << std::endl;
-    std::cout << "//////////////////////////////////////////" << std::endl << std::endl;
+    printf("//////////////////////////////////////////\n");
+    printf("/// AVT Vimba API List Cameras Example ///\n");
+    printf("//////////////////////////////////////////\n\n");
 
     if ( 1 < argc )
     {
-        std::cout << "No parameters expected. Execution will not be affected by the provided parameter(s)." << std::endl << std::endl;
+        printf("No parameters expected. Execution will not be affected by the provided parameter(s).\n\n");
     }
     
     ListCameras();
