@@ -40,8 +40,6 @@
 
 #include <VimbaC/Include/VimbaC.h>
 
-VmbError_t SaveBitmapToFile( VmbFrame_t* pFrame, const char *pPixelFormat, const char* pFileName );
-
 using namespace std;
 
 VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
@@ -50,7 +48,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
     VmbCameraInfo_t     *pCameras = NULL;   // A list of camera details
     VmbUint32_t         nCount = 0;         // Number of found cameras
     bool                bIsGigE = false;    // GigE transport layer present
-    VmbUint32_t         nTimeout = 2000;    // Timeout for Grab
+    const VmbUint32_t   nTimeout = 2000;    // Timeout for Grab
 
 
     if ( VmbErrorSuccess == err )
@@ -67,9 +65,9 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                 {
                     // And wait for them to return
 #ifdef WIN32
-                    ::Sleep(200);
+                    ::Sleep( 200 );
 #else
-                    ::usleep(200 * 1000);
+                    ::usleep( 200 * 1000 );
 #endif
                 }
                 else
