@@ -228,14 +228,14 @@ void ListFeatures( const char *pStrID )
             }
             else
             {
-                printf( "Could not get features or the camera does not provide any. Error code: %d\n" );
+                printf( "Could not get features or the camera does not provide any. Error code: %d\n", err );
             }
 
             VmbCameraClose( hCamera );                                                  // Close the camera
         }
         else
         {
-            printf( "Could not open camera. Error code: %d\n" );
+            printf( "Could not open camera. Error code: %d\n", err );
         }
         
         VmbShutdown();                                                                  // Close Vimba
