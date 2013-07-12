@@ -25,23 +25,22 @@
 
 =============================================================================*/
 
-#include <iostream>
+#include <stdio.h>
 
 #include <ListFeatures.h>
 
 int main( int argc, char* argv[] )
 {
-    std::cout << std::endl;
-    std::cout << "///////////////////////////////////////////" << std::endl;
-    std::cout << "/// AVT Vimba API List Features Example ///" << std::endl;
-    std::cout << "///////////////////////////////////////////" << std::endl;
-    std::cout << std::endl;
+    printf( "\n" );
+    printf( "///////////////////////////////////////////\n" );
+    printf( "/// AVT Vimba API List Features Example ///\n" );
+    printf( "///////////////////////////////////////////\n" );
+    printf( "\n" );
 
     if( 2 < argc )
     {
-        std::cout << "Usage: ListFeatures.exe [CameraID]" << std::endl;
-        std::cout << std::endl;
-        std::cout << "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)" << std::endl;
+        printf( "Usage: ListFeatures.exe [CameraID]\n\n" );
+        printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
     }
     else if ( 2 == argc )
     {
@@ -52,5 +51,5 @@ int main( int argc, char* argv[] )
         ListFeatures( NULL );
     }
 
-    std::cout << std::endl;
+    printf( "\n" );
 }

@@ -11,10 +11,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\ListFeatures.cpp">
+    <ClCompile Include="..\..\Source\ListFeatures.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\program.cpp">
+    <ClCompile Include="..\..\Source\program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

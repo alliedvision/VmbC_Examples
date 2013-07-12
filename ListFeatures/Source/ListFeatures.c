@@ -26,8 +26,7 @@
 
 =============================================================================*/
 
-#include <iostream>
-
+#include <stdio.h>
 #ifdef WIN32
     #include <windows.h>
 #else
@@ -40,43 +39,45 @@
 
 void ListFeatures( const char *pStrID )
 {
-    VmbError_t err = VmbStartup();                                                       // Initialize the Vimba API
-    VmbHandle_t hCamera = NULL;                                                          // A handle to our camera
-    bool bIsGigE = false;                                                                // GigE transport layer present
-    VmbFeatureInfo_t *pFeatures = NULL;                                                  // A list of static details of camera features
+    VmbError_t          err = VmbStartup();                                             // Initialize the Vimba API
+    VmbHandle_t         hCamera = NULL;                                                 // A handle to our camera
+    VmbBool_t           bIsGigE = 0;                                                    // GigE transport layer present
+    VmbFeatureInfo_t    *pFeatures = NULL;                                              // A list of static details of camera features
 
     // The changeable value of a feature
-    VmbInt64_t  nValue;                                                                  // An int value
-    double      fValue;                                                                  // A float value
-    char        *pStrValue;                                                              // A string value
-    bool        bValue;                                                                  // A bool value
+    VmbInt64_t nValue;                                                                  // An int value
+    double     fValue;                                                                  // A float value
+    char       *pStrValue;                                                              // A string value
+    VmbBool_t  bValue;                                                                  // A bool value
+
+    VmbUint32_t i = 0;
 
     if ( VmbErrorSuccess == err )
     {
         err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
-        if (    VmbErrorSuccess == err )
+        if ( VmbErrorSuccess == err )
         {
-            if( true == bIsGigE )
+            if( bIsGigE )
             {
                 err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
                 if ( VmbErrorSuccess == err )
                 {
                     // And wait for them to return
 #ifdef WIN32
-                    ::Sleep( 200 );
+                    Sleep( 200 );
 #else
-                    ::usleep( 200 * 1000 );
+                    usleep( 200 * 1000 );
 #endif
                 }
                 else
                 {
-                    std::cout << "Could not ping GigE cameras over the network. Reason: " << err << std::endl << std::endl;
+                    printf( "Could not ping GigE cameras over the network. Reason: %d\n\n", err );
                 }
             }
         }
         else
         {
-            std::cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << std::endl << std::endl;
+            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %d\n\n", err );
         }
 
         if ( NULL == pStrID )                                                           // If no ID was provided use the first camera
@@ -88,9 +89,9 @@ void ListFeatures( const char *pStrID )
                                     &nCount,
                                     sizeof *pCameras );
             if (    VmbErrorSuccess == err
-                && 0 < nCount )
+                 && 0 < nCount )
             {
-                pCameras = new VmbCameraInfo_t[ nCount ];
+                pCameras = (VmbCameraInfo_t*)malloc( nCount * sizeof *pCameras );
                 if ( NULL != pCameras )
                 {
                     err = VmbCamerasList(   pCameras,                                   // Get all known cameras
@@ -105,17 +106,17 @@ void ListFeatures( const char *pStrID )
                     }
                     else
                     {
-                        std::cout << "Could not list cameras. Error code: " << err << std::endl;
+                        printf( "Could not list cameras. Error code: %d\n", err );
                     }
                 }
                 else
                 {
-                    std::cout << "Could not allocate camera list." << std::endl;
+                    printf( "Could not allocate camera list.\n" );
                 }
             }
             else
             {
-                std::cout << "Could not list cameras or no cameras present. Error code: " << err << std::endl;
+                printf( "Could not list cameras or no cameras present. Error code: %d\n", err );
             }
         }
         else
@@ -137,7 +138,7 @@ void ListFeatures( const char *pStrID )
             if (    VmbErrorSuccess == err
                  && 0 < nCount )
             {
-                pFeatures = new VmbFeatureInfo_t[ nCount ];
+                pFeatures = (VmbFeatureInfo_t *)malloc( nCount * sizeof *pFeatures );
                 if ( NULL != pFeatures )
                 {
                     err = VmbFeaturesList(  hCamera,                                    // Get the features
@@ -147,14 +148,14 @@ void ListFeatures( const char *pStrID )
                                             sizeof *pFeatures );
                     if ( VmbErrorSuccess == err )
                     {
-                        for ( VmbUint32_t i=0; i<nCount; ++i )
+                        for ( i=0; i<nCount; ++i )
                         {
-                            std::cout << "/// Feature Name: " << ( NULL == pFeatures[i].name ? "" : pFeatures[i].name ) << std::endl;
-                            std::cout << "/// Display Name: " << ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName ) << std::endl;
-                            std::cout << "/// Tooltip: " << ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip ) << std::endl;
-                            std::cout << "/// Description: " << ( NULL == pFeatures[i].description ? "" : pFeatures[i].description ) << std::endl;
-                            std::cout << "/// SNFC Namespace: " << ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace ) << std::endl;
-                            std::cout << "/// Value: ";
+                            printf( "/// Feature Name: %s\n", ( NULL == pFeatures[i].name ? "" : pFeatures[i].name ));
+                            printf( "/// Display Name: %s\n", ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName ));
+                            printf( "/// Tooltip: %s\n", ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip ));
+                            printf( "/// Description: %s\n", ( NULL == pFeatures[i].description ? "" : pFeatures[i].description ));
+                            printf( "/// SNFC Namespace: %s\n", ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace ));
+                            printf( "/// Value: " );
 
                             switch ( pFeatures[i].featureDataType )
                             {
@@ -162,86 +163,85 @@ void ListFeatures( const char *pStrID )
                                     err = VmbFeatureBoolGet( hCamera, pFeatures[i].name, &bValue );
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        std::cout << bValue << std::endl;
+                                        printf( "%d\n", bValue );
                                     }
                                     break;
                                 case VmbFeatureDataEnum:
                                     err = VmbFeatureEnumGet( hCamera, pFeatures[i].name, (const char**)&pStrValue );
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        std::cout << pStrValue << std::endl;
+                                        printf( "%s\n", pStrValue );
                                     }
                                     break;
-                                case VmbFeatureDataFloat:    
+                                case VmbFeatureDataFloat:
                                     err = VmbFeatureFloatGet( hCamera, pFeatures[i].name, &fValue );
                                     {
-                                        std::cout << fValue << std::endl;
+                                        printf( "%f\n", fValue );
                                     }
                                     break;
-                                case VmbFeatureDataInt:      
+                                case VmbFeatureDataInt:
                                     err = VmbFeatureIntGet( hCamera, pFeatures[i].name, &nValue );
                                     {
-                                        std::cout << nValue << std::endl;
+                                        printf( "%d\n", nValue );
                                     }
-                                    break;                            
+                                    break;
                                 case VmbFeatureDataString:
                                     {
-
                                     VmbUint32_t nSize = 0;
                                     err = VmbFeatureStringGet( hCamera, pFeatures[i].name, NULL, 0, &nSize );
                                     if (    VmbErrorSuccess == err
                                          && 0 < nSize )
                                     {
-                                        pStrValue = new char[ nSize ];
+                                        pStrValue = (char*)malloc( sizeof *pStrValue * nSize );
                                         err = VmbFeatureStringGet( hCamera, pFeatures[i].name, pStrValue, nSize, &nSize );
                                         if ( VmbErrorSuccess == err )
                                         {
-                                            std::cout << pStrValue << std::endl;
+                                            printf( "%s\n", pStrValue );
                                         }
-                                        delete[] pStrValue;
+                                        free( pStrValue );
                                     }
                                     }
                                     break;
                                 case VmbFeatureDataCommand:
                                 default:
-                                    std::cout << "[None]" << std::endl;
-                                    break;                            
+                                    printf( "[None]\n" );
+                                    break;
 
                                 if ( VmbErrorSuccess != err )
                                 {
-                                    std::cout << "Could not get feature value. Error code: " << err << std::endl;
+                                    printf( "Could not get feature value. Error code: %d\n", err );
                                 }
                             }
 
-                            std::cout << std::endl;
+                            printf( "\n" );
                         }
                     }
                     else
                     {
-                        std::cout << "Could not get features. Error code: " << err << std::endl;
+                        printf( "Could not get features. Error code: %d\n", err );
                     }
                 }
                 else
                 {
-                    std::cout << "Could not allocate feature list." << std::endl;
+                    printf( "Could not allocate feature list.\n" );
                 }
             }
             else
             {
-                std::cout << "Could not get features or the camera does not provide any. Error code: " << err << std::endl;
+                printf( "Could not get features or the camera does not provide any. Error code: %d\n" );
             }
 
             VmbCameraClose( hCamera );                                                  // Close the camera
         }
         else
         {
-            std::cout << "Could not open camera. Error code: " << err << std::endl;
+            printf( "Could not open camera. Error code: %d\n" );
         }
         
         VmbShutdown();                                                                  // Close Vimba
     }
     else
     {
-        std::cout << "Could not start system. Error code: " << err << std::endl;
+        printf( "Could not start system. Error code: %d\n", err );
     }
 }

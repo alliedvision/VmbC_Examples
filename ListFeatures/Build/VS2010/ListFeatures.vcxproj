@@ -147,8 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\ListFeatures.cpp" />
-    <ClCompile Include="..\..\Source\program.cpp" />
+    <ClCompile Include="..\..\Source\ListFeatures.c" />
+    <ClCompile Include="..\..\Source\program.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ListFeatures.h" />
