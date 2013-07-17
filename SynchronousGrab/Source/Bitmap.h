@@ -28,8 +28,6 @@
 #ifndef AVT_BITMAP_H
 #define AVT_BITMAP_H
 
-#include <stdint.h>
-
 typedef enum
 {
     ColorCodeMono8  = 1,
@@ -47,10 +45,10 @@ typedef struct
     ColorCode       colorCode;
 } AVTBitmap;
 
-bool CreateBitmap( AVTBitmap& rBitmap, const void* pBuffer );
+unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer );
 
-void ReleaseBitmap( AVTBitmap& rBitmap );
+unsigned char AVTReleaseBitmap( AVTBitmap * const pBitmap );
 
-void WriteBitmapToFile( const AVTBitmap &rBitmap, const char* pFileName );
+unsigned char AVTWriteBitmapToFile( AVTBitmap const * const pBitmap, char const * const pFileName );
 
 #endif

@@ -1,5 +1,5 @@
 ﻿/*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2013 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -26,90 +26,90 @@
 
 =============================================================================*/
 
-#include <iostream>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 #include <SynchronousGrab.h>
 
-using namespace std;
-
-bool StartsWith(const char *pString, const char *pStart)
+unsigned char StartsWith(const char *pString, const char *pStart)
 {
     if(NULL == pString)
     {
-        return false;
+        return 0;
     }
     if(NULL == pStart)
     {
-        return false;
+        return 0;
     }
 
     if(strlen(pString) < strlen(pStart))
     {
-        return false;
+        return 0;
     }
 
     if(memcmp(pString, pStart, strlen(pStart)) != 0)
     {
-        return false;
+        return 0;
     }
 
-    return true;
+    return 1;
 }
 
 int main( int argc, char* argv[] )
 {
-    cout << "//////////////////////////////////////////////" << endl;
-    cout << "/// AVT Vimba API Synchronous Grab Example ///" << endl;
-    cout << "//////////////////////////////////////////////" << endl << endl;
-    
     VmbError_t err = VmbErrorSuccess;
 
-    char *pCameraID = NULL;
-    const char *pFileName = NULL;
-    bool bPrintHelp = false;
+    char *pCameraID = NULL;                 // The ID of the camera to use
+    const char *pFileName = NULL;           // The filename for the bitmap to save
+    unsigned char bPrintHelp = 0;           // Output help?
+    int i;                                  // Counter for some iteration
+    char *pParameter;                       // The command line parameter
+
+    printf( "//////////////////////////////////////////////\n" );
+    printf( "/// AVT Vimba API Synchronous Grab Example ///\n" );
+    printf( "//////////////////////////////////////////////\n\n" );
 
     //////////////////////
     //Parse command line//
     //////////////////////
 
-    for(int i = 1; i < argc; i++)
+    for( i = 1; i < argc; ++i )
     {
-        char *pParameter = argv[i];
-        if(strlen(pParameter) < 0)
+        pParameter = argv[i];
+        if( 0 > strlen( pParameter ))
         {
             err = VmbErrorBadParameter;
             break;
         }
 
-        if(pParameter[0] == '/')
+        if( '/' == pParameter[0] )
         {
-            if(StartsWith(pParameter, "/f:"))
+            if( StartsWith( pParameter, "/f:" ))
             {
-                if(NULL != pFileName)
+                if( NULL != pFileName )
                 {
                     err = VmbErrorBadParameter;
                     break;
                 }
 
                 pFileName = pParameter + 3;
-                if(strlen(pFileName) <= 0)
+                if( 0 >= strlen( pFileName ))
                 {
                     err = VmbErrorBadParameter;
                     break;
                 }
             }
-            else if(strcmp(pParameter, "/h") == 0)
+            else if( 0 == strcmp( pParameter, "/h" ))
             {
-                if(     ( pCameraID != NULL )
-                    ||  ( pFileName != NULL )
-                    ||  ( true == bPrintHelp ))
+                if(     ( NULL != pCameraID )
+                    ||  ( NULL != pFileName )
+                    ||  ( bPrintHelp ))
                 {
                     err = VmbErrorBadParameter;
                     break;
                 }
 
-                bPrintHelp = true;
+                bPrintHelp = 1;
             }
             else
             {
@@ -119,7 +119,7 @@ int main( int argc, char* argv[] )
         }
         else
         {
-            if(NULL != pCameraID)
+            if( NULL != pCameraID )
             {
                 err = VmbErrorBadParameter;
                 break;
@@ -132,18 +132,18 @@ int main( int argc, char* argv[] )
     //Write out an error if we could not parse the command line
     if ( VmbErrorBadParameter == err )
     {
-        cout << "Invalid parameters!" << endl << endl;
-        bPrintHelp = true;
+        printf( "Invalid parameters!\n\n" );
+        bPrintHelp = 1;
     }
 
     //Print out help and end program
-    if ( true == bPrintHelp )
+    if ( bPrintHelp )
     {
-        cout << "Usage: SynchronousGrab.exe [CameraID] [/h] [/f:FileName]" << endl;
-        cout << "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)" << endl;
-        cout << "              /h          Print out help" << endl;
-        cout << "              /f:FileName File name for operation" << endl;
-        cout << "                          (default \"SynchronousGrab.bmp/.dat\" if not specified)" << endl;
+        printf( "Usage: SynchronousGrab.exe [CameraID] [/h] [/f:FileName]\n" );
+        printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
+        printf( "              /h          Print out help\n" );
+        printf( "              /f:FileName File name for operation\n" );
+        printf( "                          (default \"SynchronousGrab.bmp/.dat\" if not specified)\n" );
     }
     else
     {

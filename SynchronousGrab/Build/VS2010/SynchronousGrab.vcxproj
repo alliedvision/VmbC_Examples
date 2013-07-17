@@ -147,9 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\Bitmap.cpp" />
-    <ClCompile Include="..\..\Source\program.cpp" />
-    <ClCompile Include="..\..\Source\SynchronousGrab.cpp" />
+    <ClCompile Include="..\..\Source\Bitmap.c" />
+    <ClCompile Include="..\..\Source\program.c" />
+    <ClCompile Include="..\..\Source\SynchronousGrab.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Bitmap.h" />

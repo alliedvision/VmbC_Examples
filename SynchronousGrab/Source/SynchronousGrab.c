@@ -1,5 +1,5 @@
 ﻿/*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2013 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -26,29 +26,33 @@
 
 =============================================================================*/
 
-#include <iostream>
-#include <fstream>
-#include <cstring>
+#include <stdio.h>
 #ifdef WIN32
     #include <windows.h>
 #else
     #include <unistd.h>
 #endif
 
+#include <VimbaC/Include/VimbaC.h>
+
 #include <SynchronousGrab.h>
 #include <Bitmap.h>
 
-#include <VimbaC/Include/VimbaC.h>
-
-using namespace std;
 
 VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
 {
-    VmbError_t          err = VmbStartup(); // Initialize the Vimba API
-    VmbCameraInfo_t     *pCameras = NULL;   // A list of camera details
-    VmbUint32_t         nCount = 0;         // Number of found cameras
-    bool                bIsGigE = false;    // GigE transport layer present
-    const VmbUint32_t   nTimeout = 2000;    // Timeout for Grab
+    VmbError_t          err = VmbStartup();                     // Initialize the Vimba API
+    VmbCameraInfo_t     *pCameras = NULL;                       // A list of camera details
+    VmbUint32_t         nCount = 0;                             // Number of found cameras
+    VmbBool_t           bIsGigE = VmbBoolFalse;                 // GigE transport layer present
+    const VmbUint32_t   nTimeout = 2000;                        // Timeout for Grab
+    VmbAccessMode_t     cameraAccessMode = VmbAccessModeFull;   // We open the camera with full access
+    VmbHandle_t         cameraHandle = NULL;                    // A handle to our camera
+    VmbBool_t           bIsCommandDone = VmbBoolFalse;          // Has a command finished execution
+    VmbFrame_t          frame;                                  // The frame we capture
+    const char*         pPixelFormat;                           // The pixel format we use for acquisition
+    VmbInt64_t          nPayloadSize;                           // The size of one frame
+    AVTBitmap           bitmap;                                 // The bitmap we create
 
 
     if ( VmbErrorSuccess == err )
@@ -57,7 +61,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
         err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );
         if ( VmbErrorSuccess == err )
         {
-            if( true == bIsGigE )
+            if( VmbBoolTrue == bIsGigE )
             {
                 // Send discovery packets to GigE cameras
                 err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");
@@ -65,20 +69,20 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                 {
                     // And wait for them to return
 #ifdef WIN32
-                    ::Sleep( 200 );
+                    Sleep( 200 );
 #else
-                    ::usleep( 200 * 1000 );
+                    usleep( 200 * 1000 );
 #endif
                 }
                 else
                 {
-                    cout << "Could not ping GigE cameras over the network. Reason: " << err << endl << endl;
+                    printf( "Could not ping GigE cameras over the network. Reason: %s\n\n", err );
                 }
             }
         }
         else
         {
-            cout << "Could not query Vimba for the presence of a GigE transport layer. Reason: " << err << endl << endl;
+            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %s\n\n", err );
         }
 
         // If no camera ID was provided use the first camera found
@@ -89,14 +93,14 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
             if (    VmbErrorSuccess == err
                  && 0 < nCount )
             {
-                pCameras = new VmbCameraInfo_t[ nCount ];
+                pCameras = (VmbCameraInfo_t*)malloc( nCount * sizeof( *pCameras ));
                 if ( NULL != pCameras )
                 {
                     // Query all static details of all known cameras without having to open the cameras
                     err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );
                     if ( VmbErrorSuccess != err )
                     {
-                        cout << "Could not list cameras. Error code: " << err << endl;
+                        printf( "Could not list cameras. Error code: %s\n", err );
                     }
                     else
                     {
@@ -106,31 +110,29 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                 }
                 else
                 {
-                    cout << "Could not allocate camera list." << endl;
+                    printf( "Could not allocate camera list.\n" );
                 }
+                free( pCameras );
+                pCameras = NULL;
             }
             else
             {
-                cout << "Could not list cameras or no cameras present. Error code: " << err << endl;
+                printf( "Could not list cameras or no cameras present. Error code: %s\n", err );
             }
         }
 
         if ( NULL != pCameraID )
         {
-            VmbAccessMode_t cameraAccessMode = VmbAccessModeFull;
-            VmbHandle_t cameraHandle = NULL;
-
             // Open camera
             err = VmbCameraOpen( pCameraID, cameraAccessMode, &cameraHandle );
             if ( VmbErrorSuccess == err )
             {
-                cout << "Camera ID: " << pCameraID << endl << endl;
+                printf( "Camera ID: %s\n\n", pCameraID );
 
                 // Set the GeV packet size to the highest possible value
                 // (In this example we do not test whether this cam actually is a GigE cam)
                 if ( VmbErrorSuccess == VmbFeatureCommandRun( cameraHandle, "GVSPAdjustPacketSize" ))
                 {
-                    bool bIsCommandDone = false;
                     do
                     {
                         if ( VmbErrorSuccess != VmbFeatureCommandIsDone(    cameraHandle,
@@ -139,7 +141,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                         {
                             break;
                         }
-                    } while ( false == bIsCommandDone );
+                    } while ( VmbBoolFalse == bIsCommandDone );
                 }
 
                 if ( VmbErrorSuccess == err )
@@ -152,22 +154,19 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                         err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "Mono8" );
                     }
                     // Read back pixel format
-                    const char* pPixelFormat;
                     VmbFeatureEnumGet( cameraHandle, "PixelFormat", &pPixelFormat );
 
                     if ( VmbErrorSuccess == err )
                     {
-                        VmbInt64_t nPayloadSize;
                         // Evaluate frame size
                         err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &nPayloadSize );
                         if ( VmbErrorSuccess == err )
                         {
-                            VmbFrame_t Frame;
-                            Frame.buffer        = new char [ (VmbUint32_t)nPayloadSize ];
-                            Frame.bufferSize    = (VmbUint32_t)nPayloadSize;
+                            frame.buffer        = (unsigned char*)malloc( (VmbUint32_t)nPayloadSize );
+                            frame.bufferSize    = (VmbUint32_t)nPayloadSize;
 
                             // Announce Frame
-                            err = VmbFrameAnnounce( cameraHandle, &Frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
+                            err = VmbFrameAnnounce( cameraHandle, &frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
                             if ( VmbErrorSuccess == err )
                             {
                                 // Start Capture Engine
@@ -175,7 +174,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                 if ( VmbErrorSuccess == err )
                                 {
                                     // Queue Frame
-                                    err = VmbCaptureFrameQueue( cameraHandle, &Frame, NULL );
+                                    err = VmbCaptureFrameQueue( cameraHandle, &frame, NULL );
                                     if ( VmbErrorSuccess == err )
                                     {
                                         // Start Acquisition
@@ -183,120 +182,129 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                         if ( VmbErrorSuccess == err )
                                         {
                                             // Capture one frame synchronously
-                                            err = VmbCaptureFrameWait( cameraHandle, &Frame, nTimeout );
+                                            err = VmbCaptureFrameWait( cameraHandle, &frame, nTimeout );
                                             if ( VmbErrorSuccess == err )
                                             {
                                                 // Convert the captured frame to a bitmap and save to disk
-                                                if ( VmbFrameStatusComplete == Frame.receiveStatus )
+                                                if ( VmbFrameStatusComplete == frame.receiveStatus )
                                                 {
-                                                    AVTBitmap b;
-                                                    b.bufferSize = Frame.imageSize;
-                                                    b.width = Frame.width;
-                                                    b.height = Frame.height;
+                                                    bitmap.bufferSize = frame.imageSize;
+                                                    bitmap.width = frame.width;
+                                                    bitmap.height = frame.height;
                                                     // We only support Mono and RGB in this example
                                                     if ( 0 == strcmp( "RGB8Packed", pPixelFormat ))
                                                     {
-                                                        b.colorCode = ColorCodeRGB24;
+                                                        bitmap.colorCode = ColorCodeRGB24;
                                                     }
                                                     else
                                                     {
-                                                        b.colorCode = ColorCodeMono8;
+                                                        bitmap.colorCode = ColorCodeMono8;
                                                     }
 
                                                     // Create the bitmap
-                                                    if ( false == CreateBitmap( b, Frame.buffer ))
+                                                    if ( 0 == AVTCreateBitmap( &bitmap, frame.buffer ))
                                                     {
-                                                        cout << "Could not create bitmap." << endl;
+                                                        printf( "Could not create bitmap.\n" );
                                                     }
                                                     else
                                                     {
                                                         // Save the bitmap
-                                                        WriteBitmapToFile( b, pFileName );
-                                                        cout << "Bitmap successfully written to file \"" << pFileName << "\"." << endl;
-                                                        // Release the bitmap's buffer
-                                                        ReleaseBitmap( b );
+                                                        if ( 0 == AVTWriteBitmapToFile( &bitmap, pFileName ))
+                                                        {
+                                                            printf( "Could not write bitmap to file.\n" );
+                                                        }
+                                                        else
+                                                        {
+                                                            printf( "Bitmap successfully written to file \"%s\"\n", pFileName );
+                                                            // Release the bitmap's buffer
+                                                            if ( 0 == AVTReleaseBitmap( &bitmap ))
+                                                            {
+                                                                printf( "Could not release the bitmap.\n" );
+                                                            }
+                                                        }
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    cout << "Frame not successfully received. Error code: " << Frame.receiveStatus << endl;
+                                                    printf( "Frame not successfully received. Error code: %s\n", frame.receiveStatus );
                                                 }
                                             }
                                             else
                                             {
-                                                cout << "Could not capture frame. Error code: " << err << endl;
+                                                printf( "Could not capture frame. Error code: %s", err );
                                             }
 
                                             // Stop Acquisition
                                             err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
                                             if ( VmbErrorSuccess != err )
                                             {
-                                                cout << "Could not stop acquisition. Error code: " << err << endl;
+                                                printf( "Could not stop acquisition. Error code: %s\n", err );
                                             }
                                         }
                                         else
                                         {
-                                            cout << "Could not start acquisition. Error code: " << err << endl;
+                                            printf( "Could not start acquisition. Error code: %s", err );
                                         }
                                     }
                                     else
                                     {
-                                        cout << "Could not queue frame. Error code: " << err << endl;
+                                        printf( "Could not queue frame. Error code: %s\n", err );
                                     }
 
                                     // Stop Capture Engine
                                     err = VmbCaptureEnd( cameraHandle );
                                     if ( VmbErrorSuccess != err )
                                     {
-                                        cout << "Could not end capture . Error code: " << err << endl;
+                                        printf( "Could not end capture. Error code: %s\n", err );
                                     }
                                 }
                                 else
                                 {
-                                    cout << "Could not start capture. Error code: " << err << endl;
+                                    printf( "Could not start capture. Error code: %s\n", err );
                                 }
 
                                 // Revoke frame
-                                err = VmbFrameRevoke( cameraHandle, &Frame );
+                                err = VmbFrameRevoke( cameraHandle, &frame );
                                 if ( VmbErrorSuccess != err )
                                 {
-                                    cout << "Could not revoke frame. Error code: " << err << endl;
+                                    printf( "Could not revoke frame. Error code: %s\n", err );
                                 }
                             }
                             else
                             {
-                                cout << "Could not announce frame. Error code: " << err << endl;
+                                printf( "Could not announce frame. Error code: %s\n", err );
                             }
 
-                            delete (const char*)Frame.buffer;
+                            free( frame.buffer );
+                            frame.buffer = NULL;
                         }
                     }
                     else
                     {
-                        cout << "Could not set pixel format to either RGB or Mono. Error code: " << err << endl;
+                        printf( "Could not set pixel format to either RGB or Mono. Error code: %s\n", err );
                     }
                 }
                 else
                 {
-                    cout << "Could not adjust packet size. Error code: " << err << endl;
+                    printf( "Could not adjust packet size. Error code: %s\n", err );
                 }
 
                 err = VmbCameraClose ( cameraHandle );
                 if ( VmbErrorSuccess != err )
                 {
-                    cout << "Could not close camera. Error code: " << err << endl;
+                    printf( "Could not close camera. Error code: %s\n", err );
                 }
             }
             else
             {
-                cout << "Could not open camera. Error code: " << err << endl;
+                printf( "Could not open camera. Error code: %s\n", err );
             }
         }
         VmbShutdown();
     }
     else
     {
-        cout << "Could not start system. Error code: " << err << endl;
+        printf( "Could not start system. Error code: %s\n", err );
     }
 
     return err;
