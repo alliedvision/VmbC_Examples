@@ -34,7 +34,7 @@ DEPENDENCIES			= $(VIMBAC_BIN)
 
 all: $(BIN_PATH)
 
-$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.cpp $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.c $(OBJ_DIR)
 	$(call MACRO_CXX,$@,$<,$(INCLUDE_DIRS),$(DEFINES))
 
 $(BIN_PATH): $(DEPENDENCIES) $(OBJ_FILES) $(BIN_DIR)
