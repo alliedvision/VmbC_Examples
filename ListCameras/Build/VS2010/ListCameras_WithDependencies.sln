@@ -14,6 +14,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VimbaC", "..\..\..\..\Build
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llk", "..\..\..\..\Externals\GIK\Externals\LLK\Build\VS2010\llk.vcxproj", "{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gik", "..\..\..\..\Externals\GIK\Build\VS2010\gik.vcxproj", "{36E103C2-95EE-469D-8094-2FD287F8B8BD}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -21,7 +24,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gik", "..\..\..\..\External
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\..\Externals\GIK\Externals\tinyxml\Build\VS2010\tinyxml.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\..\Externals\GIK\Externals\LLK\Externals\tinyxml\Build\VS2010\tinyxml.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

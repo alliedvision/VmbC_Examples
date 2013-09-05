@@ -10,13 +10,16 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gik", "..\..\..\Externals\G
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "llk", "..\..\..\Externals\GIK\Externals\LLK\Build\VS2010\llk.vcxproj", "{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListCameras", "..\..\ListCameras\Build\VS2010\ListCameras.vcxproj", "{04D4FDC0-8E02-460B-B0EE-56AE872EC010}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01} = {8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\Externals\GIK\Externals\tinyxml\Build\VS2010\tinyxml.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\Externals\GIK\Externals\LLK\Externals\tinyxml\Build\VS2010\tinyxml.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListFeatures", "..\..\ListFeatures\Build\VS2010\ListFeatures.vcxproj", "{C2EDC41C-046B-4913-9182-9E939CD070D6}"
 	ProjectSection(ProjectDependencies) = postProject
