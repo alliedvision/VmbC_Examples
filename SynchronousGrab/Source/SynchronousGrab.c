@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef WIN32
     #include <windows.h>
@@ -78,13 +79,13 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                 }
                 else
                 {
-                    printf( "Could not ping GigE cameras over the network. Reason: %s\n\n", err );
+                    printf( "Could not ping GigE cameras over the network. Reason: %d\n\n", err );
                 }
             }
         }
         else
         {
-            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %s\n\n", err );
+            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %d\n\n", err );
         }
 
         // If no camera ID was provided use the first camera found
@@ -102,7 +103,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                     err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );
                     if ( VmbErrorSuccess != err )
                     {
-                        printf( "Could not list cameras. Error code: %s\n", err );
+                        printf( "Could not list cameras. Error code: %d\n", err );
                     }
                     else
                     {
@@ -119,7 +120,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
             }
             else
             {
-                printf( "Could not list cameras or no cameras present. Error code: %s\n", err );
+                printf( "Could not list cameras or no cameras present. Error code: %d\n", err );
             }
         }
 
@@ -228,53 +229,53 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                                 }
                                                 else
                                                 {
-                                                    printf( "Frame not successfully received. Error code: %s\n", frame.receiveStatus );
+                                                    printf( "Frame not successfully received. Error code: %d\n", frame.receiveStatus );
                                                 }
                                             }
                                             else
                                             {
-                                                printf( "Could not capture frame. Error code: %s", err );
+                                                printf( "Could not capture frame. Error code: %d", err );
                                             }
 
                                             // Stop Acquisition
                                             err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
                                             if ( VmbErrorSuccess != err )
                                             {
-                                                printf( "Could not stop acquisition. Error code: %s\n", err );
+                                                printf( "Could not stop acquisition. Error code: %d\n", err );
                                             }
                                         }
                                         else
                                         {
-                                            printf( "Could not start acquisition. Error code: %s", err );
+                                            printf( "Could not start acquisition. Error code: %d", err );
                                         }
                                     }
                                     else
                                     {
-                                        printf( "Could not queue frame. Error code: %s\n", err );
+                                        printf( "Could not queue frame. Error code: %d\n", err );
                                     }
 
                                     // Stop Capture Engine
                                     err = VmbCaptureEnd( cameraHandle );
                                     if ( VmbErrorSuccess != err )
                                     {
-                                        printf( "Could not end capture. Error code: %s\n", err );
+                                        printf( "Could not end capture. Error code: %d\n", err );
                                     }
                                 }
                                 else
                                 {
-                                    printf( "Could not start capture. Error code: %s\n", err );
+                                    printf( "Could not start capture. Error code: %d\n", err );
                                 }
 
                                 // Revoke frame
                                 err = VmbFrameRevoke( cameraHandle, &frame );
                                 if ( VmbErrorSuccess != err )
                                 {
-                                    printf( "Could not revoke frame. Error code: %s\n", err );
+                                    printf( "Could not revoke frame. Error code: %d\n", err );
                                 }
                             }
                             else
                             {
-                                printf( "Could not announce frame. Error code: %s\n", err );
+                                printf( "Could not announce frame. Error code: %d\n", err );
                             }
 
                             free( frame.buffer );
@@ -283,30 +284,30 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                     }
                     else
                     {
-                        printf( "Could not set pixel format to either RGB or Mono. Error code: %s\n", err );
+                        printf( "Could not set pixel format to either RGB or Mono. Error code: %d\n", err );
                     }
                 }
                 else
                 {
-                    printf( "Could not adjust packet size. Error code: %s\n", err );
+                    printf( "Could not adjust packet size. Error code: %d\n", err );
                 }
 
                 err = VmbCameraClose ( cameraHandle );
                 if ( VmbErrorSuccess != err )
                 {
-                    printf( "Could not close camera. Error code: %s\n", err );
+                    printf( "Could not close camera. Error code: %d\n", err );
                 }
             }
             else
             {
-                printf( "Could not open camera. Error code: %s\n", err );
+                printf( "Could not open camera. Error code: %d\n", err );
             }
         }
         VmbShutdown();
     }
     else
     {
-        printf( "Could not start system. Error code: %s\n", err );
+        printf( "Could not start system. Error code: %d\n", err );
     }
 
     return err;
