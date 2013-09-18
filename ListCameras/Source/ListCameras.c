@@ -56,9 +56,7 @@ void ListCameras()
                 err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
                 if ( VmbErrorSuccess == err )
                 {
-                    
-                    // And wait for them to return
-#ifdef WIN32
+#ifdef WIN32                                                                            // And wait for them to return
                     Sleep( 200 );
 #else
                     usleep( 200 * 1000 );
