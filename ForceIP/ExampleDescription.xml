@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Example Index="1" Id="C_ListCameras" Title="ListCameras" Language="C" Category="Examples" >
+  <Description>Console application to assign an IP address to a camera that is identified by its MAC address.</Description>
+  <Application>
+    <Screenshot>VimbaC_Examples/ForceIP/Screenshot.png</Screenshot>
+    <Executable>VimbaC_Examples/Bin/Win32/ForceIP.exe</Executable>
+  </Application>
+  <ProjectFile>
+    <Text>Microsoft Visual Studio 2010 Solution</Text>
+    <Link>VimbaC_Examples/ListCameras/Build/VS2010/ForceIP.sln</Link>
+  </ProjectFile>
+</Example>
