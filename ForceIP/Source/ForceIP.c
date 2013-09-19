@@ -36,6 +36,7 @@
     #include <windows.h>
 #else
     #include <unistd.h>
+    #include <arpa/inet.h>
 #endif
 
 #include <ForceIP.h>
@@ -50,7 +51,7 @@ unsigned long long mac_addr( const char* strMAC )
     unsigned long long nMAC;
 
     if (    sscanf( strMAC, "0x%llx", &nMAC )
-        || sscanf( strMAC, "%ll", &nMAC ))
+        || sscanf( strMAC, "%lld", &nMAC ))
     {
         return nMAC;
     }

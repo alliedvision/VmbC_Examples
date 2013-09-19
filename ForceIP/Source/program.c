@@ -50,7 +50,7 @@ int main( int argc, char* argv[] )
         printf( "Parameters:   Subnet   The new network mask of the camera in numbers and dots notation.\n" );
         printf( "Parameters:   Gateway  The address of a possible gateway if the camera is not connected to the host PC directly.\n\n" );
         printf( "For example to change the IP address of a camera with the MAC address 0x0F3101D540 to 169.254.1.1 in a class B network call:\n\n" );
-        printf( "ForceIP.exe 0x0F3101D540 169.254.1.1 255.255.0.0\n\n" );
+        printf( "ForceIP 0x0F3101D540 169.254.1.1 255.255.0.0\n\n" );
     }
     else
     {
