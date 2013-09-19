@@ -51,7 +51,7 @@ unsigned long long mac_addr( const char* strMAC )
     unsigned long long nMAC;
 
     if (    sscanf( strMAC, "0x%llx", &nMAC )
-        || sscanf( strMAC, "%lld", &nMAC ))
+         || sscanf( strMAC, "%lld", &nMAC ))
     {
         return nMAC;
     }
