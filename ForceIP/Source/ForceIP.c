@@ -175,5 +175,4 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
     }
 
     free (strMACPadded);
-    getchar();
 }
