@@ -79,8 +79,8 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
         {
             if( bIsGigE )
             {
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");                                           // Send discovery packets to GigE cameras
-                if ( VmbErrorSuccess == err )
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce" );                                          // Send discovery packets to GigE cameras,
+                if ( VmbErrorSuccess == err )                                                                               // required to open the cam later
                 {
 #ifdef WIN32                                                                                                                // And wait for them to return
                     Sleep( 200 );
@@ -92,7 +92,7 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                         err = VmbCameraOpen( strMACPadded, VmbAccessModeFull, &hCam );                                      // Check whether the camera is opened already
                         if ( VmbErrorSuccess == err )
                         {
-                            VmbCameraClose( hCam );
+                            VmbCameraClose( hCam );                                                                         // We can close the camera now
                             err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressMAC", nMAC );                           // Send MAC address to TL
                             if ( VmbErrorSuccess == err )
                             {
@@ -116,7 +116,7 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                                             err = VmbFeatureCommandRun( gVimbaHandle, "GeVForceIPAddressSend" );            // Finally execute the command to write all settings to cam
                                             if ( VmbErrorSuccess == err )
                                             {
-                                                printf( "IP address successfully changed\n\n" );
+                                                printf( "IP address successfully changed to %s (%s).\n\n", strIP, strSubnet );
                                             }
                                             else
                                             {
