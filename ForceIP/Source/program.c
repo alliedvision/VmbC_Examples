@@ -41,8 +41,8 @@ int main( int argc, char* argv[] )
     printf("/// AVT Vimba API Force IP Example ///\n");
     printf("//////////////////////////////////////\n\n");
 
-    if(     3 > argc
-        ||  4 < argc )
+    if(     4 > argc
+        ||  5 < argc )
     {
         printf( "Usage: ForceIP.exe MAC IP Subnet [Gateway]\n\n" );
         printf( "Parameters:   MAC      The MAC address of the camera whose IP address shall be changed. Either hexadecimal with preceding 0x or decimal.\n" );
