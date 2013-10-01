@@ -87,8 +87,8 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
 #else
                     usleep( 200 * 1000 );
 #endif
-                    if (    0 == nMAC
-                         || sprintf( strMACPadded, "%012llx", nMAC ))                                                       // Opening the cam via MAC address requires a fixed format
+                    if (    0 != nMAC
+                         && sprintf( strMACPadded, "%012llx", nMAC ))                                                       // Opening the cam via MAC address requires a fixed format
                     {
                         err = VmbCameraOpen( strMACPadded, VmbAccessModeFull, &hCam );                                      // Check whether the camera is opened already
                         if ( VmbErrorSuccess == err )
