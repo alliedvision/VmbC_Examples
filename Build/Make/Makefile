@@ -15,7 +15,7 @@ VIMBAC_BIN			= $(BIN_DIR)/$(VIMBAC_FILE)
 VIMBACPP_FILE			= $(DYNAMIC_PREFIX)VimbaCPP$(DYNAMIC_SUFFIX)
 VIMBACPP_BIN			= $(BIN_DIR)/$(VIMBACPP_FILE)
 
-EXAMBLES			= ListCameras \
+EXAMPLES			= ListCameras \
 				  ListFeatures \
 				  SynchronousGrab
 
@@ -31,7 +31,7 @@ $(PROJECT_ROOT_DIR)/%/Qt/Build/Make/$(BIN_DIR)/%: $(PROJECT_ROOT_DIR)/%/Qt/Build
 $(BIN_DIR)/%: $(PROJECT_ROOT_DIR)/%/Qt/Build/Make/$(BIN_DIR)/% $(BIN_DIR)
 	$(call MACRO_CP,$(PROJECT_ROOT_DIR)/$*/Qt/Build/Make/$(BIN_DIR)/*,$(BIN_DIR))
 
-all: $(foreach example,$(EXAMBLES),$(BIN_DIR)/$(example))
+all: $(foreach example,$(EXAMPLES),$(BIN_DIR)/$(example))
 
 clean:
 	$(call MACRO_RM,$(BIN_DIR)/*)
