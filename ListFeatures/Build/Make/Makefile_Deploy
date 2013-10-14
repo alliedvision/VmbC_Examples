@@ -7,7 +7,7 @@ MAKE_INCLUDE_DIR        = $(CURDIR)/$(EXAMPLES_DIR)/Build/Make
 
 include $(MAKE_INCLUDE_DIR)/Common.mk
 
-CONFIG_DIR          = x86_$(WORDSIZE)bit
+CONFIG_DIR          = $(ARCH)_$(WORDSIZE)bit
 BIN_FILE            = $(PROJECT_NAME)
 BIN_DIR             = binary/$(CONFIG_DIR)
 OBJ_DIR             = object/$(CONFIG_DIR)
