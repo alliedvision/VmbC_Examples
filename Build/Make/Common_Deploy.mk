@@ -1,22 +1,36 @@
 UNAME		= $(shell uname -m)
 
 ifeq ($(UNAME),i386)
+ARCH			= x86
 AUTOWORDSIZE	= 32
 endif
 ifeq ($(UNAME),i486)
+ARCH			= x86
 AUTOWORDSIZE	= 32
 endif
 ifeq ($(UNAME),i586)
+ARCH			= x86
 AUTOWORDSIZE	= 32
 endif
 ifeq ($(UNAME),i686)
+ARCH			= x86
 AUTOWORDSIZE	= 32
 endif
 ifeq ($(UNAME),x86_64)
+ARCH			= x86
 AUTOWORDSIZE	= 64
 endif
 ifeq ($(UNAME),amd64)
+ARCH			= x86
 AUTOWORDSIZE	= 64
+endif
+ifeq ($(UNAME),armv6l)
+ARCH			= arm
+AUTOWORDSIZE	= 32
+endif
+ifeq ($(UNAME),armv7l)
+ARCH			= arm
+AUTOWORDSIZE	= 32
 endif
 
 #Possible word sizes: 32, 64
