@@ -50,10 +50,14 @@ CXX             = g++
 MAKE            = make
 CP              = cp
 
+ifeq ($(ARCH),x86)
+ARCH_CFLAGS     = -m$(WORDSIZE)
+endif
+
 #Debug compile flags
 #CONFIG_CFLAGS  = -O0 -g
 
 #Release compile flags
 CONFIG_CFLAGS   = -O3
 
-COMMON_CFLAGS   = $(CONFIG_CFLAGS) -fPIC
+COMMON_CFLAGS   = $(CONFIG_CFLAGS) $(ARCH_CFLAGS) -fPIC

@@ -34,10 +34,10 @@ OBJ_FILES           = $(OBJ_DIR)/Bitmap.o \
 DEPENDENCIES        = VimbaC
 
 $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.c $(OBJ_DIR)
-	$(CXX) -c $(INCLUDE_DIRS) $(DEFINES) $(CFLAGS) -m$(WORDSIZE) -o $@ $<
+	$(CXX) -c $(INCLUDE_DIRS) $(DEFINES) $(CFLAGS) -o $@ $<
 
 $(BIN_PATH): $(DEPENDENCIES) $(OBJ_FILES) $(BIN_DIR)
-	$(CXX) -m$(WORDSIZE) -o $(BIN_PATH) $(OBJ_FILES) $(LIBS) -Wl,-rpath,'$$ORIGIN'
+	$(CXX) $(ARCH_CFLAGS) -o $(BIN_PATH) $(OBJ_FILES) $(LIBS) -Wl,-rpath,'$$ORIGIN'
 
 clean:
 	$(RM) binary -r -f
