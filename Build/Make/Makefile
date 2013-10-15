@@ -15,7 +15,8 @@ VIMBAC_BIN			= $(BIN_DIR)/$(VIMBAC_FILE)
 VIMBACPP_FILE			= $(DYNAMIC_PREFIX)VimbaCPP$(DYNAMIC_SUFFIX)
 VIMBACPP_BIN			= $(BIN_DIR)/$(VIMBACPP_FILE)
 
-EXAMPLES			= ListCameras \
+EXAMPLES			= ForceIP \
+				  ListCameras \
 				  ListFeatures \
 				  SynchronousGrab
 
@@ -36,6 +37,7 @@ all: $(foreach example,$(EXAMPLES),$(BIN_DIR)/$(example))
 clean:
 	$(call MACRO_RM,$(BIN_DIR)/*)
 	$(call MACRO_RMDIR,$(BIN_DIR))
+	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ForceIP/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListCameras/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListFeatures/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/SynchronousGrab/Build/Make,clean)
