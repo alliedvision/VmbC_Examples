@@ -127,7 +127,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
         if ( NULL != pCameraID )
         {
             // Open camera
-            err = VmbCameraOpen( pCameraID, cameraAccessMode, &cameraHandle );
+            err = VmbCameraOpen( pCameraID, VmbAccessModeRead, &cameraHandle );
             if ( VmbErrorSuccess == err )
             {
                 printf( "Camera ID: %s\n\n", pCameraID );
@@ -149,15 +149,15 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
 
                 if ( VmbErrorSuccess == err )
                 {
-                    // Set pixel format. For the sake of simplicity we only support Mono and RGB in this example.
-                    err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "RGB8Packed" );
-                    if ( VmbErrorSuccess != err )
-                    {
-                        // Fall back to Mono
-                        err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "Mono8" );
-                    }
+                    //// Set pixel format. For the sake of simplicity we only support Mono and RGB in this example.
+                    //err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "RGB8Packed" );
+                    //if ( VmbErrorSuccess != err )
+                    //{
+                    //    // Fall back to Mono
+                    //    err = VmbFeatureEnumSet( cameraHandle, "PixelFormat", "Mono8" );
+                    //}
                     // Read back pixel format
-                    VmbFeatureEnumGet( cameraHandle, "PixelFormat", &pPixelFormat );
+                    //VmbFeatureEnumGet( cameraHandle, "PixelFormat", &pPixelFormat );
 
                     if ( VmbErrorSuccess == err )
                     {
@@ -181,7 +181,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                     if ( VmbErrorSuccess == err )
                                     {
                                         // Start Acquisition
-                                        err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
+                                        //err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStart" );
                                         if ( VmbErrorSuccess == err )
                                         {
                                             // Capture one frame synchronously
@@ -238,7 +238,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                             }
 
                                             // Stop Acquisition
-                                            err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
+                                            //err = VmbFeatureCommandRun( cameraHandle,"AcquisitionStop" );
                                             if ( VmbErrorSuccess != err )
                                             {
                                                 printf( "Could not stop acquisition. Error code: %d\n", err );
