@@ -139,7 +139,7 @@ int main( int argc, char* argv[] )
     //Print out help and end program
     if ( bPrintHelp )
     {
-        printf( "Usage: SynchronousGrab.exe [CameraID] [/h] [/f:FileName]\n" );
+        printf( "Usage: SynchronousGrab [CameraID] [/h] [/f:FileName]\n" );
         printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
         printf( "              /h          Print out help\n" );
         printf( "              /f:FileName File name for operation\n" );

@@ -44,7 +44,7 @@ int main( int argc, char* argv[] )
     if(     4 > argc
         ||  5 < argc )
     {
-        printf( "Usage: ForceIP.exe MAC IP Subnet [Gateway]\n\n" );
+        printf( "Usage: ForceIP MAC IP Subnet [Gateway]\n\n" );
         printf( "Parameters:   MAC      The MAC address of the camera whose IP address shall be changed. Either hexadecimal with preceding 0x or decimal.\n" );
         printf( "Parameters:   IP       The new IPv4 address of the camera in numbers and dots notation.\n" );
         printf( "Parameters:   Subnet   The new network mask of the camera in numbers and dots notation.\n" );

@@ -39,7 +39,7 @@ int main( int argc, char* argv[] )
 
     if( 2 < argc )
     {
-        printf( "Usage: ListFeatures.exe [CameraID]\n\n" );
+        printf( "Usage: ListFeatures [CameraID]\n\n" );
         printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
     }
     else if ( 2 == argc )
