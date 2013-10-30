@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  File:         Bitmap.h
+  File:         Bitmap.c
 
   Description:  The bitmap class represents a MS(R) Windows(TM) bitmap version 3
 
