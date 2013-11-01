@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Example Index="1" Id="C_ListCameras" Title="ListCameras" Language="C" Category="Examples" >
+<Example Index="5" Id="C_ForceIP" Title="ForceIP" Language="C" Category="Helper" >
   <Description>Console application to assign an IP address to a camera that is identified by its MAC address.</Description>
   <Application>
     <Screenshot>VimbaC_Examples/ForceIP/Screenshot.png</Screenshot>
@@ -8,6 +8,6 @@
   </Application>
   <ProjectFile>
     <Text>Microsoft Visual Studio 2010 Solution</Text>
-    <Link>VimbaC_Examples/ListCameras/Build/VS2010/ForceIP.sln</Link>
+    <Link>VimbaC_Examples/ForceIP/Build/VS2010/ForceIP.sln</Link>
   </ProjectFile>
 </Example>
