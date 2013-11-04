@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Example Index="5" Id="C_ForceIP" Title="ForceIP" Language="C" Category="Helper" >
+<Example Index="5" Id="C_ForceIP" Title="ForceIP" Language="C" Category="Helpers" >
   <Description>Console application to assign an IP address to a camera that is identified by its MAC address.</Description>
   <Application>
     <Screenshot>VimbaC_Examples/ForceIP/Screenshot.png</Screenshot>
