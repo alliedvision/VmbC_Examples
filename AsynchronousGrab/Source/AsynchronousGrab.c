@@ -76,9 +76,9 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, VmbFrame_t* pFrame)
     VmbErrorType res = VmbErrorSuccess;
     double dFPS = 0.0;
     VmbBool_t bFPSValid = VmbBoolFalse;
-    VmbBool_t bFrameMissing = VmbBoolFalse;
     double dFrameTime = 0.0;
     double dTimeDiff = 0.0;
+    VmbUint64_t nFramesMissing = 0;
 
     if( FrameInfos_Off != g_eFrameInfos )
     {
@@ -93,34 +93,24 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, VmbFrame_t* pFrame)
             {
                 if( pFrame->frameID != ( g_nFrameID + 1 ) )
                 {
-                    bFrameMissing = VmbBoolTrue;
+                    nFramesMissing = pFrame->frameID - g_nFrameID - 1;
+                    if( 1 == nFramesMissing )
+                    {
+                        printf("1 missing frame detected\n");
+                    }
+                    else
+                    {
+                        printf("%llu missing frames detected\n", nFramesMissing);
+                    }
                 }
             }
 
             g_nFrameID = pFrame->frameID;
             g_bFrameIDValid = VmbBoolTrue;
-        }
-        else
-        {
-            bShowFrameInfos = VmbBoolTrue;
-            g_bFrameIDValid = VmbBoolFalse;
-        }
 
-        if( bFrameMissing )
-        {
-            bShowFrameInfos = VmbBoolTrue;
-        }
-
-        if( VmbFrameStatusComplete != pFrame->receiveStatus )
-        {
-            bShowFrameInfos = VmbBoolTrue;
-        }
-
-        if( VmbFrameFlagsFrameID & pFrame->receiveFlags )
-        {
             dFrameTime = GetTime();
             if(     ( g_bFrameTimeValid )
-                &&  ( !bFrameMissing ) )
+                &&  ( 0 == nFramesMissing ) )
             {
                 dTimeDiff = dFrameTime - g_dFrameTime;
                 if(dTimeDiff > 0.0)
@@ -139,7 +129,14 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, VmbFrame_t* pFrame)
         }
         else
         {
+            bShowFrameInfos = VmbBoolTrue;
+            g_bFrameIDValid = VmbBoolFalse;
             g_bFrameTimeValid = VmbBoolFalse;
+        }
+
+        if( VmbFrameStatusComplete != pFrame->receiveStatus )
+        {
+            bShowFrameInfos = VmbBoolTrue;
         }
     }
 
