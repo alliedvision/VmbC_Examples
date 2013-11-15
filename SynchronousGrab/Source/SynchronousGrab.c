@@ -37,26 +37,27 @@
 #endif
 
 #include <VimbaC/Include/VimbaC.h>
-
+#include "../../Common/PrintVimbaVersion.h"
 #include <SynchronousGrab.h>
 #include <Bitmap.h>
 
 
 VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
 {
-    VmbError_t          err = VmbStartup();                     // Initialize the Vimba API
-    VmbCameraInfo_t     *pCameras = NULL;                       // A list of camera details
-    VmbUint32_t         nCount = 0;                             // Number of found cameras
-    VmbBool_t           bIsGigE = VmbBoolFalse;                 // GigE transport layer present
-    const VmbUint32_t   nTimeout = 2000;                        // Timeout for Grab
-    VmbAccessMode_t     cameraAccessMode = VmbAccessModeFull;   // We open the camera with full access
-    VmbHandle_t         cameraHandle = NULL;                    // A handle to our camera
-    VmbBool_t           bIsCommandDone = VmbBoolFalse;          // Has a command finished execution
+    VmbError_t          err                 = VmbStartup();     // Initialize the Vimba API
+    VmbCameraInfo_t     *pCameras           = NULL;             // A list of camera details
+    VmbUint32_t         nCount              = 0;                // Number of found cameras
+    VmbBool_t           bIsGigE             = VmbBoolFalse;     // GigE transport layer present
+    const VmbUint32_t   nTimeout            = 2000;             // Timeout for Grab
+    VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;// We open the camera with full access
+    VmbHandle_t         cameraHandle        = NULL;             // A handle to our camera
+    VmbBool_t           bIsCommandDone      = VmbBoolFalse;     // Has a command finished execution
     VmbFrame_t          frame;                                  // The frame we capture
-    const char*         pPixelFormat;                           // The pixel format we use for acquisition
-    VmbInt64_t          nPayloadSize;                           // The size of one frame
+    const char*         pPixelFormat        = NULL;             // The pixel format we use for acquisition
+    VmbInt64_t          nPayloadSize        = 0;                // The size of one frame
     AVTBitmap           bitmap;                                 // The bitmap we create
-
+    
+    PrintVimbaVersion();
 
     if ( VmbErrorSuccess == err )
     {
