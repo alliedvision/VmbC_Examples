@@ -38,13 +38,20 @@
 #include <ListCameras.h>
 
 #include <VimbaC/Include/VimbaC.h>
+#include "../../Common/PrintVimbaVersion.h"
 
 void ListCameras()
 {
-    VmbError_t err = VmbStartup();                                                      // Initialize the Vimba API
-    VmbCameraInfo_t *pCameras = NULL;                                                   // A list of camera details
-    VmbUint32_t i = 0, nCount = 0;                                                      // Number of found cameras
-    VmbBool_t bIsGigE = 0;                                                              // GigE transport layer present
+    VmbError_t          err             = VmbErrorSuccess;
+    VmbCameraInfo_t *   pCameras        = NULL;
+    VmbUint32_t         i               = 0;
+    VmbUint32_t         nCount          = 0;
+    VmbBool_t           bIsGigE         = 0;
+
+    err = VmbStartup();                                                     // Initialize the Vimba API
+    PrintVimbaVersion();                                                    // Print Vimba Version
+    
+    
 
     if ( VmbErrorSuccess == err )
     {
@@ -75,7 +82,7 @@ void ListCameras()
 
         err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );                     // Get the amount of known cameras
         if (    VmbErrorSuccess == err
-             && 0 < nCount )
+             && nCount          != 0 )
         {
             printf( "Cameras found: %d\n\n", nCount );
         
