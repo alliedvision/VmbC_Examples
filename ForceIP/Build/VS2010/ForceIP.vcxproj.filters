@@ -19,9 +19,15 @@
     <ClCompile Include="..\..\Source\ForceIP.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Common\PrintVimbaVersion.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ForceIP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\PrintVimbaVersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

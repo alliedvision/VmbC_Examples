@@ -42,7 +42,7 @@
 #include <ForceIP.h>
 
 #include <VimbaC/Include/VimbaC.h>
-
+#include "../../Common/PrintVimbaVersion.h"
 
 // Converts a hexadecimal MAC address into its decimal representation.
 // Leaves decimal addresses untouched.
@@ -63,14 +63,22 @@ unsigned long long mac_addr( const char* strMAC )
 
 void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
 {
-    VmbError_t err = VmbStartup();                                                                                          // Initialize the Vimba API
-    VmbBool_t bIsGigE = 0;                                                                                                  // GigE transport layer present
-    VmbHandle_t hCam = NULL;                                                                                                // A camera handle
-    unsigned long long nMAC = mac_addr( strMAC );                                                                           // The MAC address of the camera
-    unsigned long nIP = inet_addr( strIP );                                                                                 // The future IP address of the camera
-    unsigned long nSubnet = inet_addr( strSubnet );                                                                         // The future subnet mask of the camera
-    unsigned long nGateway = strGateway != NULL ? inet_addr( strGateway) : 0;                                               // A possible gateway
-    char* strMACPadded = (char*)malloc( 13 * sizeof( *strMACPadded ));                                                      // The MAC address with a fixed length of 12
+    VmbError_t          err             = VmbErrorSuccess;
+    VmbBool_t           bIsGigE         = 0;
+    VmbHandle_t         hCam            = NULL;
+    unsigned long long  nMAC            = 0;
+    unsigned long       nIP             = 0;
+    unsigned long       nSubnet         = 0;
+    unsigned long       nGateway        = 0;
+    char*               strMACPadded    = NULL;
+    
+    err = VmbStartup();                                                                                         // Initialize the Vimba API
+    PrintVimbaVersion();                                                                                        // Print Vimba Version
+    nMAC            = mac_addr( strMAC );                                                                       // The MAC address of the camera
+    nIP             = inet_addr( strIP );                                                                       // The future IP address of the camera
+    nSubnet         = inet_addr( strSubnet );                                                                   // The future subnet mask of the camera
+    nGateway        = strGateway != NULL ? inet_addr( strGateway) : 0;                                          // A possible gateway
+    strMACPadded    = (char*)malloc( 13 * sizeof( *strMACPadded ));                                             // The MAC address with a fixed length of 12
 
     if ( VmbErrorSuccess == err )
     {
