@@ -15,7 +15,9 @@ OBJ_DIR				= object/$(PROJECT_DIR)
 BIN_PATH			= $(BIN_DIR)/$(BIN_FILE)
 
 SOURCE_DIR			= $(PROJECT_ROOT_DIR)/Source
+COMMON_DIR			= $(PROJECT_ROOT_DIR)/../Common
 INCLUDE_DIRS			= $(SOURCE_DIR) \
+				  $(PROJECT_ROOT_DIR)/.. \
 				  $(PROJECT_ROOT_DIR)/../..
 
 VIMBAC_FILE			= $(DYNAMIC_PREFIX)VimbaC$(DYNAMIC_SUFFIX)
@@ -28,13 +30,16 @@ LIB_DIRS			= $(BIN_DIR)
 DEFINES				=
 
 OBJ_FILES			= $(OBJ_DIR)/ListFeatures.o \
-				  $(OBJ_DIR)/program.o
+				  $(OBJ_DIR)/program.o \
+				  $(OBJ_DIR)/PrintVimbaVersion.o
 
 DEPENDENCIES			= $(VIMBAC_BIN)
 
 all: $(BIN_PATH)
 
 $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.c $(OBJ_DIR)
+	$(call MACRO_CXX,$@,$<,$(INCLUDE_DIRS),$(DEFINES))
+$(OBJ_DIR)/%.o: $(COMMON_DIR)/%.c $(OBJ_DIR)
 	$(call MACRO_CXX,$@,$<,$(INCLUDE_DIRS),$(DEFINES))
 
 $(BIN_PATH): $(DEPENDENCIES) $(OBJ_FILES) $(BIN_DIR)

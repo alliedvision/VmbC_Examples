@@ -38,21 +38,25 @@
 #include <ListFeatures.h>
 
 #include <VimbaC/Include/VimbaC.h>
+#include "../../Common/PrintVimbaVersion.h"
 
 void ListFeatures( const char *pStrID )
 {
-    VmbError_t          err = VmbStartup();                                             // Initialize the Vimba API
-    VmbHandle_t         hCamera = NULL;                                                 // A handle to our camera
-    VmbBool_t           bIsGigE = 0;                                                    // GigE transport layer present
-    VmbFeatureInfo_t    *pFeatures = NULL;                                              // A list of static details of camera features
-
+    VmbError_t          err         = VmbErrorSuccess;
+    VmbHandle_t         hCamera     = NULL;                                             // A handle to our camera
+    VmbBool_t           bIsGigE     = 0;                                                // GigE transport layer present
+    VmbFeatureInfo_t    *pFeatures  = NULL;                                             // A list of static details of camera features
     // The changeable value of a feature
-    VmbInt64_t nValue;                                                                  // An int value
-    double     fValue;                                                                  // A float value
-    char       *pStrValue;                                                              // A string value
-    VmbBool_t  bValue;                                                                  // A bool value
+    VmbInt64_t          nValue      = 0;                                                // An int value
+    double              fValue      = 0.0;                                              // A float value
+    char                *pStrValue  = NULL;                                             // A string value
+    VmbBool_t           bValue      = VmbBoolFalse;                                     // A bool value
+    VmbUint32_t         i           = 0;
 
-    VmbUint32_t i = 0;
+    err = VmbStartup();                                                                 // Initialize the Vimba API
+    PrintVimbaVersion();                                                                // Print Vimba Version
+
+
 
     if ( VmbErrorSuccess == err )
     {
