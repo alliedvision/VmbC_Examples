@@ -40,6 +40,5 @@ typedef enum FrameInfos
 
 VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos );
 void StopContinuousImageAcquisition();
-char* ErrorCodeToMessage( VmbError_t eError );
 
 #endif

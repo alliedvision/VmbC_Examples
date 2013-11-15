@@ -7,6 +7,12 @@
     <ClCompile Include="..\..\Source\program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Common\PrintVimbaVersion.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\ErrorCodeToMessage.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -20,6 +26,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\AsynchronousGrab.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\PrintVimbaVersion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ErrorCodeToMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

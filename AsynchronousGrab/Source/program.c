@@ -30,7 +30,7 @@
 #include <string.h>
 
 #include <AsynchronousGrab.h>
-
+#include "Common/ErrorCodeToMessage.h"
 int main( int argc, char* argv[] )
 {
     VmbError_t err = VmbErrorSuccess;
@@ -40,7 +40,6 @@ int main( int argc, char* argv[] )
     unsigned char bPrintHelp = 0;               // Output help?
     int i;                                      // Counter for some iteration
     char *pParameter;                           // The command line parameter
-    char *strError = NULL;                      // Error string
 
     printf( "///////////////////////////////////////////////\n" );
     printf( "/// AVT Vimba API Asynchronous Grab Example ///\n" );
@@ -146,8 +145,7 @@ int main( int argc, char* argv[] )
         }
         else
         {
-            strError = ErrorCodeToMessage( err );
-            printf( "\nAn error occured: %s\n", strError );
+            printf( "\nAn error occured: %s\n", ErrorCodeToMessage( err ) );
         }
     }
 
