@@ -150,7 +150,7 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                         }
                         else if ( VmbErrorInvalidAccess == err )
                         {
-                            printf( "Could not set IP address because camera is already opened.\n\n" );
+                            printf( "Could not set IP address because camera is already opened or configured to link-local addresses.\n\n" );
                         }
                         else
                         {
