@@ -1,4 +1,4 @@
-﻿/*=============================================================================
+/*=============================================================================
   Copyright (C) 2012 - 2013 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
