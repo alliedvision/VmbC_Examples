@@ -24,7 +24,8 @@ INCLUDE_DIRS			= $(SOURCE_DIR) \
 VIMBAC_FILE			= $(DYNAMIC_PREFIX)VimbaC$(DYNAMIC_SUFFIX)
 VIMBAC_BIN			= $(BIN_DIR)/$(VIMBAC_FILE)
 
-LIBS				= VimbaC
+LIBS				= VimbaC \
+				  rt
 
 LIB_DIRS			= $(BIN_DIR)
 

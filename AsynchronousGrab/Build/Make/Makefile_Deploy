@@ -20,7 +20,8 @@ include $(MAKE_INCLUDE_DIR)/VimbaC.mk
 SOURCE_DIR          = $(PROJECT_DIR)/Source
 INCLUDE_DIRS        = -I$(SOURCE_DIR)
 
-LIBS                = $(VIMBAC_LIBS)
+LIBS                = $(VIMBAC_LIBS) \
+                      rt
 
 DEFINES             =
 
