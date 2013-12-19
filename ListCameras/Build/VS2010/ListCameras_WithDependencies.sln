@@ -9,6 +9,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VimbaC", "..\..\..\..\Build\VS2010\VimbaC.vcxproj", "{8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01}"
 	ProjectSection(ProjectDependencies) = postProject
 		{CD66AE64-62CD-434E-AD3C-FDB2A0242F1B} = {CD66AE64-62CD-434E-AD3C-FDB2A0242F1B}
+		{6E79129D-3594-4D20-AC12-1F38337D882E} = {6E79129D-3594-4D20-AC12-1F38337D882E}
 		{36E103C2-95EE-469D-8094-2FD287F8B8BD} = {36E103C2-95EE-469D-8094-2FD287F8B8BD}
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {C406DAEC-0886-4771-8DEA-9D7329B46CC1}
 	EndProjectSection
@@ -25,6 +26,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gik", "..\..\..\..\External
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\..\..\..\Externals\GIK\Externals\LLK\Externals\tinyxml\Build\VS2010\tinyxml.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ResourceConverter", "..\..\..\..\Externals\ResourceConverter\Build\VS2010\ResourceConverter.vcxproj", "{6E79129D-3594-4D20-AC12-1F38337D882E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,6 +77,14 @@ Global
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|Win32.Build.0 = Release|Win32
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|x64.ActiveCfg = Release|x64
 		{C406DAEC-0886-4771-8DEA-9D7329B46CC1}.Release|x64.Build.0 = Release|x64
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Debug|Win32.Build.0 = Debug|Win32
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Debug|x64.ActiveCfg = Debug|x64
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Debug|x64.Build.0 = Debug|x64
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Release|Win32.ActiveCfg = Release|Win32
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Release|Win32.Build.0 = Release|Win32
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Release|x64.ActiveCfg = Release|x64
+		{6E79129D-3594-4D20-AC12-1F38337D882E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
