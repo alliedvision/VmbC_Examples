@@ -212,13 +212,13 @@ void ListFeatures( const char *pStrID )
                                 default:
                                     printf( "[None]\n" );
                                     break;
-
-                                if ( VmbErrorSuccess != err )
-                                {
-                                    printf( "Could not get feature value. Error code: %d\n", err );
-                                }
                             }
-
+                            
+                            if ( VmbErrorSuccess != err )
+                            {
+                                printf( "Could not get feature value. Error code: %d\n", err );
+                            }
+                            
                             printf( "\n" );
                         }
                     }
@@ -226,6 +226,8 @@ void ListFeatures( const char *pStrID )
                     {
                         printf( "Could not get features. Error code: %d\n", err );
                     }
+
+                    free(pFeatures);
                 }
                 else
                 {
