@@ -70,15 +70,13 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
     unsigned long       nIP             = 0;
     unsigned long       nSubnet         = 0;
     unsigned long       nGateway        = 0;
-    char*               strMACPadded    = NULL;
     
-    err = VmbStartup();                                                                                         // Initialize the Vimba API
-    PrintVimbaVersion();                                                                                        // Print Vimba Version
-    nMAC            = mac_addr( strMAC );                                                                       // The MAC address of the camera
-    nIP             = inet_addr( strIP );                                                                       // The future IP address of the camera
-    nSubnet         = inet_addr( strSubnet );                                                                   // The future subnet mask of the camera
-    nGateway        = strGateway != NULL ? inet_addr( strGateway) : 0;                                          // A possible gateway
-    strMACPadded    = (char*)malloc( 13 * sizeof( *strMACPadded ));                                             // The MAC address with a fixed length of 12
+    err = VmbStartup();                                                                                                     // Initialize the Vimba API
+    PrintVimbaVersion();                                                                                                    // Print Vimba Version
+    nMAC            = mac_addr( strMAC );                                                                                   // The MAC address of the camera
+    nIP             = inet_addr( strIP );                                                                                   // The future IP address of the camera
+    nSubnet         = inet_addr( strSubnet );                                                                               // The future subnet mask of the camera
+    nGateway        = strGateway != NULL ? inet_addr( strGateway) : 0;                                                      // A possible gateway
 
     if ( VmbErrorSuccess == err )
     {
@@ -87,84 +85,57 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
         {
             if( bIsGigE )
             {
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce" );                                          // Send discovery packets to GigE cameras,
-                if ( VmbErrorSuccess == err )                                                                               // required to open the cam later
+                if ( 0 != nMAC )
                 {
-#ifdef WIN32                                                                                                                // And wait for them to return
-                    Sleep( 200 );
-#else
-                    usleep( 200 * 1000 );
-#endif
-                    if (    0 != nMAC
-                         && sprintf( strMACPadded, "%012llx", nMAC ))                                                       // Opening the cam via MAC address requires a fixed format
+                    err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressMAC", nMAC );                                   // Send MAC address to TL
+                    if ( VmbErrorSuccess == err )
                     {
-                        err = VmbCameraOpen( strMACPadded, VmbAccessModeFull, &hCam );                                      // Check whether the camera is opened already
+                        err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressIP", nIP );                                 // Send new IP address to TL
                         if ( VmbErrorSuccess == err )
                         {
-                            VmbCameraClose( hCam );                                                                         // We can close the camera now
-                            err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressMAC", nMAC );                           // Send MAC address to TL
+                            err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressSubnetMask", nSubnet );                 // Send new subnet mask to TL
                             if ( VmbErrorSuccess == err )
                             {
-                                err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressIP", nIP );                         // Send new IP address to TL
+                                if( 0 != nGateway )
+                                {
+                                    err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressGateway", nGateway );           // Send gateway address to TL
+                                    if ( VmbErrorSuccess != err )
+                                    {
+                                        printf( "Could not prepare the gateway settings. Reason: %d\n\n", err );
+                                    }
+                                }
+
                                 if ( VmbErrorSuccess == err )
                                 {
-                                    err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressSubnetMask", nSubnet );         // Send new subnet mask to TL
+                                    err = VmbFeatureCommandRun( gVimbaHandle, "GeVForceIPAddressSend" );                    // Finally execute the command to write all settings to cam
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        if( 0 != nGateway )
-                                        {
-                                            err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressGateway", nGateway );   // Send gateway address to TL
-                                            if ( VmbErrorSuccess != err )
-                                            {
-                                                printf( "Could not prepare the gateway settings. Reason: %d\n\n", err );
-                                            }
-                                        }
-
-                                        if ( VmbErrorSuccess == err )
-                                        {
-                                            err = VmbFeatureCommandRun( gVimbaHandle, "GeVForceIPAddressSend" );            // Finally execute the command to write all settings to cam
-                                            if ( VmbErrorSuccess == err )
-                                            {
-                                                printf( "IP address successfully changed to %s (%s).\n\n", strIP, strSubnet );
-                                            }
-                                            else
-                                            {
-                                                printf( "Could not set a new IP address. Reason: %d\n\n", err );
-                                            }
-                                        }
+                                        printf( "IP address successfully changed to %s (%s).\n\n", strIP, strSubnet );
                                     }
                                     else
                                     {
-                                        printf( "Could not prepare the subnet settings. Reason: %d\n\n", err );
+                                        printf( "Could not set a new IP address. Reason: %d\n\n", err );
                                     }
-                                }
-                                else
-                                {
-                                    printf( "Could not prepare the IP address settings. Reason: %d\n\n", err );
                                 }
                             }
                             else
                             {
-                                printf( "Could not prepare the MAC address settings. Reason: %d\n\n", err );
+                                printf( "Could not prepare the subnet settings. Reason: %d\n\n", err );
                             }
-                        }
-                        else if ( VmbErrorInvalidAccess == err )
-                        {
-                            printf( "Could not set IP address because camera is already opened or configured to link-local addresses.\n\n" );
                         }
                         else
                         {
-                            printf( "Could not access camera. Reason: %d\n\n", err );
+                            printf( "Could not prepare the IP address settings. Reason: %d\n\n", err );
                         }
                     }
                     else
                     {
-                        printf( "Malformed MAC address.\n\n" );
+                        printf( "Could not prepare the MAC address settings. Reason: %d\n\n", err );
                     }
                 }
                 else
                 {
-                    printf( "Could not ping GigE cameras over the network. Reason: %d\n", err );
+                    printf( "Malformed MAC address.\n\n" );
                 }
             }
             else
@@ -183,6 +154,4 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
     {
         printf( "Could not start system. Error code: %d\n\n", err );
     }
-
-    free (strMACPadded);
 }
