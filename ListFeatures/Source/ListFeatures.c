@@ -55,9 +55,6 @@ void ListFeatures( const char *pStrID )
 
     err = VmbStartup();                                                                 // Initialize the Vimba API
     PrintVimbaVersion();                                                                // Print Vimba Version
-
-
-
     if ( VmbErrorSuccess == err )
     {
         err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
@@ -114,6 +111,9 @@ void ListFeatures( const char *pStrID )
                     {
                         printf( "Could not list cameras. Error code: %d\n", err );
                     }
+
+                    free( pCameras );
+                    pCameras = NULL;
                 }
                 else
                 {
@@ -205,6 +205,7 @@ void ListFeatures( const char *pStrID )
                                             printf( "%s\n", pStrValue );
                                         }
                                         free( pStrValue );
+                                        pStrValue = NULL;
                                     }
                                     }
                                     break;
@@ -228,6 +229,7 @@ void ListFeatures( const char *pStrID )
                     }
 
                     free(pFeatures);
+                    pFeatures = NULL;
                 }
                 else
                 {
