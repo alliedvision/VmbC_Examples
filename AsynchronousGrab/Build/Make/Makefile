@@ -34,7 +34,8 @@ DEFINES				=
 OBJ_FILES			= $(OBJ_DIR)/AsynchronousGrab.o \
 				  $(OBJ_DIR)/program.o \
 				  $(OBJ_DIR)/PrintVimbaVersion.o \
-				  $(OBJ_DIR)/ErrorCodeToMessage.o 
+				  $(OBJ_DIR)/ErrorCodeToMessage.o \
+				  $(OBJ_DIR)/DiscoverGigECameras.o
 
 DEPENDENCIES			= $(VIMBAC_BIN)
 

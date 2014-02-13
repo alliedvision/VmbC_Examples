@@ -13,6 +13,9 @@
     <ClCompile Include="..\..\..\Common\ErrorCodeToMessage.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Common\DiscoverGigECameras.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
@@ -32,6 +35,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\ErrorCodeToMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\DiscoverGigECameras.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
