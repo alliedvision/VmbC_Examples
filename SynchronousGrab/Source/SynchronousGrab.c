@@ -38,6 +38,7 @@
 
 #include <VimbaC/Include/VimbaC.h>
 #include "../../Common/PrintVimbaVersion.h"
+#include "../../Common/DiscoverGigECameras.h"
 #include <SynchronousGrab.h>
 #include <Bitmap.h>
 
@@ -47,7 +48,6 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
     VmbError_t          err                 = VmbStartup();     // Initialize the Vimba API
     VmbCameraInfo_t     *pCameras           = NULL;             // A list of camera details
     VmbUint32_t         nCount              = 0;                // Number of found cameras
-    VmbBool_t           bIsGigE             = VmbBoolFalse;     // GigE transport layer present
     const VmbUint32_t   nTimeout            = 2000;             // Timeout for Grab
     VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;// We open the camera with full access
     VmbHandle_t         cameraHandle        = NULL;             // A handle to our camera
@@ -62,33 +62,8 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
     if ( VmbErrorSuccess == err )
     {
         // Is Vimba connected to a GigE transport layer?
-        err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );
-        if ( VmbErrorSuccess == err )
-        {
-            if( VmbBoolTrue == bIsGigE )
-            {
-                // Send discovery packets to GigE cameras
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");
-                if ( VmbErrorSuccess == err )
-                {
-                    // And wait for them to return
-#ifdef WIN32
-                    Sleep( 200 );
-#else
-                    usleep( 200 * 1000 );
-#endif
-                }
-                else
-                {
-                    printf( "Could not ping GigE cameras over the network. Reason: %d\n\n", err );
-                }
-            }
-        }
-        else
-        {
-            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %d\n\n", err );
-        }
-
+        DiscoverGigECameras();
+        
         // If no camera ID was provided use the first camera found
         if ( NULL == pCameraID )
         {
@@ -111,13 +86,14 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                         // Use the first camera
                         pCameraID = pCameras[0].cameraIdString;
                     }
+
+                    free( pCameras );
+                    pCameras = NULL;
                 }
                 else
                 {
                     printf( "Could not allocate camera list.\n" );
                 }
-                free( pCameras );
-                pCameras = NULL;
             }
             else
             {

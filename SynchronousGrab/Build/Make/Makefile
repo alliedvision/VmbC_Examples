@@ -33,7 +33,8 @@ DEFINES				=
 OBJ_FILES			= $(OBJ_DIR)/Bitmap.o \
 				  $(OBJ_DIR)/SynchronousGrab.o \
 				  $(OBJ_DIR)/program.o \
-				  $(OBJ_DIR)/PrintVimbaVersion.o
+				  $(OBJ_DIR)/PrintVimbaVersion.o \
+				  $(OBJ_DIR)/DiscoverGigECameras.o
 
 DEPENDENCIES			= $(VIMBAC_BIN)
 
