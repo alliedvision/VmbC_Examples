@@ -29,22 +29,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-    #include <windows.h>
-#else
-    #include <unistd.h>
-#endif
-
 #include <ListFeatures.h>
 
 #include <VimbaC/Include/VimbaC.h>
 #include "../../Common/PrintVimbaVersion.h"
+#include "../../Common/DiscoverGigECameras.h"
 
 void ListFeatures( const char *pStrID )
 {
     VmbError_t          err         = VmbErrorSuccess;
     VmbHandle_t         hCamera     = NULL;                                             // A handle to our camera
-    VmbBool_t           bIsGigE     = 0;                                                // GigE transport layer present
     VmbFeatureInfo_t    *pFeatures  = NULL;                                             // A list of static details of camera features
     // The changeable value of a feature
     VmbInt64_t          nValue      = 0;                                                // An int value
@@ -57,31 +51,7 @@ void ListFeatures( const char *pStrID )
     PrintVimbaVersion();                                                                // Print Vimba Version
     if ( VmbErrorSuccess == err )
     {
-        err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
-        if ( VmbErrorSuccess == err )
-        {
-            if( bIsGigE )
-            {
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
-                if ( VmbErrorSuccess == err )
-                {
-                    // And wait for them to return
-#ifdef WIN32
-                    Sleep( 200 );
-#else
-                    usleep( 200 * 1000 );
-#endif
-                }
-                else
-                {
-                    printf( "Could not ping GigE cameras over the network. Reason: %d\n\n", err );
-                }
-            }
-        }
-        else
-        {
-            printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %d\n\n", err );
-        }
+        DiscoverGigECameras();
 
         if ( NULL == pStrID )                                                           // If no ID was provided use the first camera
         {
@@ -199,13 +169,20 @@ void ListFeatures( const char *pStrID )
                                          && 0 < nSize )
                                     {
                                         pStrValue = (char*)malloc( sizeof *pStrValue * nSize );
-                                        err = VmbFeatureStringGet( hCamera, pFeatures[i].name, pStrValue, nSize, &nSize );
-                                        if ( VmbErrorSuccess == err )
+                                        if ( NULL != pStrValue )
                                         {
-                                            printf( "%s\n", pStrValue );
+                                            err = VmbFeatureStringGet( hCamera, pFeatures[i].name, pStrValue, nSize, &nSize );
+                                            if ( VmbErrorSuccess == err )
+                                            {
+                                                printf( "%s\n", pStrValue );
+                                            }
+                                            free( pStrValue );
+                                            pStrValue = NULL;
                                         }
-                                        free( pStrValue );
-                                        pStrValue = NULL;
+                                        else
+                                        {
+                                            printf( "Could not allocate string.\n" );
+                                        }
                                     }
                                     }
                                     break;
