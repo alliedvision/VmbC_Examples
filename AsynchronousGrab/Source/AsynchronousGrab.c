@@ -44,7 +44,10 @@
 #include "Common/DiscoverGigECameras.h"
 
 
-#define NUM_FRAMES 3 
+enum
+{
+    NUM_FRAMES  = 3
+};
 
 VmbBool_t       g_bVimbaStarted = VmbBoolFalse;     // Remember if vimba is started
 VmbBool_t       g_bStreaming = VmbBoolFalse;        // Remember if vimba is streaming

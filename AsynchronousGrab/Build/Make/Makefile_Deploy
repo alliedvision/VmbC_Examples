@@ -18,7 +18,8 @@ all: $(BIN_PATH)
 include $(MAKE_INCLUDE_DIR)/VimbaC.mk
 
 SOURCE_DIR          = $(PROJECT_DIR)/Source
-INCLUDE_DIRS        = -I$(SOURCE_DIR)
+INCLUDE_DIRS        = -I$(SOURCE_DIR) \
+                      -I$(EXAMPLES_DIR) \
 
 LIBS                = $(VIMBAC_LIBS) \
                       rt
