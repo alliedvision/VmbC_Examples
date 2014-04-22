@@ -18,6 +18,8 @@ all: $(BIN_PATH)
 include $(MAKE_INCLUDE_DIR)/VimbaC.mk
 
 SOURCE_DIR          = $(PROJECT_DIR)/Source
+COMMON_DIR          = $(EXAMPLES_DIR)/Common
+
 INCLUDE_DIRS        = -I$(SOURCE_DIR) \
                       -I$(EXAMPLES_DIR) \
 
@@ -29,9 +31,15 @@ CFLAGS              = $(COMMON_CFLAGS) \
                       $(VIMBAC_CFLAGS)
 
 OBJ_FILES           = $(OBJ_DIR)/ListCameras.o \
-                      $(OBJ_DIR)/program.o
+                      $(OBJ_DIR)/program.o \
+                      $(OBJ_DIR)/PrintVimbaVersion.o \
+                      $(OBJ_DIR)/ErrorCodeToMessage.o \
+                      $(OBJ_DIR)/DiscoverGigECameras.o
 
 DEPENDENCIES        = VimbaC
+
+$(OBJ_DIR)/%.o: $(COMMON_DIR)/%.c $(OBJ_DIR)
+	$(CXX) -c $(INCLUDE_DIRS) $(DEFINES) $(CFLAGS) -o $@ $<
 
 $(OBJ_DIR)/%.o: $(SOURCE_DIR)/%.c $(OBJ_DIR)
 	$(CXX) -c $(INCLUDE_DIRS) $(DEFINES) $(CFLAGS) -o $@ $<
