@@ -158,7 +158,7 @@ void ListFeatures( const char *pStrID )
                                 case VmbFeatureDataInt:
                                     err = VmbFeatureIntGet( hCamera, pFeatures[i].name, &nValue );
                                     {
-                                        printf( "%d\n", nValue );
+                                        printf( "%lld\n", nValue );
                                     }
                                     break;
                                 case VmbFeatureDataString:
