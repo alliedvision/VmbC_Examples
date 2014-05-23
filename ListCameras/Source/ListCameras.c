@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2014 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -42,10 +42,8 @@ void ListCameras()
     VmbUint32_t         i               = 0;
     VmbUint32_t         nCount          = 0;
     
-    err = VmbStartup();                                                     // Initialize the Vimba API
-    PrintVimbaVersion();                                                    // Print Vimba Version
-    
-    
+    err = VmbStartup();                                                                 // Initialize the Vimba API
+    PrintVimbaVersion();                                                                // Print Vimba Version
 
     if ( VmbErrorSuccess == err )
     {

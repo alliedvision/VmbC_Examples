@@ -13,24 +13,16 @@
 
 VmbError_t DiscoverGigECameras()
 {
-    VmbError_t          err             = VmbErrorSuccess;
-    VmbBool_t           bIsGigE         = 0;
+    VmbError_t  err     = VmbErrorSuccess;
+    VmbBool_t   bIsGigE = 0;
 
     err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
     if ( VmbErrorSuccess == err )
     {
         if( bIsGigE )
         {
-            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce");       // Send discovery packets to GigE cameras
-            if ( VmbErrorSuccess == err )
-            {
-#ifdef WIN32                                                                            // And wait for them to return
-                Sleep( 200 );
-#else
-                usleep( 200 * 1000 );
-#endif
-            }
-            else
+            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnceWait");   // Send discovery packets to GigE cameras
+            if ( VmbErrorSuccess != err )
             {
                 printf( "Could not ping GigE cameras over the network. Reason: %d\n", err );
             }
