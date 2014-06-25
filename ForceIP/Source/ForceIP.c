@@ -76,7 +76,7 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
     nMAC            = mac_addr( strMAC );                                                                                   // The MAC address of the camera
     nIP             = inet_addr( strIP );                                                                                   // The future IP address of the camera
     nSubnet         = inet_addr( strSubnet );                                                                               // The future subnet mask of the camera
-    nGateway        = strGateway != NULL ? inet_addr( strGateway) : 0;                                                      // A possible gateway
+    nGateway        = strGateway != NULL ? inet_addr( strGateway ) : 0;                                                     // A possible gateway
 
     if ( VmbErrorSuccess == err )
     {

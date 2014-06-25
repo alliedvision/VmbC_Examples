@@ -29,8 +29,8 @@
 
 =============================================================================*/
 
-#ifndef FORCEIP
-#define FORCEIP
+#ifndef FORCE_IP_H_
+#define FORCE_IP_H_
 
 void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway );
 

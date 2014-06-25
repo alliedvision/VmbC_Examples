@@ -146,7 +146,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                             frame.bufferSize    = (VmbUint32_t)nPayloadSize;
 
                             // Announce Frame
-                            err = VmbFrameAnnounce( cameraHandle, &frame, (VmbUint32_t)sizeof( VmbFrame_t ) );
+                            err = VmbFrameAnnounce( cameraHandle, &frame, (VmbUint32_t)sizeof( VmbFrame_t ));
                             if ( VmbErrorSuccess == err )
                             {
                                 // Start Capture Engine

@@ -31,13 +31,13 @@
 
 int main( int argc, char* argv[] )
 {
-    printf("//////////////////////////////////////////\n");
-    printf("/// AVT Vimba API List Cameras Example ///\n");
-    printf("//////////////////////////////////////////\n\n");
+    printf( "//////////////////////////////////////////\n" );
+    printf( "/// AVT Vimba API List Cameras Example ///\n" );
+    printf( "//////////////////////////////////////////\n\n" );
 
     if ( 1 < argc )
     {
-        printf("No parameters expected. Execution will not be affected by the provided parameter(s).\n\n");
+        printf( "No parameters expected. Execution will not be affected by the provided parameter(s).\n\n" );
     }
     
     ListCameras();

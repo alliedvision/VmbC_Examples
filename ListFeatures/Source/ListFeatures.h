@@ -26,8 +26,8 @@
 
 =============================================================================*/
 
-#ifndef LISTFEATURES
-#define LISTFEATURES
+#ifndef LIST_FEATURES_H_
+#define LIST_FEATURES_H_
 
 void ListFeatures( const char *pStrID );
 

@@ -1,12 +1,12 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        AsynchronousGrab.cpp
+  File:        AsynchronousGrab.c
 
   Description: The AsynchronousGrab example will grab images asynchronously
                using VimbaC.
@@ -67,16 +67,16 @@ double GetTime()
 {
 #ifdef WIN32
     LARGE_INTEGER nCounter;
-    QueryPerformanceCounter(&nCounter);
-    return ((double)nCounter.QuadPart) / g_dFrequency;
+    QueryPerformanceCounter( &nCounter );
+    return ( (double)nCounter.QuadPart ) / g_dFrequency;
 #else
 	struct timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
-	return ((double)now.tv_sec) + ((double)now.tv_nsec) / 1000000000.0;
+	clock_gettime( CLOCK_REALTIME, &now );
+	return ( (double)now.tv_sec ) + ( (double)now.tv_nsec ) / 1000000000.0;
 #endif //WIN32
 }
 
-void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, VmbFrame_t* pFrame)
+void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame )
 {
     VmbBool_t bShowFrameInfos = VmbBoolFalse;
     VmbErrorType res = VmbErrorSuccess;
@@ -119,7 +119,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, VmbFrame_t* pFrame)
                 &&  ( 0 == nFramesMissing ) )
             {
                 dTimeDiff = dFrameTime - g_dFrameTime;
-                if(dTimeDiff > 0.0)
+                if( dTimeDiff > 0.0 )
                 {
                     dFPS = 1.0 / dTimeDiff;
                     bFPSValid = VmbBoolTrue;
@@ -152,67 +152,67 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, VmbFrame_t* pFrame)
         if( VmbFrameFlagsFrameID & pFrame->receiveFlags )
         {
 
-            printf("%llu", pFrame->frameID);
+            printf( "%llu", pFrame->frameID );
         }
         else
         {
-            printf("?");
+            printf( "?" );
         }
 
-        printf(" Status:");
-        switch(pFrame->receiveStatus)
+        printf( " Status:" );
+        switch( pFrame->receiveStatus )
         {
         case VmbFrameStatusComplete:
-            printf("Complete");
+            printf( "Complete" );
             break;
 
         case VmbFrameStatusIncomplete:
-            printf("Incomplete");
+            printf( "Incomplete" );
             break;
 
         case VmbFrameStatusTooSmall:  
-            printf("Too small");
+            printf( "Too small" );
             break;
 
         case VmbFrameStatusInvalid:
-            printf("Invalid");
+            printf( "Invalid" );
             break;
 
         default:
-            printf("?");
+            printf( "?" );
             break;
         }
 
-        printf(" Size:");
+        printf( " Size:" );
         if( VmbFrameFlagsDimension & pFrame->receiveFlags )
         {
-            printf("%ux%u", pFrame->width, pFrame->height);
+            printf( "%ux%u", pFrame->width, pFrame->height );
         }
         else
         {
-            printf("?x?");
+            printf( "?x?" );
         }
 
-        printf(" Format:0x%08X", pFrame->pixelFormat);
+        printf( " Format:0x%08X", pFrame->pixelFormat );
 
-        printf(" FPS:");
+        printf( " FPS:" );
         if( bFPSValid )
         {
-            printf("%.2f", dFPS);
+            printf( "%.2f", dFPS );
         }
         else
         {
-            printf("?");
+            printf( "?" );
         }
 
-        printf("\n");
+        printf( "\n" );
     }
     else
     {
-        printf(".");
+        printf( "." );
     }
     
-    fflush(stdout);
+    fflush( stdout );
 
     VmbCaptureFrameQueue( cameraHandle, pFrame, &FrameCallback );
 }
@@ -234,7 +234,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
         g_bStreaming = VmbBoolFalse;
         g_bAcquiring = VmbBoolFalse;
         g_CameraHandle = NULL;
-        memset(g_Frames, 0, sizeof(g_Frames));
+        memset( g_Frames, 0, sizeof( g_Frames ));
         g_dFrameTime = 0.0;              
         g_bFrameTimeValid = VmbBoolFalse;
         g_nFrameID = 0;
@@ -242,7 +242,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
         g_eFrameInfos = eFrameInfos;
 
 #ifdef WIN32
-        QueryPerformanceFrequency(&nFrequency);
+        QueryPerformanceFrequency( &nFrequency );
         g_dFrequency = (double)nFrequency.QuadPart;
 #endif //WIN32
 
@@ -324,19 +324,19 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                             for(i = 0; i < NUM_FRAMES; i++)
                             {
                                 g_Frames[i].buffer        = (unsigned char*)malloc( (VmbUint32_t)nPayloadSize );
-                                if(NULL == g_Frames[i].buffer)
+                                if( NULL == g_Frames[i].buffer )
                                 {
                                     err = VmbErrorResources;
                                     break;
                                 }
-                                g_Frames[i].bufferSize    = (VmbUint32_t)nPayloadSize;
+                                g_Frames[i].bufferSize = (VmbUint32_t)nPayloadSize;
 
                                 // Announce Frame
-                                err = VmbFrameAnnounce( g_CameraHandle, &g_Frames[i], (VmbUint32_t)sizeof( VmbFrame_t ) );
+                                err = VmbFrameAnnounce( g_CameraHandle, &g_Frames[i], (VmbUint32_t)sizeof( VmbFrame_t ));
                                 if ( VmbErrorSuccess != err )
                                 {
-                                    free(g_Frames[i].buffer);
-                                    memset(&g_Frames[i], 0, sizeof(VmbFrame_t));
+                                    free( g_Frames[i].buffer );
+                                    memset( &g_Frames[i], 0, sizeof( VmbFrame_t ));
                                     break;
                                 }
                             }
@@ -348,7 +348,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                                 if ( VmbErrorSuccess == err )
                                 {
                                     g_bStreaming = VmbBoolTrue;
-                                    for(i = 0; i < NUM_FRAMES; i++)
+                                    for( i = 0; i < NUM_FRAMES; i++ )
                                     {
                                         // Queue Frame
                                         err = VmbCaptureFrameQueue( g_CameraHandle, &g_Frames[i], &FrameCallback );
@@ -413,13 +413,13 @@ void StopContinuousImageAcquisition()
             // Flush the capture queue
             VmbCaptureQueueFlush( g_CameraHandle );
 
-            for(i = 0; i < NUM_FRAMES; i++)
+            for( i = 0; i < NUM_FRAMES; i++ )
             {
                 if( NULL != g_Frames[i].buffer )
                 {
                     VmbFrameRevoke( g_CameraHandle, &g_Frames[i] );
-                    free(g_Frames[i].buffer);
-                    memset(&g_Frames[i], 0, sizeof(VmbFrame_t));
+                    free( g_Frames[i].buffer );
+                    memset( &g_Frames[i], 0, sizeof( VmbFrame_t ));
                 }
             }
 

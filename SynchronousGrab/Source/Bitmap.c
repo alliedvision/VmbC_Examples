@@ -69,7 +69,7 @@ unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
         return 0;
     }
 
-    if ( pBitmap->colorCode == (pBitmap->colorCode & THREE_CHANNEL) )
+    if ( pBitmap->colorCode == ( pBitmap->colorCode & THREE_CHANNEL ))
     {
         nNumColors = 3;
     }
@@ -79,7 +79,7 @@ unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
     }
 
     // Bitmap padding always is a multiple of four Bytes. If data is not we need to pad with zeros.
-    nPadLength = (pBitmap->width * nNumColors) % ALIGNMENT_SIZE;
+    nPadLength = ( pBitmap->width * nNumColors ) % ALIGNMENT_SIZE;
     if ( 0 != nPadLength )
     {
         nPadLength = ALIGNMENT_SIZE - nPadLength;
@@ -91,47 +91,47 @@ unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
     }
     
     nHeaderSize = BMP_HEADER_SIZE + nPaletteSize * 4;
-    pBitmapBuffer = (unsigned char*)malloc( nHeaderSize + pBitmap->bufferSize + (nPadLength * pBitmap->height) );
-    nFileSize = nHeaderSize + pBitmap->bufferSize + (nPadLength * pBitmap->height);
+    pBitmapBuffer = (unsigned char*)malloc( nHeaderSize + pBitmap->bufferSize + (nPadLength * pBitmap->height ));
+    nFileSize = nHeaderSize + pBitmap->bufferSize + ( nPadLength * pBitmap->height );
 
     // File size
-    fileHeader[2] = (char)(nFileSize);
-    fileHeader[3] = (char)(nFileSize >> 8);
-    fileHeader[4] = (char)(nFileSize >> 16);
-    fileHeader[5] = (char)(nFileSize >> 24);
+    fileHeader[2] = (char)( nFileSize );
+    fileHeader[3] = (char)( nFileSize >> 8 );
+    fileHeader[4] = (char)( nFileSize >> 16 );
+    fileHeader[5] = (char)( nFileSize >> 24 );
     // Offset to image content
-    fileHeader[10] = (char)(nHeaderSize);
-    fileHeader[11] = (char)(nHeaderSize >> 8);
-    fileHeader[12] = (char)(nHeaderSize >> 16);
-    fileHeader[13] = (char)(nHeaderSize >> 24);
+    fileHeader[10] = (char)( nHeaderSize );
+    fileHeader[11] = (char)( nHeaderSize >> 8 );
+    fileHeader[12] = (char)( nHeaderSize >> 16 );
+    fileHeader[13] = (char)( nHeaderSize >> 24 );
 
     // Width
-    infoHeader[ 4] = (char)(pBitmap->width);
-    infoHeader[ 5] = (char)(pBitmap->width >> 8);
-    infoHeader[ 6] = (char)(pBitmap->width >> 16);
-    infoHeader[ 7] = (char)(pBitmap->width >> 24);
+    infoHeader[ 4] = (char)( pBitmap->width );
+    infoHeader[ 5] = (char)( pBitmap->width >> 8 );
+    infoHeader[ 6] = (char)( pBitmap->width >> 16 );
+    infoHeader[ 7] = (char)( pBitmap->width >> 24 );
     // Height (has to be negative for a top down image)
-    infoHeader[ 8] = (char)(-(long)pBitmap->height);
-    infoHeader[ 9] = (char)(-(long)pBitmap->height >> 8);
-    infoHeader[10] = (char)(-(long)pBitmap->height >> 16);
-    infoHeader[11] = (char)(-(long)pBitmap->height >> 24);
+    infoHeader[ 8] = (char)( -(long)pBitmap->height );
+    infoHeader[ 9] = (char)( -(long)pBitmap->height >> 8 );
+    infoHeader[10] = (char)( -(long)pBitmap->height >> 16 );
+    infoHeader[11] = (char)( -(long)pBitmap->height >> 24 );
     // bpp
     infoHeader[14] = 8 * nNumColors;
     // Image size
-    infoHeader[20] = (char)(pBitmap->bufferSize);
-    infoHeader[21] = (char)(pBitmap->bufferSize >> 8);
-    infoHeader[22] = (char)(pBitmap->bufferSize >> 16);
-    infoHeader[23] = (char)(pBitmap->bufferSize >> 24);
+    infoHeader[20] = (char)( pBitmap->bufferSize );
+    infoHeader[21] = (char)( pBitmap->bufferSize >> 8 );
+    infoHeader[22] = (char)( pBitmap->bufferSize >> 16 );
+    infoHeader[23] = (char)( pBitmap->bufferSize >> 24 );
     // Palette size
-    infoHeader[32] = (char)(nPaletteSize);
-    infoHeader[33] = (char)(nPaletteSize >> 8);
-    infoHeader[34] = (char)(nPaletteSize >> 16);
-    infoHeader[35] = (char)(nPaletteSize >> 24);
+    infoHeader[32] = (char)( nPaletteSize );
+    infoHeader[33] = (char)( nPaletteSize >> 8 );
+    infoHeader[34] = (char)( nPaletteSize >> 16 );
+    infoHeader[35] = (char)( nPaletteSize >> 24 );
     // Used colors
-    infoHeader[36] = (char)(nPaletteSize);
-    infoHeader[37] = (char)(nPaletteSize >> 8);
-    infoHeader[38] = (char)(nPaletteSize >> 16);
-    infoHeader[39] = (char)(nPaletteSize >> 24);
+    infoHeader[36] = (char)( nPaletteSize );
+    infoHeader[37] = (char)( nPaletteSize >> 8 );
+    infoHeader[38] = (char)( nPaletteSize >> 16 );
+    infoHeader[39] = (char)( nPaletteSize >> 24 );
 
     // Write header
     pCurBitmapBuf = pBitmapBuffer;
@@ -139,7 +139,7 @@ unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
     pCurBitmapBuf += 14;
     memcpy( pCurBitmapBuf, infoHeader, 40 );
     pCurBitmapBuf += 40;
-    for(i = 0; i < nPaletteSize; ++i)
+    for( i = 0; i < nPaletteSize; ++i )
     {
         pCurBitmapBuf[0] = (char)(i);
         pCurBitmapBuf[1] = (char)(i);
@@ -162,7 +162,7 @@ unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
             {
                 px = 0;
                 // Create a 4 Byte structure to store ARGB (we don't use A)
-                px = px | (pCurSrc[0] << 16) | (pCurSrc[1] << 8) | pCurSrc[2];
+                px = px | ( pCurSrc[0] << 16 ) | ( pCurSrc[1] << 8 ) | pCurSrc[2];
                 // Due to endianess ARGB is stored as BGRA 
                 // and we only have to write the first three Bytes
                 memcpy( pCurBitmapBuf, &px, 3 );
@@ -223,9 +223,9 @@ unsigned char AVTWriteBitmapToFile( AVTBitmap const * const pBitmap, char const 
          && NULL != pBitmap->buffer
          && NULL != pFileName )
     {
-        file = fopen(pFileName, "wb");
-        fwrite(pBitmap->buffer, 1, pBitmap->bufferSize, file );
-        fclose(file);
+        file = fopen( pFileName, "wb" );
+        fwrite( pBitmap->buffer, 1, pBitmap->bufferSize, file );
+        fclose( file );
 
         return 1;
     }

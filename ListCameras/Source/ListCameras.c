@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  File:        ListCameras.cpp
+  File:        ListCameras.c
 
   Description: The ListCameras example will list all available cameras that
                are found by VimbaC.
@@ -55,7 +55,7 @@ void ListCameras()
         {
             printf( "Cameras found: %d\n\n", nCount );
         
-            pCameras = (VmbCameraInfo_t*)malloc( sizeof *pCameras * nCount);
+            pCameras = (VmbCameraInfo_t*)malloc( sizeof *pCameras * nCount );
             if ( NULL != pCameras )
             {
                 err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );    // Query all static details of all known cameras
@@ -67,15 +67,15 @@ void ListCameras()
                              pCameras[i].modelName,
                              pCameras[i].cameraIdString,
                              pCameras[i].serialString,
-                             pCameras[i].interfaceIdString);
+                             pCameras[i].interfaceIdString );
                 }
 
-                free(pCameras);
+                free( pCameras );
                 pCameras = NULL;
             }
             else
             {
-                printf("Could not allocate camera list.\n");
+                printf( "Could not allocate camera list.\n" );
             }
         }
         else

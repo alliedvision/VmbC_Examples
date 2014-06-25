@@ -26,8 +26,8 @@
 
 =============================================================================*/
 
-#ifndef LISTCAMERAS
-#define LISTCAMERAS
+#ifndef LIST_CAMERAS_H_
+#define LIST_CAMERAS_H_
 
 void ListCameras();
 

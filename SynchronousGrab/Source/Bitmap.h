@@ -25,8 +25,8 @@
 
 =============================================================================*/
 
-#ifndef AVT_BITMAP_H
-#define AVT_BITMAP_H
+#ifndef AVT_BITMAP_H_
+#define AVT_BITMAP_H_
 
 typedef enum
 {

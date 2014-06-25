@@ -1,15 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2014 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        SynchronousGrab.h
+  File:        AsynchronousGrab.h
 
-  Description: The SynchronousGrab example will grab a single image
-               synchronously and save it to a file using VimbaC.
+  Description: The AsynchronousGrab example will grab images asynchronously
+               using VimbaC.
 
 -------------------------------------------------------------------------------
 
@@ -26,8 +26,8 @@
 
 =============================================================================*/
 
-#ifndef SYNCHRONOUSGRAB_H
-#define SYNCHRONOUSGRAB_H
+#ifndef ASYNCHRONOUS_GRAB_H_
+#define ASYNCHRONOUS_GRAB_H_
 
 #include <VimbaC/Include/VmbCommonTypes.h>
 

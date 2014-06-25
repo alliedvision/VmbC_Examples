@@ -26,8 +26,8 @@
 
 =============================================================================*/
 
-#ifndef SYNCHRONOUSGRAB_H
-#define SYNCHRONOUSGRAB_H
+#ifndef SYNCHRONOUS_GRAB_H_
+#define SYNCHRONOUS_GRAB_H_
 
 #include <VimbaC/Include/VmbCommonTypes.h>
 

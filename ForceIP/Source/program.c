@@ -37,21 +37,21 @@
 
 int main( int argc, char* argv[] )
 {
-    printf("\n//////////////////////////////////////\n");
-    printf("/// AVT Vimba API Force IP Example ///\n");
-    printf("//////////////////////////////////////\n\n");
+    printf( "\n//////////////////////////////////////\n" );
+    printf( "/// AVT Vimba API Force IP Example ///\n" );
+    printf( "//////////////////////////////////////\n\n" );
 
     if(     4 > argc
         ||  5 < argc )
     {
         printf( "Usage: ForceIP MAC IP Subnet [Gateway]\n\n" );
         printf( "Parameters:\n" );
-	printf( "MAC      The MAC address of the camera whose IP address shall be changed.\n" );
-	printf( "         Either hexadecimal with preceding 0x or decimal.\n" );
+        printf( "MAC      The MAC address of the camera whose IP address shall be changed.\n" );
+        printf( "         Either hexadecimal with preceding 0x or decimal.\n" );
         printf( "IP       The new IPv4 address of the camera in numbers and dots notation.\n" );
         printf( "Subnet   The new network mask of the camera in numbers and dots notation.\n" );
         printf( "Gateway  The address of a possible gateway if the camera is not connected\n" );
-	printf( "         to the host PC directly.\n\n" );
+        printf( "         to the host PC directly.\n\n" );
         printf( "For example to change the IP address of a camera with the MAC address 0x0F3101D540\nto 169.254.1.1 in a class B network call:\n\n" );
         printf( "ForceIP 0x0F3101D540 169.254.1.1 255.255.0.0\n\n" );
         printf( "To alter cameras in foreign subnets run the program with sudo -E. \n\n" );
