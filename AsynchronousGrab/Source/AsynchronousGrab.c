@@ -70,9 +70,9 @@ double GetTime()
     QueryPerformanceCounter( &nCounter );
     return ( (double)nCounter.QuadPart ) / g_dFrequency;
 #else
-	struct timespec now;
-	clock_gettime( CLOCK_REALTIME, &now );
-	return ( (double)now.tv_sec ) + ( (double)now.tv_nsec ) / 1000000000.0;
+    struct timespec now;
+    clock_gettime( CLOCK_REALTIME, &now );
+    return ( (double)now.tv_sec ) + ( (double)now.tv_nsec ) / 1000000000.0;
 #endif //WIN32
 }
 

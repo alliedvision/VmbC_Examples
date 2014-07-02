@@ -48,10 +48,18 @@ VmbError_t DiscoverGigECameras()
     {
         if( bIsGigE )
         {
-            err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnceWait" );  // Send discovery packets to GigE cameras
-            if ( VmbErrorSuccess != err )
+            err = VmbFeatureIntSet( gVimbaHandle, "GeVDiscoveryDuration", 250 );    // Set the waiting duration for discovery packets to return. If not set the default of 250 ms is used.
+            if ( VmbErrorSuccess == err )
             {
-                printf( "Could not ping GigE cameras over the network. Reason: %d\n", err );
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce" );  // Send discovery packets to GigE cameras
+                if ( VmbErrorSuccess != err )
+                {
+                    printf( "Could not ping GigE cameras over the network. Reason: %d\n", err );
+                }
+            }
+            else
+            {
+                printf( "Could not set the discovery waiting duration. Reason: %d\n", err );
             }
         }
     }
