@@ -59,11 +59,11 @@ int main( int argc, char* argv[] )
 {
     VmbError_t err = VmbErrorSuccess;
 
-    char *pCameraID = NULL;                 // The ID of the camera to use
-    const char *pFileName = NULL;           // The filename for the bitmap to save
-    unsigned char bPrintHelp = 0;           // Output help?
-    int i;                                  // Counter for some iteration
-    char *pParameter;                       // The command line parameter
+    char*           pCameraID   = NULL;         // The ID of the camera to use
+    const char*     pFileName   = NULL;         // The filename for the bitmap to save
+    unsigned char   bPrintHelp  = 0;            // Output help?
+    int             i           = 0;            // Counter for some iteration
+    char*           pParameter  = 0;            // The command line parameter
 
     printf( "//////////////////////////////////////////////\n" );
     printf( "/// AVT Vimba API Synchronous Grab Example ///\n" );
