@@ -55,8 +55,8 @@ void ListFeatures( const char *pStrID )
 
         if ( NULL == pStrID )                                                           // If no ID was provided use the first camera
         {
-            VmbCameraInfo_t *pCameras = NULL;
-            VmbUint32_t nCount = 0;
+            VmbCameraInfo_t*    pCameras    = NULL;
+            VmbUint32_t         nCount      = 0;
             err = VmbCamerasList(   NULL,                                               // Get the amount of known cameras
                                     0,
                                     &nCount,
