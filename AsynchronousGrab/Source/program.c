@@ -33,13 +33,13 @@
 #include "Common/ErrorCodeToMessage.h"
 int main( int argc, char* argv[] )
 {
-    VmbError_t err = VmbErrorSuccess;
+    VmbError_t      err             = VmbErrorSuccess;
 
-    char *pCameraID = NULL;                     // The ID of the camera to use
-    FrameInfos eFrameInfos = FrameInfos_Off;    // Show frame infos
-    unsigned char bPrintHelp = 0;               // Output help?
-    int i;                                      // Counter for some iteration
-    char *pParameter;                           // The command line parameter
+    char*           pCameraID       = NULL;             // The ID of the camera to use
+    FrameInfos      eFrameInfos     = FrameInfos_Off;   // Show frame infos
+    unsigned char   bPrintHelp      = 0;                // Output help?
+    int             i               = 0;                // Counter for some iteration
+    char*           pParameter      = NULL;             // The command line parameter
 
     printf( "///////////////////////////////////////////////\n" );
     printf( "/// AVT Vimba API Asynchronous Grab Example ///\n" );

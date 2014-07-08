@@ -49,18 +49,18 @@ enum
     NUM_FRAMES  = 3
 };
 
-VmbBool_t       g_bVimbaStarted = VmbBoolFalse;     // Remember if vimba is started
-VmbBool_t       g_bStreaming = VmbBoolFalse;        // Remember if vimba is streaming
-VmbBool_t       g_bAcquiring = VmbBoolFalse;        // Remember if vimba is acquiring
-VmbHandle_t     g_CameraHandle = NULL;              // A handle to our camera
-VmbFrame_t      g_Frames[NUM_FRAMES];               // The frames we capture into
-FrameInfos      g_eFrameInfos = FrameInfos_Off;     // Remember if we should print out frame infos
-double          g_dFrameTime = 0.0;                 // Timestamp of last frame
-VmbBool_t       g_bFrameTimeValid = VmbBoolFalse;   // Remember if there was a last timestamp
-VmbUint64_t     g_nFrameID = 0;                     // ID of last frame
-VmbBool_t       g_bFrameIDValid = VmbBoolFalse;     // Remember if there was a last ID
+VmbBool_t       g_bVimbaStarted         = VmbBoolFalse;     // Remember if vimba is started
+VmbBool_t       g_bStreaming            = VmbBoolFalse;     // Remember if vimba is streaming
+VmbBool_t       g_bAcquiring            = VmbBoolFalse;     // Remember if vimba is acquiring
+VmbHandle_t     g_CameraHandle          = NULL;             // A handle to our camera
+VmbFrame_t      g_Frames[NUM_FRAMES];                       // The frames we capture into
+FrameInfos      g_eFrameInfos           = FrameInfos_Off;   // Remember if we should print out frame infos
+double          g_dFrameTime            = 0.0;              // Timestamp of last frame
+VmbBool_t       g_bFrameTimeValid       = VmbBoolFalse;     // Remember if there was a last timestamp
+VmbUint64_t     g_nFrameID              = 0;                // ID of last frame
+VmbBool_t       g_bFrameIDValid         = VmbBoolFalse;     // Remember if there was a last ID
 #ifdef WIN32
-double          g_dFrequency = 0.0;                 //Frequency of tick counter in Win32
+double          g_dFrequency            = 0.0;              //Frequency of tick counter in Win32
 #endif //WIN32
 
 double GetTime()
@@ -78,13 +78,13 @@ double GetTime()
 
 void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame )
 {
-    VmbBool_t bShowFrameInfos = VmbBoolFalse;
-    VmbErrorType res = VmbErrorSuccess;
-    double dFPS = 0.0;
-    VmbBool_t bFPSValid = VmbBoolFalse;
-    double dFrameTime = 0.0;
-    double dTimeDiff = 0.0;
-    VmbUint64_t nFramesMissing = 0;
+    VmbBool_t       bShowFrameInfos     = VmbBoolFalse;
+    VmbErrorType    res                 = VmbErrorSuccess;
+    double          dFPS                = 0.0;
+    VmbBool_t       bFPSValid           = VmbBoolFalse;
+    double          dFrameTime          = 0.0;
+    double          dTimeDiff           = 0.0;
+    VmbUint64_t     nFramesMissing      = 0;
 
     if( FrameInfos_Off != g_eFrameInfos )
     {
@@ -111,7 +111,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
                 }
             }
 
-            g_nFrameID = pFrame->frameID;
+            g_nFrameID      = pFrame->frameID;
             g_bFrameIDValid = VmbBoolTrue;
 
             dFrameTime = GetTime();
@@ -121,8 +121,8 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
                 dTimeDiff = dFrameTime - g_dFrameTime;
                 if( dTimeDiff > 0.0 )
                 {
-                    dFPS = 1.0 / dTimeDiff;
-                    bFPSValid = VmbBoolTrue;
+                    dFPS        = 1.0 / dTimeDiff;
+                    bFPSValid   = VmbBoolTrue;
                 }
                 else
                 {
@@ -130,14 +130,14 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
                 }
             }
 
-            g_dFrameTime = dFrameTime;
-            g_bFrameTimeValid = VmbBoolTrue;
+            g_dFrameTime        = dFrameTime;
+            g_bFrameTimeValid   = VmbBoolTrue;
         }
         else
         {
-            bShowFrameInfos = VmbBoolTrue;
-            g_bFrameIDValid = VmbBoolFalse;
-            g_bFrameTimeValid = VmbBoolFalse;
+            bShowFrameInfos     = VmbBoolTrue;
+            g_bFrameIDValid     = VmbBoolFalse;
+            g_bFrameTimeValid   = VmbBoolFalse;
         }
 
         if( VmbFrameStatusComplete != pFrame->receiveStatus )
@@ -218,32 +218,32 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
 }
 VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos )
 {
-    VmbError_t          err = VmbErrorSuccess;                  // The function result
-    VmbCameraInfo_t     *pCameras = NULL;                       // A list of camera details
-    VmbUint32_t         nCount = 0;                             // Number of found cameras
-    VmbAccessMode_t     cameraAccessMode = VmbAccessModeFull;   // We open the camera with full access
-    VmbBool_t           bIsCommandDone = VmbBoolFalse;          // Has a command finished execution
-    VmbInt64_t          nPayloadSize;                           // The size of one frame
-    int                 i = 0;                                  // Counting variable
+    VmbError_t          err                 = VmbErrorSuccess;      // The function result
+    VmbCameraInfo_t     *pCameras           = NULL;                 // A list of camera details
+    VmbUint32_t         nCount              = 0;                    // Number of found cameras
+    VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;    // We open the camera with full access
+    VmbBool_t           bIsCommandDone      = VmbBoolFalse;         // Has a command finished execution
+    VmbInt64_t          nPayloadSize        = 0;                    // The size of one frame
+    int                 i                   = 0;                    // Counting variable
 #ifdef WIN32
     LARGE_INTEGER nFrequency;
 #endif //WIN32
 
     if( !g_bVimbaStarted )
     {
-        g_bStreaming = VmbBoolFalse;
-        g_bAcquiring = VmbBoolFalse;
-        g_CameraHandle = NULL;
+        g_bStreaming        = VmbBoolFalse;
+        g_bAcquiring        = VmbBoolFalse;
+        g_CameraHandle      = NULL;
         memset( g_Frames, 0, sizeof( g_Frames ));
-        g_dFrameTime = 0.0;              
-        g_bFrameTimeValid = VmbBoolFalse;
-        g_nFrameID = 0;
-        g_bFrameIDValid = VmbBoolFalse;
-        g_eFrameInfos = eFrameInfos;
+        g_dFrameTime        = 0.0;              
+        g_bFrameTimeValid   = VmbBoolFalse;
+        g_nFrameID          = 0;
+        g_bFrameIDValid     = VmbBoolFalse;
+        g_eFrameInfos       = eFrameInfos;
 
 #ifdef WIN32
         QueryPerformanceFrequency( &nFrequency );
-        g_dFrequency = (double)nFrequency.QuadPart;
+        g_dFrequency        = (double)nFrequency.QuadPart;
 #endif //WIN32
 
         err = VmbStartup();
