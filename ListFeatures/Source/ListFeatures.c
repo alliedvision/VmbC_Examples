@@ -71,11 +71,18 @@ void ListFeatures( const char *pStrID )
                                             nCount,
                                             &nCount,
                                             sizeof *pCameras );
-                    if ( VmbErrorSuccess == err )
+                    if ( VmbErrorSuccess == err || VmbErrorMoreData == err)
                     {
-                        err = VmbCameraOpen(    pCameras[0].cameraIdString,             // Finally open the first one
-                                                VmbAccessModeFull,
-                                                &hCamera );
+                        if( nCount != 0)
+                        {
+                            err = VmbCameraOpen(    pCameras[0].cameraIdString,             // Finally open the first one
+                                                    VmbAccessModeFull,
+                                                    &hCamera );
+                        }
+                        else
+                        {
+                            printf( "camera lost");
+                        }
                     }
                     else
                     {
