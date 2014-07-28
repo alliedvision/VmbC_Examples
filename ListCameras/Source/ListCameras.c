@@ -41,15 +41,16 @@ void ListCameras()
     VmbCameraInfo_t *   pCameras        = NULL;
     VmbUint32_t         i               = 0;
     VmbUint32_t         nCount          = 0;
+    VmbUint32_t         nFoundCount     = 0;
     
-    err = VmbStartup();                                                                 // Initialize the Vimba API
-    PrintVimbaVersion();                                                                // Print Vimba Version
+    err = VmbStartup();                                                                     // Initialize the Vimba API
+    PrintVimbaVersion();                                                                    // Print Vimba Version
 
     if ( VmbErrorSuccess == err )
     {
         DiscoverGigECameras();
 
-        err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );                     // Get the amount of known cameras
+        err = VmbCamerasList( NULL, 0, &nCount, sizeof *pCameras );                         // Get the amount of known cameras
         if (    VmbErrorSuccess == err
              && nCount          != 0 )
         {
@@ -58,13 +59,13 @@ void ListCameras()
             pCameras = (VmbCameraInfo_t*)malloc( sizeof *pCameras * nCount );
             if ( NULL != pCameras )
             {
-                VmbUint32_t nFoundCount = 0;
-                err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );    // Query all static details of all known cameras
-                                                                                        // Without having to open the cameras
-                if( VmbErrorSuccess == err || VmbErrorMoreData == err)
+                err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );   // Query all static details of all known cameras
+                                                                                            // Without having to open the cameras
+                if(     VmbErrorSuccess == err
+                    ||  VmbErrorMoreData == err )
                 {
-                    if( nFoundCount < nCount)
-                    {
+                    if( nFoundCount < nCount)                                               // If a new camera was connected since we queried
+                    {                                                                       // the amount of cameras, we can ignore that one
                         nCount = nFoundCount;
                     }
                     for ( i=0; i<nCount; ++i )                                              // And print them out
@@ -79,7 +80,7 @@ void ListCameras()
                 }
                 else
                 {
-                    printf( "could not retrieve camera list. Error code: %d\n", err );
+                    printf( "Could not retrieve camera list. Error code: %d\n", err );
                 }
                 free( pCameras );
                 pCameras = NULL;
@@ -94,7 +95,7 @@ void ListCameras()
             printf( "Could not list cameras or no cameras present. Error code: %d\n", err );
         }
         
-        VmbShutdown();                                                                  // Close Vimba
+        VmbShutdown();                                                                      // Close Vimba
     }
     else
     {
