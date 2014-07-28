@@ -58,18 +58,29 @@ void ListCameras()
             pCameras = (VmbCameraInfo_t*)malloc( sizeof *pCameras * nCount );
             if ( NULL != pCameras )
             {
-                err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );    // Query all static details of all known cameras
+                VmbUint32_t nFoundCount = 0;
+                err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );    // Query all static details of all known cameras
                                                                                         // Without having to open the cameras
-                for ( i=0; i<nCount; ++i )                                              // And print them out
+                if( VmbErrorSuccess == err || VmbErrorMoreData == err)
                 {
-                    printf( "/// Camera Name: %s\n/// Model Name: %s\n/// Camera ID: %s\n/// Serial Number: %s\n/// @ Interface ID: %s\n\n\n",
-                             pCameras[i].cameraName,
-                             pCameras[i].modelName,
-                             pCameras[i].cameraIdString,
-                             pCameras[i].serialString,
-                             pCameras[i].interfaceIdString );
+                    if( nFoundCount < nCount)
+                    {
+                        nCount = nFoundCount;
+                    }
+                    for ( i=0; i<nCount; ++i )                                              // And print them out
+                    {
+                        printf( "/// Camera Name: %s\n/// Model Name: %s\n/// Camera ID: %s\n/// Serial Number: %s\n/// @ Interface ID: %s\n\n\n",
+                                 pCameras[i].cameraName,
+                                 pCameras[i].modelName,
+                                 pCameras[i].cameraIdString,
+                                 pCameras[i].serialString,
+                                 pCameras[i].interfaceIdString );
+                    }
                 }
-
+                else
+                {
+                    printf( "could not retrieve camera list. Error code: %d\n", err );
+                }
                 free( pCameras );
                 pCameras = NULL;
             }
