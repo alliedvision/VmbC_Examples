@@ -269,7 +269,8 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                         // Query all static details of all known cameras without having to open the cameras
                         VmbUint32_t nFoundCount = 0;
                         err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );
-                        if ( VmbErrorSuccess != err  && VmbErrorMoreData != err)
+                        if (    VmbErrorSuccess != err
+                             && VmbErrorMoreData != err)
                         {
                             printf( "Could not list cameras. Error code: %d\n", err );
                         }
@@ -282,9 +283,9 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                             }
                             else
                             {
-                                printf( "camera lost. Error code:\n" );
-                                pCameraID = NULL;
                                 err = VmbErrorNotFound;
+                                printf( "Camera lost. Error code: %d\n", err );
+                                pCameraID = NULL;
                             }
                         }
 
