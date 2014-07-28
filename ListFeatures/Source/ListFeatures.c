@@ -71,17 +71,18 @@ void ListFeatures( const char *pStrID )
                                             nCount,
                                             &nCount,
                                             sizeof *pCameras );
-                    if ( VmbErrorSuccess == err || VmbErrorMoreData == err)
-                    {
-                        if( nCount != 0)
+                    if (    VmbErrorSuccess == err
+                         || VmbErrorMoreData == err )                                   // If a new camera was connected since we queried
+                    {                                                                   // for the amount of cameras, we can ignore that one
+                        if( 0 < nCount )
                         {
-                            err = VmbCameraOpen(    pCameras[0].cameraIdString,             // Finally open the first one
+                            err = VmbCameraOpen(    pCameras[0].cameraIdString,         // Finally open the first one
                                                     VmbAccessModeFull,
                                                     &hCamera );
                         }
                         else
                         {
-                            printf( "camera lost");
+                            printf( "Camera lost.\n" );
                         }
                     }
                     else
