@@ -76,15 +76,25 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                 if ( NULL != pCameras )
                 {
                     // Query all static details of all known cameras without having to open the cameras
-                    err = VmbCamerasList( pCameras, nCount, &nCount, sizeof *pCameras );
-                    if ( VmbErrorSuccess != err )
+                    VmbUint32_t nFoundCount = 0;
+                    err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );
+                    if ( VmbErrorSuccess != err && VmbErrorMoreData != err)
                     {
                         printf( "Could not list cameras. Error code: %d\n", err );
                     }
                     else
                     {
                         // Use the first camera
-                        pCameraID = pCameras[0].cameraIdString;
+                        if( nFoundCount != 0)
+                        {
+                            pCameraID = pCameras[0].cameraIdString;
+                        }
+                        else
+                        {
+                            pCameraID = NULL;
+                            err = VmbErrorNotFound;
+                            printf("camera lost while listing");
+                        }
                     }
 
                     free( pCameras );
