@@ -48,6 +48,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
     VmbError_t          err                 = VmbStartup();     // Initialize the Vimba API
     VmbCameraInfo_t     *pCameras           = NULL;             // A list of camera details
     VmbUint32_t         nCount              = 0;                // Number of found cameras
+    VmbUint32_t         nFoundCount         = 0;                // Change of found cameras
     const VmbUint32_t   nTimeout            = 2000;             // Timeout for Grab
     VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;// We open the camera with full access
     VmbHandle_t         cameraHandle        = NULL;             // A handle to our camera
@@ -75,10 +76,11 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                 pCameras = (VmbCameraInfo_t*)malloc( nCount * sizeof( *pCameras ));
                 if ( NULL != pCameras )
                 {
-                    // Query all static details of all known cameras without having to open the cameras
-                    VmbUint32_t nFoundCount = 0;
+                    // Actually query all static details of all known cameras without having to open the cameras
+                    // If a new camera was connected since we queried the amount of cameras (nFoundCount > nCount) we can ignore that one
                     err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );
-                    if ( VmbErrorSuccess != err && VmbErrorMoreData != err)
+                    if (    VmbErrorSuccess != err
+                         && VmbErrorMoreData != err )
                     {
                         printf( "Could not list cameras. Error code: %d\n", err );
                     }
@@ -93,7 +95,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                         {
                             pCameraID = NULL;
                             err = VmbErrorNotFound;
-                            printf("camera lost while listing");
+                            printf( "Camera lost.\n" );
                         }
                     }
 
