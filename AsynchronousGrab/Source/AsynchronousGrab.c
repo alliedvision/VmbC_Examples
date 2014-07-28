@@ -221,6 +221,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
     VmbCameraInfo_t     *pCameras           = NULL;                 // A list of camera details
     VmbUint32_t         nCount              = 0;                    // Number of found cameras
+    VmbUint32_t         nFoundCount         = 0;                    // Change of found cameras
     VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;    // We open the camera with full access
     VmbBool_t           bIsCommandDone      = VmbBoolFalse;         // Has a command finished execution
     VmbInt64_t          nPayloadSize        = 0;                    // The size of one frame
@@ -266,11 +267,11 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                     pCameras = (VmbCameraInfo_t*)malloc( nCount * sizeof( *pCameras ));
                     if ( NULL != pCameras )
                     {
-                        // Query all static details of all known cameras without having to open the cameras
-                        VmbUint32_t nFoundCount = 0;
+                        // Actually query all static details of all known cameras without having to open the cameras
+                        // If a new camera was connected since we queried the amount of cameras (nFoundCount > nCount) we can ignore that one
                         err = VmbCamerasList( pCameras, nCount, &nFoundCount, sizeof *pCameras );
                         if (    VmbErrorSuccess != err
-                             && VmbErrorMoreData != err)
+                             && VmbErrorMoreData != err )
                         {
                             printf( "Could not list cameras. Error code: %d\n", err );
                         }
