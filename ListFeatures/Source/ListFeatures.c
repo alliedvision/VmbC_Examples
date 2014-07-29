@@ -113,7 +113,6 @@ void ListFeatures( const char *pStrID )
         // Query all static details as well as the value of all fetched features and print them out.
         if ( VmbErrorSuccess == err )
         {
-            VmbUint32_t nCount = 0;
             err = VmbFeaturesList(  hCamera,                                            // Get the amount of features
                                     NULL,
                                     0,
