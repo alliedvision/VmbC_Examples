@@ -78,7 +78,7 @@ VmbError_t ProcessFrame( VmbFrame_t * pFrame)
     VmbUint32_t         TransformInfoCount  = 0;
     if( NULL == pFrame || NULL == pFrame->buffer )
     {
-        printf(__FUNCTION__" error invalid frame\n");
+        printf("%s error invalid frame\n", __FUNCTION__);
         return VmbErrorBadParameter;
     }
     Width   = pFrame->width;
