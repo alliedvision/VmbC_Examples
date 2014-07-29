@@ -32,8 +32,8 @@
 #include <ListCameras.h>
 
 #include <VimbaC/Include/VimbaC.h>
-#include "../../Common/PrintVimbaVersion.h"
-#include "../../Common/DiscoverGigECameras.h"
+#include <../../Common/PrintVimbaVersion.h>
+#include <../../Common/DiscoverGigECameras.h>
 
 void ListCameras()
 {
