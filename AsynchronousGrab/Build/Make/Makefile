@@ -43,7 +43,7 @@ OBJ_FILES			= $(OBJ_DIR)/AsynchronousGrab.o \
 				  $(OBJ_DIR)/ErrorCodeToMessage.o \
 				  $(OBJ_DIR)/DiscoverGigECameras.o
 
-DEPENDENCIES			= $(VIMBAC_BIN)
+DEPENDENCIES			= $(VIMBAC_BIN) \
 				  $(AVTIMAGETRANSFORM_BIN)
 all: $(BIN_PATH)
 
