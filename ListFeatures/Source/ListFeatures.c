@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2014 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -32,13 +32,15 @@
 #include <ListFeatures.h>
 
 #include <VimbaC/Include/VimbaC.h>
-#include "../../Common/PrintVimbaVersion.h"
-#include "../../Common/DiscoverGigECameras.h"
+#include <../../Common/PrintVimbaVersion.h>
+#include <../../Common/DiscoverGigECameras.h>
 
 void ListFeatures( const char *pStrID )
 {
     VmbError_t          err         = VmbErrorSuccess;
     VmbHandle_t         hCamera     = NULL;                                             // A handle to our camera
+    VmbCameraInfo_t*    pCameras    = NULL;                                             // A list of camera infos
+    VmbUint32_t         nCount      = 0;                                                // The number of found cameras	
     VmbFeatureInfo_t    *pFeatures  = NULL;                                             // A list of static details of camera features
     // The changeable value of a feature
     VmbInt64_t          nValue      = 0;                                                // An int value
@@ -55,8 +57,6 @@ void ListFeatures( const char *pStrID )
 
         if ( NULL == pStrID )                                                           // If no ID was provided use the first camera
         {
-            VmbCameraInfo_t*    pCameras    = NULL;
-            VmbUint32_t         nCount      = 0;
             err = VmbCamerasList(   NULL,                                               // Get the amount of known cameras
                                     0,
                                     &nCount,
