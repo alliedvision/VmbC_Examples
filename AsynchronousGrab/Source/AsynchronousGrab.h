@@ -38,7 +38,7 @@ typedef enum FrameInfos
     FrameInfos_Automatic
 } FrameInfos;
 
-VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos );
+VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing );
 void StopContinuousImageAcquisition();
 
 #endif

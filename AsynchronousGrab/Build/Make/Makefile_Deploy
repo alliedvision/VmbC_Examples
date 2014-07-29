@@ -17,6 +17,8 @@ all: $(BIN_PATH)
 
 include $(MAKE_INCLUDE_DIR)/VimbaC.mk
 
+include $(MAKE_INCLUDE_DIR)/AVTImageTransform.mk
+
 SOURCE_DIR          = $(PROJECT_DIR)/Source
 COMMON_DIR          = $(EXAMPLES_DIR)/Common
 
@@ -24,11 +26,13 @@ INCLUDE_DIRS        = -I$(SOURCE_DIR) \
                       -I$(EXAMPLES_DIR) \
 
 LIBS                = $(VIMBAC_LIBS)
+                      $(AVTIMAGETRANSFORM_LIBS)
 
 DEFINES             =
 
 CFLAGS              = $(COMMON_CFLAGS) \
                       $(VIMBAC_CFLAGS)
+                      $(AVTIMAGETRANSFORM_CFLAGS)
 
 OBJ_FILES           = $(OBJ_DIR)/AsynchronousGrab.o \
                       $(OBJ_DIR)/program.o \
@@ -36,7 +40,9 @@ OBJ_FILES           = $(OBJ_DIR)/AsynchronousGrab.o \
                       $(OBJ_DIR)/ErrorCodeToMessage.o \
                       $(OBJ_DIR)/DiscoverGigECameras.o
 
-DEPENDENCIES        = VimbaC
+DEPENDENCIES        = VimbaC \
+                      AVTImageTransform
+
 
 $(OBJ_DIR)/%.o: $(COMMON_DIR)/%.c $(OBJ_DIR)
 	$(CXX) -c $(INCLUDE_DIRS) $(DEFINES) $(CFLAGS) -o $@ $<

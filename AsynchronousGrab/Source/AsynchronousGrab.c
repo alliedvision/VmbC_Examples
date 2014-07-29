@@ -39,6 +39,8 @@
 
 #include <VimbaC/Include/VimbaC.h>
 
+#include "VmbTransform.h"
+
 #include <AsynchronousGrab.h>
 #include "Common/PrintVimbaVersion.h"
 #include "Common/DiscoverGigECameras.h"
@@ -49,19 +51,79 @@ enum
     NUM_FRAMES  = 3
 };
 
-VmbBool_t       g_bVimbaStarted         = VmbBoolFalse;     // Remember if vimba is started
-VmbBool_t       g_bStreaming            = VmbBoolFalse;     // Remember if vimba is streaming
-VmbBool_t       g_bAcquiring            = VmbBoolFalse;     // Remember if vimba is acquiring
-VmbHandle_t     g_CameraHandle          = NULL;             // A handle to our camera
-VmbFrame_t      g_Frames[NUM_FRAMES];                       // The frames we capture into
-FrameInfos      g_eFrameInfos           = FrameInfos_Off;   // Remember if we should print out frame infos
-double          g_dFrameTime            = 0.0;              // Timestamp of last frame
-VmbBool_t       g_bFrameTimeValid       = VmbBoolFalse;     // Remember if there was a last timestamp
-VmbUint64_t     g_nFrameID              = 0;                // ID of last frame
-VmbBool_t       g_bFrameIDValid         = VmbBoolFalse;     // Remember if there was a last ID
+VmbBool_t       g_bVimbaStarted             = VmbBoolFalse;     // Remember if Vimba is started
+VmbBool_t       g_bStreaming                = VmbBoolFalse;     // Remember if Vimba is streaming
+VmbBool_t       g_bAcquiring                = VmbBoolFalse;     // Remember if Vimba is acquiring
+VmbHandle_t     g_CameraHandle              = NULL;             // A handle to our camera
+VmbFrame_t      g_Frames[NUM_FRAMES];                           // The frames we capture into
+FrameInfos      g_eFrameInfos               = FrameInfos_Off;   // Remember if we should print out frame infos
+VmbBool_t       g_bEnableColorProcessing    = VmbBoolFalse;     // enables color processing for frames
+double          g_dFrameTime                = 0.0;              // Timestamp of last frame
+VmbBool_t       g_bFrameTimeValid           = VmbBoolFalse;     // Remember if there was a last timestamp
+VmbUint64_t     g_nFrameID                  = 0;                // ID of last frame
+VmbBool_t       g_bFrameIDValid             = VmbBoolFalse;     // Remember if there was a last ID
 #ifdef WIN32
-double          g_dFrequency            = 0.0;              //Frequency of tick counter in Win32
+double          g_dFrequency                = 0.0;              //Frequency of tick counter in Win32
 #endif //WIN32
+
+VmbError_t ProcessFrame( VmbFrame_t * pFrame)
+{
+    VmbError_t          Result              = VmbErrorSuccess;
+    VmbUint32_t         Width               = 0;
+    VmbUint32_t         Height              = 0;
+    VmbImage            SourceImage;
+    VmbImage            DestinationImage;
+    VmbRGB8_t*          DestinationBuffer   = NULL;
+    VmbTransformInfo    TransformInfo;
+    VmbUint32_t         TransformInfoCount  = 0;
+    if( NULL == pFrame || NULL == pFrame->buffer )
+    {
+        printf(__FUNCTION__" error invalid frame\n");
+        return VmbErrorBadParameter;
+    }
+    Width   = pFrame->width;
+    Height  = pFrame->height;
+    if( g_bEnableColorProcessing == VmbBoolTrue )
+    {
+        const static VmbFloat_t matrix[9] = {   0.0, 0.0, 1.0,
+                                                0.0, 1.0, 0.0,
+                                                1.0, 0.0, 0.0 };
+        Result = VmbSetColorCorrectionMatrix3x3(matrix, &TransformInfo); 
+        if( VmbErrorSuccess != Result)
+        {
+            printf("%s error could not set transform matrix; Error: %d\n", __FUNCTION__, Result);
+            return Result;
+        }
+        TransformInfoCount = 1;
+    }
+    SourceImage.Size        = sizeof( SourceImage );
+    Result                  = VmbSetImageInfoFromPixelFormat( pFrame->pixelFormat, Width, Height, &SourceImage );
+    if( VmbErrorSuccess != Result)
+    {
+        printf( "%s error could not set source image info; Error: %d\n", __FUNCTION__, Result);
+        return Result;
+    }
+    SourceImage.Data = pFrame->buffer;
+
+    DestinationImage.Size   = sizeof( DestinationImage );
+    Result                  = VmbSetImageInfoFromString( "RGB8", 4, Width, Height, &DestinationImage );
+    if( VmbErrorSuccess != Result)
+    {
+        printf("%s error could not set destination image info; Error: %d\n", __FUNCTION__, Result);
+        return Result;
+    }
+    DestinationBuffer       = (VmbRGB8_t*) malloc( Width*Height*sizeof( VmbRGB8_t) );
+    if( NULL == DestinationBuffer)
+    {
+        printf("%s error could not allocate rgb buffer for width: %d and height: %d\n", __FUNCTION__, Width, Height);
+        return VmbErrorResources;
+    }
+    DestinationImage.Data = DestinationBuffer;
+    Result = VmbImageTransform( &SourceImage, &DestinationImage, &TransformInfo, TransformInfoCount );
+    printf("R: %d\tG: %d\tB: %d\n", DestinationBuffer->R, DestinationBuffer->G, DestinationBuffer->B);
+    free( DestinationBuffer );
+    return -Result;
+}
 
 double GetTime()
 {
@@ -102,15 +164,14 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
                     nFramesMissing = pFrame->frameID - g_nFrameID - 1;
                     if( 1 == nFramesMissing )
                     {
-                        printf("1 missing frame detected\n");
+                        printf("%s 1 missing frame detected\n", __FUNCTION__);
                     }
                     else
                     {
-                        printf("%llu missing frames detected\n", nFramesMissing);
+                        printf("%s error %llu missing frames detected\n",__FUNCTION__, nFramesMissing);
                     }
                 }
             }
-
             g_nFrameID      = pFrame->frameID;
             g_bFrameIDValid = VmbBoolTrue;
 
@@ -207,16 +268,14 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
 
         printf( "\n" );
     }
-    else
-    {
-        printf( "." );
-    }
+
+    ProcessFrame( pFrame);
     
     fflush( stdout );
 
     VmbCaptureFrameQueue( cameraHandle, pFrame, &FrameCallback );
 }
-VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos )
+VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing)
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
     VmbCameraInfo_t     *pCameras           = NULL;                 // A list of camera details
@@ -232,15 +291,16 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
 
     if( !g_bVimbaStarted )
     {
-        g_bStreaming        = VmbBoolFalse;
-        g_bAcquiring        = VmbBoolFalse;
-        g_CameraHandle      = NULL;
+        g_bStreaming                = VmbBoolFalse;
+        g_bAcquiring                = VmbBoolFalse;
+        g_CameraHandle              = NULL;
         memset( g_Frames, 0, sizeof( g_Frames ));
-        g_dFrameTime        = 0.0;              
-        g_bFrameTimeValid   = VmbBoolFalse;
-        g_nFrameID          = 0;
-        g_bFrameIDValid     = VmbBoolFalse;
-        g_eFrameInfos       = eFrameInfos;
+        g_dFrameTime                = 0.0;              
+        g_bFrameTimeValid           = VmbBoolFalse;
+        g_nFrameID                  = 0;
+        g_bFrameIDValid             = VmbBoolFalse;
+        g_eFrameInfos               = eFrameInfos;
+        g_bEnableColorProcessing    = bEnableColorProcessing;
 
 #ifdef WIN32
         QueryPerformanceFrequency( &nFrequency );
@@ -273,7 +333,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                         if (    VmbErrorSuccess != err
                              && VmbErrorMoreData != err )
                         {
-                            printf( "Could not list cameras. Error code: %d\n", err );
+                            printf( "%s Could not list cameras. Error code: %d\n", __FUNCTION__, err );
                         }
                         else
                         {
@@ -285,7 +345,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                             else
                             {
                                 err = VmbErrorNotFound;
-                                printf( "Camera lost. Error code: %d\n", err );
+                                printf( "%s camera lost. Error code: %d\n", __FUNCTION__, err );
                                 pCameraID = NULL;
                             }
                         }
@@ -295,12 +355,12 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                     }
                     else
                     {
-                        printf( "Could not allocate camera list.\n" );
+                        printf( "%s Could not allocate camera list.\n", __FUNCTION__ );
                     }
                 }
                 else
                 {
-                    printf( "Could not list cameras or no cameras present. Error code: %d\n", err );
+                    printf( "%s Could not list cameras or no cameras present. Error code: %d\n", __FUNCTION__, err );
                 }
             }
 

@@ -40,5 +40,8 @@
     <ClInclude Include="..\..\..\Common\DiscoverGigECameras.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Externals\AVTImageTransform\UniTransform\interface\VmbTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

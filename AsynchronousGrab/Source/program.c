@@ -33,13 +33,14 @@
 #include "Common/ErrorCodeToMessage.h"
 int main( int argc, char* argv[] )
 {
-    VmbError_t      err             = VmbErrorSuccess;
+    VmbError_t      err                     = VmbErrorSuccess;
 
-    char*           pCameraID       = NULL;             // The ID of the camera to use
-    FrameInfos      eFrameInfos     = FrameInfos_Off;   // Show frame infos
-    unsigned char   bPrintHelp      = 0;                // Output help?
-    int             i               = 0;                // Counter for some iteration
-    char*           pParameter      = NULL;             // The command line parameter
+    char*           pCameraID               = NULL;             // The ID of the camera to use
+    FrameInfos      eFrameInfos             = FrameInfos_Off;   // Show frame infos
+    VmbBool_t       bEnableColorProcessing  = VmbBoolFalse;     // enables color processing of frames
+    unsigned char   bPrintHelp              = 0;                // Output help?
+    int             i                       = 0;                // Counter for some iteration
+    char*           pParameter              = NULL;             // The command line parameter
 
     printf( "///////////////////////////////////////////////\n" );
     printf( "/// AVT Vimba API Asynchronous Grab Example ///\n" );
@@ -71,6 +72,16 @@ int main( int argc, char* argv[] )
 
                 eFrameInfos = FrameInfos_Show;
             }
+            if( 0 == strcmp( pParameter, "/c" ))
+            {
+                if (bPrintHelp )
+                {
+                    err = VmbErrorBadParameter;
+                    break;
+                }
+
+                bEnableColorProcessing = VmbBoolTrue;
+            }
             else if( 0 == strcmp( pParameter, "/a" ))
             {
                 if(     ( FrameInfos_Off != eFrameInfos )
@@ -86,6 +97,7 @@ int main( int argc, char* argv[] )
             {
                 if(     ( NULL != pCameraID )
                     ||  ( bPrintHelp )
+                    ||  ( VmbBoolTrue    != bEnableColorProcessing)
                     ||  ( FrameInfos_Off != eFrameInfos ))
                 {
                     err = VmbErrorBadParameter;
@@ -124,16 +136,17 @@ int main( int argc, char* argv[] )
     {
         printf( "Usage: AsynchronousGrab [CameraID] [/i] [/h]\n" );
         printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
+        printf( "              /c          enable color processing\n" );
         printf( "              /i          Show frame infos\n" );
         printf( "              /a          Automatically only show frame infos of corrupt frames\n" );
         printf( "              /h          Print out help\n" );
     }
     else
     {
-        err = StartContinuousImageAcquisition(pCameraID, eFrameInfos);
+        err = StartContinuousImageAcquisition(pCameraID, eFrameInfos,bEnableColorProcessing);
         if ( VmbErrorSuccess == err )
         {
-           printf( "Press <enter> to stop aquision...\n" );
+           printf( "Press <enter> to stop acquision...\n" );
            getchar();
 
            StopContinuousImageAcquisition();
@@ -145,7 +158,7 @@ int main( int argc, char* argv[] )
         }
         else
         {
-            printf( "\nAn error occured: %s\n", ErrorCodeToMessage( err ) );
+            printf( "\nAn error occurred: %s\n", ErrorCodeToMessage( err ) );
         }
     }
 
