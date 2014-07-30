@@ -65,30 +65,39 @@ VmbBool_t       g_bFrameIDValid             = VmbBoolFalse;     // Remember if t
 #ifdef WIN32
 double          g_dFrequency                = 0.0;              //Frequency of tick counter in Win32
 #endif //WIN32
-
+//
+// Method: ProcessFrame
+//
+// Purpose: convert frames to RGB24 format and apply color processing if desired
+//
+// Parameters:
+// [in] pFrame frame to process data might be destroyed dependent on transform function used
+//
 VmbError_t ProcessFrame( VmbFrame_t * pFrame)
 {
-    VmbError_t          Result              = VmbErrorSuccess;
-    VmbUint32_t         Width               = 0;
-    VmbUint32_t         Height              = 0;
-    VmbImage            SourceImage;
-    VmbImage            DestinationImage;
-    VmbRGB8_t*          DestinationBuffer   = NULL;
-    VmbTransformInfo    TransformInfo;
-    VmbUint32_t         TransformInfoCount  = 0;
+    VmbError_t          Result              = VmbErrorSuccess;  // result of function
+    VmbUint32_t         Width               = 0;                // will later hold the frame width
+    VmbUint32_t         Height              = 0;                // will later hold the frame height
+    VmbImage            SourceImage;                            // source image struct to pass to image transform
+    VmbImage            DestinationImage;                       // destination image struct to pass to image transform
+    VmbRGB8_t*          DestinationBuffer   = NULL;             // destination image buffer
+    VmbTransformInfo    TransformInfo;                          // if desired the transform information is constructed here
+    VmbUint32_t         TransformInfoCount  = 0;                // if color processing is desired this will be set
+    // check if we can get data
     if( NULL == pFrame || NULL == pFrame->buffer )
     {
         printf("%s error invalid frame\n", __FUNCTION__);
         return VmbErrorBadParameter;
     }
+    // init local variables for frame width and height
     Width   = pFrame->width;
     Height  = pFrame->height;
-    if( g_bEnableColorProcessing == VmbBoolTrue )
+    if( g_bEnableColorProcessing == VmbBoolTrue )   // if color processing is desired set the transform matrix
     {
-        const static VmbFloat_t matrix[9] = {   0.0, 0.0, 1.0,
+        const static VmbFloat_t matrix[9] = {   0.0, 0.0, 1.0,                  // matrix to swap red and blue component
                                                 0.0, 1.0, 0.0,
                                                 1.0, 0.0, 0.0 };
-        Result = VmbSetColorCorrectionMatrix3x3(matrix, &TransformInfo); 
+        Result = VmbSetColorCorrectionMatrix3x3(matrix, &TransformInfo);        // initialize transform info
         if( VmbErrorSuccess != Result)
         {
             printf("%s error could not set transform matrix; Error: %d\n", __FUNCTION__, Result);
@@ -96,31 +105,40 @@ VmbError_t ProcessFrame( VmbFrame_t * pFrame)
         }
         TransformInfoCount = 1;
     }
+    // set the struct size to image 
     SourceImage.Size        = sizeof( SourceImage );
+    // set the image information from the frames pixel format and size
     Result                  = VmbSetImageInfoFromPixelFormat( pFrame->pixelFormat, Width, Height, &SourceImage );
     if( VmbErrorSuccess != Result)
     {
         printf( "%s error could not set source image info; Error: %d\n", __FUNCTION__, Result);
         return Result;
     }
+    // the frame buffer will be the images data buffer
     SourceImage.Data = pFrame->buffer;
-
+    // set size for destination image
     DestinationImage.Size   = sizeof( DestinationImage );
+    // set destination image info from frame size and string for RGB8 (rgb24)
     Result                  = VmbSetImageInfoFromString( "RGB8", 4, Width, Height, &DestinationImage );
     if( VmbErrorSuccess != Result)
     {
         printf("%s error could not set destination image info; Error: %d\n", __FUNCTION__, Result);
         return Result;
     }
+    // allocate buffer for destination image size is width * height * size of rgb pixel
     DestinationBuffer       = (VmbRGB8_t*) malloc( Width*Height*sizeof( VmbRGB8_t) );
     if( NULL == DestinationBuffer)
     {
         printf("%s error could not allocate rgb buffer for width: %d and height: %d\n", __FUNCTION__, Width, Height);
         return VmbErrorResources;
     }
+    // set the destination buffer to the data buffer of the image
     DestinationImage.Data = DestinationBuffer;
+    // transform source to destination if color processing was enabled TransformInfoCount is 1 otherwise TransformInfo will be ignored
     Result = VmbImageTransform( &SourceImage, &DestinationImage, &TransformInfo, TransformInfoCount );
+    // print first rgb pixel
     printf("R: %d\tG: %d\tB: %d\n", DestinationBuffer->R, DestinationBuffer->G, DestinationBuffer->B);
+    // clean image buffer
     free( DestinationBuffer );
     return -Result;
 }
