@@ -25,13 +25,13 @@ COMMON_DIR          = $(EXAMPLES_DIR)/Common
 INCLUDE_DIRS        = -I$(SOURCE_DIR) \
                       -I$(EXAMPLES_DIR) \
 
-LIBS                = $(VIMBAC_LIBS)
+LIBS                = $(VIMBAC_LIBS) \
                       $(AVTIMAGETRANSFORM_LIBS)
 
 DEFINES             =
 
 CFLAGS              = $(COMMON_CFLAGS) \
-                      $(VIMBAC_CFLAGS)
+                      $(VIMBAC_CFLAGS) \
                       $(AVTIMAGETRANSFORM_CFLAGS)
 
 OBJ_FILES           = $(OBJ_DIR)/AsynchronousGrab.o \
