@@ -142,7 +142,12 @@ VmbError_t ProcessFrame( VmbFrame_t * pFrame)
     free( DestinationBuffer );
     return -Result;
 }
-
+//
+// Method: GetTime
+//
+// Purpose: get time indicator
+//
+// Returns: time indicator in seconds for differential measurements
 double GetTime()
 {
 #ifdef WIN32
@@ -155,16 +160,29 @@ double GetTime()
     return ( (double)now.tv_sec ) + ( (double)now.tv_nsec ) / 1000000000.0;
 #endif //WIN32
 }
-
+//
+// Method: FrameCallback
+//
+// Purpose: called from Vimba if a frame is ready for user processing
+//
+// Parameters:
+//
+// [in] handle to camera that supplied the frame
+// [in] pointer to frame structure that can hold valid data
+//
 void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame )
 {
-    VmbBool_t       bShowFrameInfos     = VmbBoolFalse;
-    VmbErrorType    res                 = VmbErrorSuccess;
-    double          dFPS                = 0.0;
-    VmbBool_t       bFPSValid           = VmbBoolFalse;
-    double          dFrameTime          = 0.0;
-    double          dTimeDiff           = 0.0;
-    VmbUint64_t     nFramesMissing      = 0;
+    //
+    // from here on the frame is under user control until returned to Vimba by re queuing it
+    // if you want to have smooth streaming keep the time you hold the frame short
+    //
+    VmbBool_t       bShowFrameInfos     = VmbBoolFalse;         // showing frame infos 
+    VmbErrorType    res                 = VmbErrorSuccess;      // accumulating results from functions
+    double          dFPS                = 0.0;                  // frames per second calculated
+    VmbBool_t       bFPSValid           = VmbBoolFalse;         // indicator if fps calculation was valid
+    double          dFrameTime          = 0.0;                  // reference time for frames
+    double          dTimeDiff           = 0.0;                  // time difference between frames
+    VmbUint64_t     nFramesMissing      = 0;                    // number of missing frames
 
     if( FrameInfos_Off != g_eFrameInfos )
     {
@@ -179,6 +197,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
             {
                 if( pFrame->frameID != ( g_nFrameID + 1 ) )
                 {
+                    // get difference between current frame and last received frame to calculate missing frames
                     nFramesMissing = pFrame->frameID - g_nFrameID - 1;
                     if( 1 == nFramesMissing )
                     {
@@ -190,14 +209,14 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
                     }
                 }
             }
-            g_nFrameID      = pFrame->frameID;
-            g_bFrameIDValid = VmbBoolTrue;
+            g_nFrameID      = pFrame->frameID;          // store current frame id to calculate missing frames in the next calls
+            g_bFrameIDValid = VmbBoolTrue;  
 
-            dFrameTime = GetTime();
-            if(     ( g_bFrameTimeValid )
-                &&  ( 0 == nFramesMissing ) )
+            dFrameTime = GetTime();                     // get current time to calculate frames per second
+            if(     ( g_bFrameTimeValid )               // only if the last time was valid
+                &&  ( 0 == nFramesMissing ) )           // and the frame is not missing
             {
-                dTimeDiff = dFrameTime - g_dFrameTime;
+                dTimeDiff = dFrameTime - g_dFrameTime;  // build time difference with last frames time
                 if( dTimeDiff > 0.0 )
                 {
                     dFPS        = 1.0 / dTimeDiff;
@@ -208,7 +227,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
                     bShowFrameInfos = VmbBoolTrue;
                 }
             }
-
+            // store time for fps calculation in the next call
             g_dFrameTime        = dFrameTime;
             g_bFrameTimeValid   = VmbBoolTrue;
         }
@@ -218,7 +237,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
             g_bFrameIDValid     = VmbBoolFalse;
             g_bFrameTimeValid   = VmbBoolFalse;
         }
-
+        // test if the frame is complete
         if( VmbFrameStatusComplete != pFrame->receiveStatus )
         {
             bShowFrameInfos = VmbBoolTrue;
@@ -286,13 +305,27 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
 
         printf( "\n" );
     }
-
+    // goto image processing
     ProcessFrame( pFrame);
     
     fflush( stdout );
-
+    // requeue the frame so it can be filled again
     VmbCaptureFrameQueue( cameraHandle, pFrame, &FrameCallback );
 }
+//
+// Method StartContinuousImageAcquesition
+//
+// Purpose: starts image acquisition on a given camera
+//
+// Parameters:
+//
+// [in]     pCameraId               zero terminated C string with the camera id for the camera to be used
+// [in]     eFrameInfos             enumeration value for the frame infos to show for received frames
+// [in]     bEnableColorProcessing  toggle for enabling image processing, in this case just swapping red with blue
+//
+// Note: Vimba has to be uninitialized and the camera has to allow access mode full
+//
+
 VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing)
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
@@ -309,6 +342,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
 
     if( !g_bVimbaStarted )
     {
+        // initialize global state
         g_bStreaming                = VmbBoolFalse;
         g_bAcquiring                = VmbBoolFalse;
         g_CameraHandle              = NULL;
@@ -324,8 +358,9 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
         QueryPerformanceFrequency( &nFrequency );
         g_dFrequency        = (double)nFrequency.QuadPart;
 #endif //WIN32
-
+        // startup Vimba
         err = VmbStartup();
+        // Print the version of Vimba
         PrintVimbaVersion();
         if ( VmbErrorSuccess == err )
         {
@@ -477,7 +512,11 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
 
     return err;
 }
-
+//
+// Method: StopContinuouseImageAcquisition
+//
+// Purpose: stops image acquisition that was started with StartContinuouseImageAcquisition
+//
 void StopContinuousImageAcquisition()
 {
     int i = 0;
