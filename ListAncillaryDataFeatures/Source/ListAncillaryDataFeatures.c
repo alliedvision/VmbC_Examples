@@ -39,7 +39,7 @@ void ListAncillaryDataFeatures( const char *pStrID )
 {
     VmbError_t          err             = VmbErrorSuccess;
     VmbHandle_t         hCamera         = NULL;                                                     // A handle to our camera
-    VmbHandle_t         hAncillaryData  = NULL;                                                     // A handle to our camera
+    VmbHandle_t         hAncillaryData  = NULL;                                                     // A handle to ancillary data
     VmbCameraInfo_t*    pCameras        = NULL;                                                     // A list of camera infos
     VmbUint32_t         nCount          = 0;                                                        // The number of found cameras
     VmbFeatureInfo_t*   pFeatures       = NULL;                                                     // A list of ancillary data features
