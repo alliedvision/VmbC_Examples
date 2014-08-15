@@ -50,6 +50,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVTImageTransform_dll", "..\..\..\Externals\AVTImageTransform\UniTransform\build\VS2010\AVTImageTransform_dll.vcxproj", "{D092073C-4E0B-4556-874B-0D3DE3227225}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListAncillaryDataFeatures", "..\..\ListAncillaryDataFeatures\Build\VS2010\ListAncillaryDataFeatures.vcxproj", "{0B027DEC-6DF3-4410-A9D9-36F796D28373}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01} = {8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
