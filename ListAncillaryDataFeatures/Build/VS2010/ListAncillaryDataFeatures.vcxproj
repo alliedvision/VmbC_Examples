@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C2EDC41C-046B-4913-9182-9E939CD070D6}</ProjectGuid>
+    <ProjectGuid>{0B027DEC-6DF3-4410-A9D9-36F796D28373}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ListAncillaryDataFeatures</RootNamespace>
   </PropertyGroup>
@@ -149,7 +149,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Common\DiscoverGigECameras.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
-	  <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
