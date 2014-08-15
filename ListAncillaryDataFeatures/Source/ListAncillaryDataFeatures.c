@@ -125,7 +125,7 @@ void ListAncillaryDataFeatures( const char *pStrID )
                 if ( VmbErrorSuccess == err )
                 {
                     Frame.bufferSize = (VmbUint32_t)nPLS;
-                    Frame.buffer = malloc( nPLS * sizeof( unsigned char) );
+                    Frame.buffer = malloc( nPLS * sizeof( unsigned char ) );
                     if ( NULL != Frame.buffer )
                     {
                         err = VmbCaptureStart( hCamera );
@@ -140,125 +140,132 @@ void ListAncillaryDataFeatures( const char *pStrID )
                                     err = VmbCaptureFrameWait( hCamera, &Frame, 1000 );
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        err = VmbAncillaryDataOpen( &Frame, &hAncillaryData );
-                                        if ( VmbErrorSuccess == err )
+                                        if ( VmbFrameStatusComplete == Frame.receiveStatus )
                                         {
-                                            // Query all static details as well as the value of all fetched ancillary data features and print them out.
-                                            err = VmbFeaturesList(  hAncillaryData,                 // Get the amount of features
-                                                                    NULL,
-                                                                    0,
-                                                                    &nCount,
-                                                                    sizeof *pFeatures );
-                                            if (    VmbErrorSuccess == err
-                                                 && 0 < nCount )
+                                            err = VmbAncillaryDataOpen( &Frame, &hAncillaryData );
+                                            if ( VmbErrorSuccess == err )
                                             {
-                                                pFeatures = (VmbFeatureInfo_t *)malloc( nCount * sizeof *pFeatures );
-                                                if ( NULL != pFeatures )
+                                                // Query all static details as well as the value of all fetched ancillary data features and print them out.
+                                                err = VmbFeaturesList(  hAncillaryData,             // Get the amount of features
+                                                                        NULL,
+                                                                        0,
+                                                                        &nCount,
+                                                                        sizeof *pFeatures );
+                                                if (    VmbErrorSuccess == err
+                                                     && 0 < nCount )
                                                 {
-                                                    err = VmbFeaturesList(  hAncillaryData,         // Get the features
-                                                                            pFeatures,
-                                                                            nCount,
-                                                                            &nCount,
-                                                                            sizeof *pFeatures );
-                                                    if ( VmbErrorSuccess == err )
+                                                    pFeatures = (VmbFeatureInfo_t *)malloc( nCount * sizeof *pFeatures );
+                                                    if ( NULL != pFeatures )
                                                     {
-                                                        for ( i=0; i<nCount; ++i )
+                                                        err = VmbFeaturesList(  hAncillaryData,     // Get the features
+                                                                                pFeatures,
+                                                                                nCount,
+                                                                                &nCount,
+                                                                                sizeof *pFeatures );
+                                                        if ( VmbErrorSuccess == err )
                                                         {
-                                                            printf( "/// Feature Name: %s\n", ( NULL == pFeatures[i].name ? "" : pFeatures[i].name ));
-                                                            printf( "/// Display Name: %s\n", ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName ));
-                                                            printf( "/// Tooltip: %s\n", ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip ));
-                                                            printf( "/// Description: %s\n", ( NULL == pFeatures[i].description ? "" : pFeatures[i].description ));
-                                                            printf( "/// SNFC Namespace: %s\n", ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace ));
-                                                            printf( "/// Value: " );
-
-                                                            switch ( pFeatures[i].featureDataType )
+                                                            for ( i=0; i<nCount; ++i )
                                                             {
-                                                            case VmbFeatureDataBool:
-                                                                err = VmbFeatureBoolGet( hAncillaryData, pFeatures[i].name, &bValue );
-                                                                if ( VmbErrorSuccess == err )
+                                                                printf( "/// Feature Name: %s\n", ( NULL == pFeatures[i].name ? "" : pFeatures[i].name ));
+                                                                printf( "/// Display Name: %s\n", ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName ));
+                                                                printf( "/// Tooltip: %s\n", ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip ));
+                                                                printf( "/// Description: %s\n", ( NULL == pFeatures[i].description ? "" : pFeatures[i].description ));
+                                                                printf( "/// SNFC Namespace: %s\n", ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace ));
+                                                                printf( "/// Value: " );
+
+                                                                switch ( pFeatures[i].featureDataType )
                                                                 {
-                                                                    printf( "%d\n", bValue );
-                                                                }
-                                                                break;
-                                                            case VmbFeatureDataEnum:
-                                                                err = VmbFeatureEnumGet( hAncillaryData, pFeatures[i].name, (const char**)&pStrValue );
-                                                                if ( VmbErrorSuccess == err )
-                                                                {
-                                                                    printf( "%s\n", pStrValue );
-                                                                }
-                                                                break;
-                                                            case VmbFeatureDataFloat:
-                                                                err = VmbFeatureFloatGet( hAncillaryData, pFeatures[i].name, &fValue );
-                                                                {
-                                                                    printf( "%f\n", fValue );
-                                                                }
-                                                                break;
-                                                            case VmbFeatureDataInt:
-                                                                err = VmbFeatureIntGet( hAncillaryData, pFeatures[i].name, &nValue );
-                                                                {
-                                                                    printf( "%lld\n", nValue );
-                                                                }
-                                                                break;
-                                                            case VmbFeatureDataString:
-                                                                {
-                                                                    VmbUint32_t nSize = 0;
-                                                                    err = VmbFeatureStringGet( hAncillaryData, pFeatures[i].name, NULL, 0, &nSize );
-                                                                    if (    VmbErrorSuccess == err
-                                                                        && 0 < nSize )
+                                                                case VmbFeatureDataBool:
+                                                                    err = VmbFeatureBoolGet( hAncillaryData, pFeatures[i].name, &bValue );
+                                                                    if ( VmbErrorSuccess == err )
                                                                     {
-                                                                        pStrValue = (char*)malloc( sizeof *pStrValue * nSize );
-                                                                        if ( NULL != pStrValue )
+                                                                        printf( "%d\n", bValue );
+                                                                    }
+                                                                    break;
+                                                                case VmbFeatureDataEnum:
+                                                                    err = VmbFeatureEnumGet( hAncillaryData, pFeatures[i].name, (const char**)&pStrValue );
+                                                                    if ( VmbErrorSuccess == err )
+                                                                    {
+                                                                        printf( "%s\n", pStrValue );
+                                                                    }
+                                                                    break;
+                                                                case VmbFeatureDataFloat:
+                                                                    err = VmbFeatureFloatGet( hAncillaryData, pFeatures[i].name, &fValue );
+                                                                    {
+                                                                        printf( "%f\n", fValue );
+                                                                    }
+                                                                    break;
+                                                                case VmbFeatureDataInt:
+                                                                    err = VmbFeatureIntGet( hAncillaryData, pFeatures[i].name, &nValue );
+                                                                    {
+                                                                        printf( "%lld\n", nValue );
+                                                                    }
+                                                                    break;
+                                                                case VmbFeatureDataString:
+                                                                    {
+                                                                        VmbUint32_t nSize = 0;
+                                                                        err = VmbFeatureStringGet( hAncillaryData, pFeatures[i].name, NULL, 0, &nSize );
+                                                                        if (    VmbErrorSuccess == err
+                                                                             && 0 < nSize )
                                                                         {
-                                                                            err = VmbFeatureStringGet( hAncillaryData, pFeatures[i].name, pStrValue, nSize, &nSize );
-                                                                            if ( VmbErrorSuccess == err )
+                                                                            pStrValue = (char*)malloc( sizeof *pStrValue * nSize );
+                                                                            if ( NULL != pStrValue )
                                                                             {
-                                                                                printf( "%s\n", pStrValue );
+                                                                                err = VmbFeatureStringGet( hAncillaryData, pFeatures[i].name, pStrValue, nSize, &nSize );
+                                                                                if ( VmbErrorSuccess == err )
+                                                                                {
+                                                                                    printf( "%s\n", pStrValue );
+                                                                                }
+                                                                                free( pStrValue );
+                                                                                pStrValue = NULL;
                                                                             }
-                                                                            free( pStrValue );
-                                                                            pStrValue = NULL;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            printf( "Could not allocate string.\n" );
+                                                                            else
+                                                                            {
+                                                                                printf( "Could not allocate string.\n" );
+                                                                            }
                                                                         }
                                                                     }
+                                                                    break;
+                                                                case VmbFeatureDataCommand:
+                                                                default:
+                                                                    printf( "[None]\n" );
+                                                                    break;
                                                                 }
-                                                                break;
-                                                            case VmbFeatureDataCommand:
-                                                            default:
-                                                                printf( "[None]\n" );
-                                                                break;
-                                                            }
 
-                                                            if ( VmbErrorSuccess != err )
-                                                            {
-                                                                printf( "Could not get feature value. Error code: %d\n", err );
-                                                            }
+                                                                if ( VmbErrorSuccess != err )
+                                                                {
+                                                                    printf( "Could not get feature value. Error code: %d\n", err );
+                                                                }
 
-                                                            printf( "\n" );
+                                                                printf( "\n" );
+                                                            }
                                                         }
+                                                        else
+                                                        {
+                                                            printf( "Could not get features. Error code: %d\n", err );
+                                                        }
+
+                                                        free(pFeatures);
+                                                        pFeatures = NULL;
                                                     }
                                                     else
                                                     {
-                                                        printf( "Could not get features. Error code: %d\n", err );
+                                                        printf( "Could not allocate feature list.\n" );
                                                     }
-
-                                                    free(pFeatures);
-                                                    pFeatures = NULL;
                                                 }
                                                 else
                                                 {
-                                                    printf( "Could not allocate feature list.\n" );
+                                                    printf( "Could not get features or the ancillary data does not provide any. Error code: %d\n", err );
                                                 }
                                             }
                                             else
                                             {
-                                                printf( "Could not get features or the ancillary data does not provide any. Error code: %d\n", err );
+                                                printf( "Could not open ancillary data. Error code: %d\n", err );
                                             }
                                         }
                                         else
                                         {
-                                            printf( "Could not open ancillary data. Error code: %d\n", err );
+                                            printf( "Captured frame is not complete. Cannot access ancillary data. Frame status: %d\n", err );
                                         }
                                     }
                                     else
