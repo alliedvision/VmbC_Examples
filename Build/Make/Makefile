@@ -19,6 +19,7 @@ EXAMPLES			= AsynchronousGrab \
 				  ForceIP \
 				  ListCameras \
 				  ListFeatures \
+				  ListAncillaryDataFeatures \
 				  SynchronousGrab
 
 $(PROJECT_ROOT_DIR)/%/Build/Make/$(BIN_DIR)/%: $(PROJECT_ROOT_DIR)/%/Build/Make/Makefile
@@ -42,6 +43,7 @@ clean:
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ForceIP/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListCameras/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListFeatures/Build/Make,clean)
+	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListAncillaryDataFeatures/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/SynchronousGrab/Build/Make,clean)
 
 $(BIN_DIR):
