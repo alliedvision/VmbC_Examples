@@ -26,7 +26,8 @@ INCLUDE_DIRS        = -I$(SOURCE_DIR) \
                       -I$(EXAMPLES_DIR) \
 
 LIBS                = $(VIMBAC_LIBS) \
-                      $(AVTIMAGETRANSFORM_LIBS)
+                      $(AVTIMAGETRANSFORM_LIBS) \
+					  -lrt
 
 DEFINES             =
 
