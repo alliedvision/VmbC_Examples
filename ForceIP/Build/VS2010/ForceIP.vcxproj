@@ -19,8 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>
-    </ProjectGuid>
+    <ProjectGuid>{607A9CA3-DB40-10A8-6DF2-D6E6948FCB77}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ForceIP</RootNamespace>
   </PropertyGroup>
