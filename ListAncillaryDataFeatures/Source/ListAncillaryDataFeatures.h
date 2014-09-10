@@ -29,6 +29,6 @@
 #ifndef LIST_FEATURES_H_
 #define LIST_FEATURES_H_
 
-void ListAncillaryDataFeatures (const char *pStrID);
+void ListAncillaryDataFeatures( const char *pStrID );
 
 #endif
