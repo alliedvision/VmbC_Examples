@@ -1,15 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        ListAncillaryDataFeatures.h
+  File:         ListAncillaryDataFeatures.h
 
-  Description: The ListAncillaryDataFeatures example will list all available features of a
-               camera that are found by VimbaC.
+  Description:  The ListAncillaryDataFeatures example will list all available
+                features of a camera that are found by VimbaC.
 
 -------------------------------------------------------------------------------
 
@@ -29,6 +29,6 @@
 #ifndef LIST_FEATURES_H_
 #define LIST_FEATURES_H_
 
-void ListAncillaryDataFeatures( const char *pStrID );
+void ListAncillaryDataFeatures (const char *pStrID);
 
 #endif

@@ -37,289 +37,289 @@
 
 void ListAncillaryDataFeatures( const char *pStrID )
 {
-    VmbError_t          err             = VmbErrorSuccess;
-    VmbHandle_t         hCamera         = NULL;                                                     // A handle to our camera
-    VmbHandle_t         hAncillaryData  = NULL;                                                     // A handle to ancillary data
-    VmbCameraInfo_t*    pCameras        = NULL;                                                     // A list of camera infos
-    VmbUint32_t         nCount          = 0;                                                        // The number of found cameras
-    VmbFeatureInfo_t*   pFeatures       = NULL;                                                     // A list of ancillary data features
-    VmbFrame_t          Frame;                                                                      // A single frame
-    VmbInt64_t          nPLS            = 0;                                                        // The payload size of a frame
+    VmbError_t          err                 = VmbErrorSuccess;
+    VmbHandle_t         cameraHandle        = NULL;                                                 // A handle to our camera
+    VmbHandle_t         ancillaryDataHandle = NULL;                                                 // A handle to ancillary data
+    VmbCameraInfo_t*    pCameras            = NULL;                                                 // A list of camera infos
+    VmbUint32_t         count               = 0;                                                    // The number of found cameras
+    VmbFeatureInfo_t*   pFeatures           = NULL;                                                 // A list of ancillary data features
+    VmbFrame_t          frame;                                                                      // A single frame
+    VmbInt64_t          pls                 = 0;                                                    // The payload size of a frame
     // The volatile value of a feature
-    VmbInt64_t          nValue          = 0;                                                        // An int value
-    double              fValue          = 0.0;                                                      // A float value
-    char                *pStrValue      = NULL;                                                     // A string value
-    VmbBool_t           bValue          = VmbBoolFalse;                                             // A bool value
-    VmbUint32_t         i               = 0;
+    double              doubleValue         = 0.0;                                                  // A float value
+    char                *pStringValue       = NULL;                                                 // A string value
+    VmbBool_t           boolValue           = VmbBoolFalse;                                         // A bool value
+    VmbInt64_t          intValue            = 0;                                                    // An int value
+    VmbUint32_t         i                   = 0;
 
     err = VmbStartup();                                                                             // Initialize the Vimba API
     PrintVimbaVersion();                                                                            // Print Vimba Version
-    if ( VmbErrorSuccess == err )
+    if (VmbErrorSuccess == err)
     {
         DiscoverGigECameras();                                                                      // Seek for GigE cameras on the network
 
-        if ( NULL == pStrID )                                                                       // If no ID was provided use the first camera
+        if( NULL == pStrID )                                                                        // If no ID was provided use the first camera
         {
-            err = VmbCamerasList(   NULL,                                                           // Get the amount of known cameras
+            err = VmbCamerasList (  NULL,                                                           // Get the amount of known cameras
                                     0,
-                                    &nCount,
+                                    &count,
                                     sizeof *pCameras );
-            if (    VmbErrorSuccess == err
-                 && 0 < nCount )
+            if (   VmbErrorSuccess == err
+                && 0 < count)
             {
-                pCameras = (VmbCameraInfo_t*)malloc( nCount * sizeof *pCameras );
-                if ( NULL != pCameras )
+                pCameras = (VmbCameraInfo_t*)malloc (count * sizeof *pCameras);
+                if (NULL != pCameras)
                 {
                     err = VmbCamerasList(   pCameras,                                               // Get all known cameras
-                                            nCount,
-                                            &nCount,
-                                            sizeof *pCameras );
+                                            count,
+                                            &count,
+                                            sizeof *pCameras);
                     if (    VmbErrorSuccess == err
-                         || VmbErrorMoreData == err )                                               // If a new camera was connected since we queried
+                        ||  VmbErrorMoreData == err)                                                // If a new camera was connected since we queried
                     {                                                                               // for the amount of cameras, we can ignore that one
-                        if( 0 < nCount )
+                        if (0 < count)
                         {
                             err = VmbCameraOpen(    pCameras[0].cameraIdString,                     // Finally open the first one
                                                     VmbAccessModeFull,
-                                                    &hCamera );
+                                                    &cameraHandle );
                         }
                         else
                         {
-                            printf( "Camera lost.\n" );
+                            printf ("Camera lost.\n");
                         }
                     }
                     else
                     {
-                        printf( "Could not list cameras. Error code: %d\n", err );
+                        printf ("Could not list cameras. Error code: %d\n", err);
                     }
 
-                    free( pCameras );
+                    free (pCameras);
                     pCameras = NULL;
                 }
                 else
                 {
-                    printf( "Could not allocate camera list.\n" );
+                    printf ("Could not allocate camera list.\n");
                 }
             }
             else
             {
-                printf( "Could not list cameras or no cameras present. Error code: %d\n", err );
+                printf ("Could not list cameras or no cameras present. Error code: %d\n", err);
             }
         }
         else
         {
             err = VmbCameraOpen(    pStrID,                                                         // Open the camera with the given ID
                                     VmbAccessModeFull,
-                                    &hCamera );
+                                    &cameraHandle);
         }
 
-        if ( VmbErrorSuccess == err )
+        if (VmbErrorSuccess == err)
         {
-            err = VmbFeatureBoolSet( hCamera, "ChunkModeActive", VmbBoolTrue );                     // Enable ancillary data
-            if ( VmbErrorSuccess == err )
+            err = VmbFeatureBoolSet (cameraHandle, "ChunkModeActive", VmbBoolTrue);                 // Enable ancillary data
+            if (VmbErrorSuccess == err)
             {
                 // In order to fill the ancillary data we need to fill frame
-                printf( "Capture a single frame\n" );
+                printf ("Capture a single frame\n");
 
-                err = VmbFeatureIntGet( hCamera, "PayloadSize", &nPLS );
-                if ( VmbErrorSuccess == err )
+                err = VmbFeatureIntGet (cameraHandle, "PayloadSize", &pls);
+                if (VmbErrorSuccess == err)
                 {
-                    Frame.bufferSize = (VmbUint32_t)nPLS;
-                    Frame.buffer = malloc( nPLS * sizeof( unsigned char ) );
-                    if ( NULL != Frame.buffer )
+                    frame.bufferSize = (VmbUint32_t)pls;
+                    frame.buffer = malloc (pls * sizeof (unsigned char));
+                    if (NULL != frame.buffer)
                     {
-                        err = VmbCaptureStart( hCamera );
-                        if ( VmbErrorSuccess == err )
+                        err = VmbCaptureStart (cameraHandle);
+                        if (VmbErrorSuccess == err)
                         {
-                            err = VmbCaptureFrameQueue( hCamera, &Frame, NULL );
-                            if ( VmbErrorSuccess == err )
+                            err = VmbCaptureFrameQueue (cameraHandle, &frame, NULL);
+                            if (VmbErrorSuccess == err)
                             {
-                                err = VmbFeatureCommandRun( hCamera, "AcquisitionStart" );
-                                if ( VmbErrorSuccess == err )
+                                err = VmbFeatureCommandRun (cameraHandle, "AcquisitionStart");
+                                if (VmbErrorSuccess == err)
                                 {
-                                    err = VmbCaptureFrameWait( hCamera, &Frame, 1000 );
-                                    if ( VmbErrorSuccess == err )
+                                    err = VmbCaptureFrameWait (cameraHandle, &frame, 1000);
+                                    if (VmbErrorSuccess == err)
                                     {
-                                        if ( VmbFrameStatusComplete == Frame.receiveStatus )
+                                        if (VmbFrameStatusComplete == frame.receiveStatus)
                                         {
-                                            err = VmbAncillaryDataOpen( &Frame, &hAncillaryData );
-                                            if ( VmbErrorSuccess == err )
+                                            err = VmbAncillaryDataOpen (&frame, &ancillaryDataHandle);
+                                            if (VmbErrorSuccess == err)
                                             {
                                                 // Query all static details as well as the value of all fetched ancillary data features and print them out.
-                                                err = VmbFeaturesList(  hAncillaryData,             // Get the amount of features
+                                                err = VmbFeaturesList(  ancillaryDataHandle,        // Get the amount of features
                                                                         NULL,
                                                                         0,
-                                                                        &nCount,
-                                                                        sizeof *pFeatures );
+                                                                        &count,
+                                                                        sizeof *pFeatures);
                                                 if (    VmbErrorSuccess == err
-                                                     && 0 < nCount )
+                                                    &&  0 < count)
                                                 {
-                                                    pFeatures = (VmbFeatureInfo_t *)malloc( nCount * sizeof *pFeatures );
-                                                    if ( NULL != pFeatures )
+                                                    pFeatures = (VmbFeatureInfo_t *)malloc (count * sizeof *pFeatures);
+                                                    if (NULL != pFeatures)
                                                     {
-                                                        err = VmbFeaturesList(  hAncillaryData,     // Get the features
+                                                        err = VmbFeaturesList(  ancillaryDataHandle,    // Get the features
                                                                                 pFeatures,
-                                                                                nCount,
-                                                                                &nCount,
-                                                                                sizeof *pFeatures );
-                                                        if ( VmbErrorSuccess == err )
+                                                                                count,
+                                                                                &count,
+                                                                                sizeof *pFeatures);
+                                                        if (VmbErrorSuccess == err)
                                                         {
-                                                            for ( i=0; i<nCount; ++i )
+                                                            for (i=0; i<count; ++i)
                                                             {
-                                                                printf( "/// Feature Name: %s\n", ( NULL == pFeatures[i].name ? "" : pFeatures[i].name ));
-                                                                printf( "/// Display Name: %s\n", ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName ));
-                                                                printf( "/// Tooltip: %s\n", ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip ));
-                                                                printf( "/// Description: %s\n", ( NULL == pFeatures[i].description ? "" : pFeatures[i].description ));
-                                                                printf( "/// SNFC Namespace: %s\n", ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace ));
-                                                                printf( "/// Value: " );
+                                                                printf ("/// Feature Name: %s\n", ( NULL == pFeatures[i].name ? "" : pFeatures[i].name));
+                                                                printf ("/// Display Name: %s\n", ( NULL == pFeatures[i].displayName ? "" : pFeatures[i].displayName));
+                                                                printf ("/// Tooltip: %s\n", ( NULL == pFeatures[i].tooltip ? "" : pFeatures[i].tooltip));
+                                                                printf ("/// Description: %s\n", ( NULL == pFeatures[i].description ? "" : pFeatures[i].description));
+                                                                printf ("/// SNFC Namespace: %s\n", ( NULL == pFeatures[i].sfncNamespace ? "" : pFeatures[i].sfncNamespace));
+                                                                printf ("/// Value: ");
 
-                                                                switch ( pFeatures[i].featureDataType )
+                                                                switch (pFeatures[i].featureDataType)
                                                                 {
                                                                 case VmbFeatureDataBool:
-                                                                    err = VmbFeatureBoolGet( hAncillaryData, pFeatures[i].name, &bValue );
-                                                                    if ( VmbErrorSuccess == err )
+                                                                    err = VmbFeatureBoolGet (ancillaryDataHandle, pFeatures[i].name, &boolValue);
+                                                                    if (VmbErrorSuccess == err)
                                                                     {
-                                                                        printf( "%d\n", bValue );
+                                                                        printf ("%d\n", boolValue);
                                                                     }
                                                                     break;
                                                                 case VmbFeatureDataEnum:
-                                                                    err = VmbFeatureEnumGet( hAncillaryData, pFeatures[i].name, (const char**)&pStrValue );
-                                                                    if ( VmbErrorSuccess == err )
+                                                                    err = VmbFeatureEnumGet (ancillaryDataHandle, pFeatures[i].name, (const char**)&pStringValue);
+                                                                    if (VmbErrorSuccess == err)
                                                                     {
-                                                                        printf( "%s\n", pStrValue );
+                                                                        printf ("%s\n", pStringValue);
                                                                     }
                                                                     break;
                                                                 case VmbFeatureDataFloat:
-                                                                    err = VmbFeatureFloatGet( hAncillaryData, pFeatures[i].name, &fValue );
+                                                                    err = VmbFeatureFloatGet (ancillaryDataHandle, pFeatures[i].name, &doubleValue);
                                                                     {
-                                                                        printf( "%f\n", fValue );
+                                                                        printf ("%f\n", doubleValue);
                                                                     }
                                                                     break;
                                                                 case VmbFeatureDataInt:
-                                                                    err = VmbFeatureIntGet( hAncillaryData, pFeatures[i].name, &nValue );
+                                                                    err = VmbFeatureIntGet (ancillaryDataHandle, pFeatures[i].name, &intValue);
                                                                     {
-                                                                        printf( "%lld\n", nValue );
+                                                                        printf ("%lld\n", intValue);
                                                                     }
                                                                     break;
                                                                 case VmbFeatureDataString:
                                                                     {
-                                                                        VmbUint32_t nSize = 0;
-                                                                        err = VmbFeatureStringGet( hAncillaryData, pFeatures[i].name, NULL, 0, &nSize );
+                                                                        VmbUint32_t size = 0;
+                                                                        err = VmbFeatureStringGet (ancillaryDataHandle, pFeatures[i].name, NULL, 0, &size);
                                                                         if (    VmbErrorSuccess == err
-                                                                             && 0 < nSize )
+                                                                            &&  0 < size )
                                                                         {
-                                                                            pStrValue = (char*)malloc( sizeof *pStrValue * nSize );
-                                                                            if ( NULL != pStrValue )
+                                                                            pStringValue = (char*)malloc (sizeof *pStringValue * intValue);
+                                                                            if (NULL != pStringValue)
                                                                             {
-                                                                                err = VmbFeatureStringGet( hAncillaryData, pFeatures[i].name, pStrValue, nSize, &nSize );
-                                                                                if ( VmbErrorSuccess == err )
+                                                                                err = VmbFeatureStringGet (ancillaryDataHandle, pFeatures[i].name, pStringValue, size, &size);
+                                                                                if (VmbErrorSuccess == err)
                                                                                 {
-                                                                                    printf( "%s\n", pStrValue );
+                                                                                    printf ("%s\n", pStringValue);
                                                                                 }
-                                                                                free( pStrValue );
-                                                                                pStrValue = NULL;
+                                                                                free (pStringValue);
+                                                                                pStringValue = NULL;
                                                                             }
                                                                             else
                                                                             {
-                                                                                printf( "Could not allocate string.\n" );
+                                                                                printf ("Could not allocate string.\n");
                                                                             }
                                                                         }
                                                                     }
                                                                     break;
                                                                 case VmbFeatureDataCommand:
                                                                 default:
-                                                                    printf( "[None]\n" );
+                                                                    printf ("[None]\n");
                                                                     break;
                                                                 }
 
-                                                                if ( VmbErrorSuccess != err )
+                                                                if (VmbErrorSuccess != err)
                                                                 {
-                                                                    printf( "Could not get feature value. Error code: %d\n", err );
+                                                                    printf ("Could not get feature value. Error code: %d\n", err);
                                                                 }
 
-                                                                printf( "\n" );
+                                                                printf ("\n");
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            printf( "Could not get features. Error code: %d\n", err );
+                                                            printf ("Could not get features. Error code: %d\n", err);
                                                         }
 
-                                                        free(pFeatures);
+                                                        free (pFeatures);
                                                         pFeatures = NULL;
                                                     }
                                                     else
                                                     {
-                                                        printf( "Could not allocate feature list.\n" );
+                                                        printf ("Could not allocate feature list.\n");
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    printf( "Could not get features or the ancillary data does not provide any. Error code: %d\n", err );
+                                                    printf ("Could not get features or the ancillary data does not provide any. Error code: %d\n", err);
                                                 }
                                             }
                                             else
                                             {
-                                                printf( "Could not open ancillary data. Error code: %d\n", err );
+                                                printf ("Could not open ancillary data. Error code: %d\n", err);
                                             }
                                         }
                                         else
                                         {
-                                            printf( "Captured frame is not complete. Cannot access ancillary data. Frame status: %d\n", err );
+                                            printf ("Captured frame is not complete. Cannot access ancillary data. Frame status: %d\n", err);
                                         }
                                     }
                                     else
                                     {
-                                        printf( "Could not capture frame. Error code: %d\n", err );
+                                        printf ("Could not capture frame. Error code: %d\n", err);
                                     }
-                                    free( Frame.buffer );
-                                    Frame.buffer = NULL;
+                                    free (frame.buffer);
+                                    frame.buffer = NULL;
                                 }
                                 else
                                 {
-                                    printf( "Could not start acquisition on the camera. Error code: %d\n", err );
+                                    printf ("Could not start acquisition on the camera. Error code: %d\n", err);
                                 }
                             }
                             else
                             {
-                                printf( "Could not queue frame. Error code: %d\n", err );
+                                printf ("Could not queue frame. Error code: %d\n", err);
                             }
                         }
                         else
                         {
-                            printf( "Could not start capture engine on the host. Error code: %d\n", err );
+                            printf ("Could not start capture engine on the host. Error code: %d\n", err);
                         }
                     }
                     else
                     {
-                        printf( "Could not allocate image buffer.\n" );
+                        printf ("Could not allocate image buffer.\n");
                     }
                 }
                 else
                 {
-                    printf( "Could not get payload size. Cannot acquire frame. Error code: %d\n", err );
+                    printf ("Could not get payload size. Cannot acquire frame. Error code: %d\n", err);
                 }
             }
             else if ( VmbErrorNotFound == err )
             {
-                printf( "The camera does not provide ancillary data. Error code: %d\n", err );
+                printf ("The camera does not provide ancillary data. Error code: %d\n", err);
             }
             else
             {
-                printf( "Could not query for the presence of ancillary data. Error code: %d\n", err );
+                printf ("Could not query for the presence of ancillary data. Error code: %d\n", err);
             }
 
-            VmbCameraClose( hCamera );                                                              // Close the camera
+            VmbCameraClose (cameraHandle);                                                              // Close the camera
         }
         else
         {
-            printf( "Could not open camera. Error code: %d\n", err );
+            printf ("Could not open camera. Error code: %d\n", err);
         }
         
-        VmbShutdown();                                                                              // Close Vimba
+        VmbShutdown();                                                                                  // Close Vimba
     }
     else
     {
-        printf( "Could not start system. Error code: %d\n", err );
+        printf ("Could not start system. Error code: %d\n", err);
     }
 }
