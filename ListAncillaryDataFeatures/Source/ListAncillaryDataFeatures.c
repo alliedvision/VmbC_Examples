@@ -35,6 +35,12 @@
 #include <../../Common/PrintVimbaVersion.h>
 #include <../../Common/DiscoverGigECameras.h>
 
+// Purpose: Fetches features from the ancillary data. Ancillary data is part of a frame,
+//          therefore we need to capture a single frame beforehand.
+//          If no camera ID string was passed we use the first camera found.
+//
+// Parameter:
+// [in ]    const char* pStrID          The ID of the camera to use. May be NULL.
 void ListAncillaryDataFeatures( const char *pStrID )
 {
     VmbError_t          err                 = VmbErrorSuccess;
@@ -77,7 +83,7 @@ void ListAncillaryDataFeatures( const char *pStrID )
                     if(     VmbErrorSuccess == err
                         ||  VmbErrorMoreData == err )                                               // If a new camera was connected since we queried
                     {                                                                               // for the amount of cameras, we can ignore that one
-                        if (0 < count)
+                        if( 0 < count )
                         {
                             err = VmbCameraOpen(    pCameras[0].cameraIdString,                     // Finally open the first one
                                                     VmbAccessModeFull,
@@ -85,7 +91,7 @@ void ListAncillaryDataFeatures( const char *pStrID )
                         }
                         else
                         {
-                            printf( "Camera lost.\n" );
+                            printf( "Camera lost. Error code: %d\n", err );
                         }
                     }
                     else
@@ -118,8 +124,7 @@ void ListAncillaryDataFeatures( const char *pStrID )
             err = VmbFeatureBoolSet( cameraHandle, "ChunkModeActive", VmbBoolTrue );                // Enable ancillary data
             if( VmbErrorSuccess == err )
             {
-                // In order to fill the ancillary data we need to fill frame
-                printf( "Capture a single frame\n" );
+                printf( "Capture a single frame\n" );                                               // In order to fill the ancillary data we need to fill a frame
 
                 err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &pls );
                 if( VmbErrorSuccess == err )

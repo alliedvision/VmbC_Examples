@@ -30,6 +30,8 @@
 
 #include <VimbaC/Include/VimbaC.h>
 
+// Purpose: Discovers GigE cameras if GigE TL is present.
+//          Discovery is switched on only once so that the API can detect all currently connected cameras.
 VmbError_t DiscoverGigECameras();
 
 #endif

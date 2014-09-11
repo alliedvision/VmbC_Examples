@@ -26,9 +26,15 @@
 
 =============================================================================*/
 
-#ifndef LIST_FEATURES_H_
-#define LIST_FEATURES_H_
+#ifndef LIST_ANCILLARY_DATA_FEATURES_H_
+#define LIST_ANCILLARY_DATA_FEATURES_H_
 
+// Purpose: Fetches features from the ancillary data. Ancillary data is part of a frame,
+//          therefore we need to capture a single frame beforehand.
+//          If no camera ID string was passed we use the first camera found.
+//
+// Parameter:
+// [in ]    const char* pStrID          The ID of the camera to use. May be NULL.
 void ListAncillaryDataFeatures( const char *pStrID );
 
 #endif

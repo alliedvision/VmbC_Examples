@@ -35,24 +35,23 @@
     #include <unistd.h>
 #endif
 
-/**Discover GigE cameras if GigE TL is present.
-*/
-
+// Purpose: Discovers GigE cameras if GigE TL is present.
+//          Discovery is switched on only once so that the API can detect all currently connected cameras.
 VmbError_t DiscoverGigECameras()
 {
     VmbError_t  err     = VmbErrorSuccess;
     VmbBool_t   bIsGigE = 0;
 
-    err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );            // Is Vimba connected to a GigE transport layer?
+    err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );                // Is Vimba connected to a GigE transport layer?
     if ( VmbErrorSuccess == err )
     {
-        if( bIsGigE )
+        if( true == bIsGigE )
         {
-            err = VmbFeatureIntSet( gVimbaHandle, "GeVDiscoveryAllDuration", 250 ); // Set the waiting duration for discovery packets to return. If not set the default of 150 ms is used.
-            if ( VmbErrorSuccess == err )
+            err = VmbFeatureIntSet( gVimbaHandle, "GeVDiscoveryAllDuration", 250 );     // Set the waiting duration for discovery packets to return. If not set the default of 150 ms is used.
+            if( VmbErrorSuccess == err )
             {
-                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce" );  // Send discovery packets to GigE cameras and wait 250 ms until they are answered
-                if ( VmbErrorSuccess != err )
+                err = VmbFeatureCommandRun( gVimbaHandle, "GeVDiscoveryAllOnce" );      // Send discovery packets to GigE cameras and wait 250 ms until they are answered
+                if( VmbErrorSuccess != err )
                 {
                     printf( "Could not ping GigE cameras over the network. Reason: %d\n", err );
                 }
