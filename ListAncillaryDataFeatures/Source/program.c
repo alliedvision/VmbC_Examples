@@ -42,7 +42,7 @@ int main( int argc, char* argv[] )
         printf( "Usage: ListAncillaryDataFeatures [CameraID]\n\n" );
         printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
     }
-    else if ( 2 == argc )
+    else if( 2 == argc )
     {
         ListAncillaryDataFeatures( (const char*)argv[1] );
     }

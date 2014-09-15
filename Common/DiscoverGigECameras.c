@@ -25,27 +25,29 @@
 
 =============================================================================*/
 
-#include "DiscoverGigECameras.h"
 #include <stdio.h>
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <VimbaC/Include/VimbaC.h>
 
-#ifdef WIN32
-    #include <windows.h>
-#else
-    #include <unistd.h>
-#endif
+#include "DiscoverGigECameras.h"
+
 
 // Purpose: Discovers GigE cameras if GigE TL is present.
 //          Discovery is switched on only once so that the API can detect all currently connected cameras.
 VmbError_t DiscoverGigECameras()
 {
     VmbError_t  err     = VmbErrorSuccess;
-    VmbBool_t   bIsGigE = 0;
+    VmbBool_t   isGigE  = VmbBoolFalse;
 
-    err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &bIsGigE );                // Is Vimba connected to a GigE transport layer?
+    err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &isGigE );                 // Is Vimba connected to a GigE transport layer?
     if ( VmbErrorSuccess == err )
     {
-        if( true == bIsGigE )
+        if( VmbBoolTrue == isGigE )
         {
             err = VmbFeatureIntSet( gVimbaHandle, "GeVDiscoveryAllDuration", 250 );     // Set the waiting duration for discovery packets to return. If not set the default of 150 ms is used.
             if( VmbErrorSuccess == err )

@@ -25,9 +25,10 @@
 
 =============================================================================*/
 
-#ifndef PRINT_VIMBA_VERTION_H_
+#ifndef PRINT_VIMBA_VERSION_H_
 #define PRINT_VIMBA_VERSION_H_
 
+// Prints the Vimba version information.
 void PrintVimbaVersion();
 
 #endif
