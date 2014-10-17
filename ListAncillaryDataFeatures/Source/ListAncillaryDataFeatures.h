@@ -35,6 +35,6 @@
 //
 // Parameter:
 // [in ]    const char* pStrID          The ID of the camera to use. May be NULL.
-void ListAncillaryDataFeatures( const char *pStrID );
+void ListAncillaryDataFeatures( const char* pStrID );
 
 #endif

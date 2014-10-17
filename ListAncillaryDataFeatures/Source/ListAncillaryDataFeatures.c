@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  File:         ListAncillaryDataFeatures.cpp
+  File:         ListAncillaryDataFeatures.c
 
   Description:  The ListAncillaryDataFeatures example will list all available
                 features of the ancillary data that are found by VimbaC.
@@ -41,7 +41,7 @@
 //
 // Parameter:
 // [in ]    const char* pStrID          The ID of the camera to use. May be NULL.
-void ListAncillaryDataFeatures( const char *pStrID )
+void ListAncillaryDataFeatures( const char* pStrID )
 {
     VmbError_t          err                 = VmbErrorSuccess;
     VmbHandle_t         cameraHandle        = NULL;                                                 // A handle to our camera
@@ -53,7 +53,7 @@ void ListAncillaryDataFeatures( const char *pStrID )
     VmbInt64_t          pls                 = 0;                                                    // The payload size of a frame
     // The volatile value of a feature
     double              doubleValue         = 0.0;                                                  // A float value
-    char                *pStringValue       = NULL;                                                 // A string value
+    char*               pStringValue        = NULL;                                                 // A string value
     VmbBool_t           boolValue           = VmbBoolFalse;                                         // A bool value
     VmbInt64_t          intValue            = 0;                                                    // An int value
     VmbUint32_t         i                   = 0;

@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  File:        program.cpp
+  File:        program.c
 
   Description: Main entry point of ListAncillaryDataFeatures example of VimbaC.
 
