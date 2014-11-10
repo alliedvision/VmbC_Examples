@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Example Index="6" Id="C_SerialIO" Title="SerialIO" Language="C" Category="Examples" >
+  <Description>Console application to test the serial port of a camera with a serial port of the PC.</Description>
+  <Application>
+    <Screenshot>VimbaC_Examples/SerialIO/Screenshot.png</Screenshot>
+    <Executable>VimbaC_Examples/Bin/Win32/SerialIO.exe</Executable>
+  </Application>
+  <ProjectFile>
+    <Text>Microsoft Visual Studio 2010 Solution</Text>
+    <Link>VimbaC_Examples/SerialIO/Build/VS2010/SerialIO.sln</Link>
+  </ProjectFile>
+</Example>

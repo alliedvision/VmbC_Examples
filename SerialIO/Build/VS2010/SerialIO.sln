@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{5982E978-5D86-4C74-B12D-CEAAD8748858}") = "SerialIO", "SerialIO.vcxproj", "{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Debug|Win32.Build.0 = Debug|Win32
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Debug|x64.ActiveCfg = Debug|x64
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Debug|x64.Build.0 = Debug|x64
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|Win32.ActiveCfg = Release|Win32
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|Win32.Build.0 = Release|Win32
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|x64.ActiveCfg = Release|x64
+		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
