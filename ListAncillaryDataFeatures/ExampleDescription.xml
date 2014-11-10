@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<Example Index="2" Id="C_ListAncillaryDataFeatures" Title="ListAncillaryDataFeatures" Language="C" Category="Examples" >
+<Example Index="5" Id="C_ListAncillaryDataFeatures" Title="ListAncillaryDataFeatures" Language="C" Category="Examples" >
   <Description>Console application to list features of the ancillary data of a given camera.</Description>
   <Application>
     <Screenshot>VimbaC_Examples/ListAncillaryDataFeatures/Screenshot.png</Screenshot>
