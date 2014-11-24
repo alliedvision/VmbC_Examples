@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <VimbaC/Include/VimbaC.h>
 
-// Prints the Vimba version information.
+// Purpose: Prints the Vimba version information.
 void PrintVimbaVersion()
 {
     VmbVersionInfo_t    version_info;
