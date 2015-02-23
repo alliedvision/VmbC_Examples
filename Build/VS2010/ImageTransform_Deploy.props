@@ -5,16 +5,16 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(VIMBA_HOME)\AVTImageTransform\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VIMBA_HOME)\VimbaImageTransform\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(VIMBA_HOME)\AVTImageTransform\Lib\Win$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VIMBA_HOME)\VimbaImageTransform\Lib\Win$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent />
     <ResourceCompile />
     <PostBuildEvent>
       <Command>%(Command)
-xcopy "$(VIMBA_HOME)\AVTImageTransform\Bin\Win$(PlatformArchitecture)\*.*" "$(TargetDir)" /Y
+xcopy "$(VIMBA_HOME)\VimbaImageTransform\Bin\Win$(PlatformArchitecture)\*.*" "$(TargetDir)" /Y
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

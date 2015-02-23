@@ -98,7 +98,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>VimbaC.lib;AvtImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VimbaC.lib;VimbaImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Build\vs2010\$(Platform)\$(Configuration);..\..\..\..\..\AVTImageTransform\UniTransform\build\vs2010\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>VimbaC.lib;AVTImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VimbaC.lib;VimbaImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Build\vs2010\$(Platform)\$(Configuration);..\..\..\..\..\AVTImageTransform\UniTransform\build\vs2010\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -134,7 +134,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>VimbaC.lib;AvtImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VimbaC.lib;VimbaImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Build\vs2010\$(Platform)\$(Configuration);..\..\..\..\..\AVTImageTransform\UniTransform\build\vs2010\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -154,7 +154,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>VimbaC.lib;AVTImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>VimbaC.lib;VimbaImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\Build\vs2010\$(Platform)\$(Configuration);..\..\..\..\..\AVTImageTransform\UniTransform\build\vs2010\$(Platform)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

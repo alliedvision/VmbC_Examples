@@ -19,18 +19,16 @@ COMMON_DIR			= $(PROJECT_ROOT_DIR)/../Common
 
 INCLUDE_DIRS			= $(SOURCE_DIR) \
 				  $(PROJECT_ROOT_DIR)/.. \
-				  $(PROJECT_ROOT_DIR)/../.. \
-				  $(PROJECT_ROOT_DIR)/../../Externals/AVTImageTransform/UniTransform/interface/ \
 
 
 VIMBAC_FILE			= $(DYNAMIC_PREFIX)VimbaC$(DYNAMIC_SUFFIX)
 VIMBAC_BIN			= $(BIN_DIR)/$(VIMBAC_FILE)
 
-AVTIMAGETRANSFORM_FILE		= $(DYNAMIC_PREFIX)AVTImageTransform$(DYNAMIC_SUFFIX)
+AVTIMAGETRANSFORM_FILE		= $(DYNAMIC_PREFIX)VimbaImageTransform$(DYNAMIC_SUFFIX)
 AVTIMAGETRANSFORM_BIN		= $(BIN_DIR)/$(AVTIMAGETRANSFORM_FILE)
 
 LIBS				= VimbaC \
-				  AVTImageTransform \
+				  VimbaImageTransform \
 				  rt
 
 LIB_DIRS			= $(BIN_DIR)
