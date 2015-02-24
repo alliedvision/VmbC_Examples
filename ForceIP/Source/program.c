@@ -37,9 +37,9 @@
 
 int main( int argc, char* argv[] )
 {
-    printf( "\n//////////////////////////////////////\n" );
-    printf( "/// AVT Vimba API Force IP Example ///\n" );
-    printf( "//////////////////////////////////////\n\n" );
+    printf( "\n//////////////////////////////////\n" );
+    printf( "/// Vimba API Force IP Example ///\n" );
+    printf( "//////////////////////////////////\n\n" );
 
     if(     4 > argc
         ||  5 < argc )

@@ -32,9 +32,9 @@
 int main( int argc, char* argv[] )
 {
     printf( "\n" );
-    printf( "//////////////////////////////////////////////////////////\n" );
-    printf( "/// AVT Vimba API List Ancillary Data Features Example ///\n" );
-    printf( "//////////////////////////////////////////////////////////\n" );
+    printf( "//////////////////////////////////////////////////////\n" );
+    printf( "/// Vimba API List Ancillary Data Features Example ///\n" );
+    printf( "//////////////////////////////////////////////////////\n" );
     printf( "\n" );
 
     if( 2 < argc )

@@ -42,9 +42,9 @@ int main( int argc, char* argv[] )
     int             i                       = 0;                // Counter for some iteration
     char*           pParameter              = NULL;             // The command line parameter
 
-    printf( "///////////////////////////////////////////////\n" );
-    printf( "/// AVT Vimba API Asynchronous Grab Example ///\n" );
-    printf( "///////////////////////////////////////////////\n\n" );
+    printf( "///////////////////////////////////////////\n" );
+    printf( "/// Vimba API Asynchronous Grab Example ///\n" );
+    printf( "///////////////////////////////////////////\n\n" );
 
     //////////////////////
     //Parse command line//

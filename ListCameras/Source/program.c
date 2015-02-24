@@ -31,9 +31,9 @@
 
 int main( int argc, char* argv[] )
 {
-    printf( "//////////////////////////////////////////\n" );
-    printf( "/// AVT Vimba API List Cameras Example ///\n" );
-    printf( "//////////////////////////////////////////\n\n" );
+    printf( "//////////////////////////////////////\n" );
+    printf( "/// Vimba API List Cameras Example ///\n" );
+    printf( "//////////////////////////////////////\n\n" );
 
     if ( 1 < argc )
     {
