@@ -32,9 +32,9 @@
 int main( int argc, char* argv[] )
 {
     printf( "\n" );
-    printf( "///////////////////////////////////////\n" );
-    printf( "/// AVT Vimba API Serial IO Example ///\n" );
-    printf( "///////////////////////////////////////\n" );
+    printf( "///////////////////////////////////\n" );
+    printf( "/// Vimba API Serial IO Example ///\n" );
+    printf( "///////////////////////////////////\n" );
     printf( "\n" );
 
     if( 3 < argc )
