@@ -72,7 +72,7 @@ int main( int argc, char* argv[] )
 
                 eFrameInfos = FrameInfos_Show;
             }
-            if( 0 == strcmp( pParameter, "/c" ))
+            else if( 0 == strcmp( pParameter, "/c" ))
             {
                 if (bPrintHelp )
                 {
