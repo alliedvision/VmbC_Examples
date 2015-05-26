@@ -54,7 +54,9 @@ int main( int argc, char* argv[] )
         printf( "         to the host PC directly.\n\n" );
         printf( "For example to change the IP address of a camera with the MAC address 0x0F3101D540\nto 169.254.1.1 in a class B network call:\n\n" );
         printf( "ForceIP 0x0F3101D540 169.254.1.1 255.255.0.0\n\n" );
+#ifndef WIN32
         printf( "To alter cameras in foreign subnets run the program with sudo -E. \n\n" );
+#endif
     }
     else
     {
