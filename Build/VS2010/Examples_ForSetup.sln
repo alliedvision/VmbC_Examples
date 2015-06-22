@@ -1,17 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListCameras", "..\..\ListCameras\Build\VS2010\ListCameras_ForSetup.vcxproj", "{04D4FDC0-8E02-460B-B0EE-56AE872EC010}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListCameras_ForSetup", "..\..\ListCameras\Build\VS2010\ListCameras_ForSetup.vcxproj", "{04D4FDC0-8E02-460B-B0EE-56AE872EC010}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListFeatures", "..\..\ListFeatures\Build\VS2010\ListFeatures_ForSetup.vcxproj", "{C2EDC41C-046B-4913-9182-9E939CD070D6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListFeatures_ForSetup", "..\..\ListFeatures\Build\VS2010\ListFeatures_ForSetup.vcxproj", "{C2EDC41C-046B-4913-9182-9E939CD070D6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SynchronousGrab", "..\..\SynchronousGrab\Build\VS2010\SynchronousGrab_ForSetup.vcxproj", "{E06988BC-2C88-48AF-A09A-F6704F022D24}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SynchronousGrab_ForSetup", "..\..\SynchronousGrab\Build\VS2010\SynchronousGrab_ForSetup.vcxproj", "{E06988BC-2C88-48AF-A09A-F6704F022D24}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ForceIP", "..\..\ForceIP\Build\VS2010\ForceIP_ForSetup.vcxproj", "{607A9CA3-DB40-10A8-6DF2-D6E6948FCB77}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ForceIP_ForSetup", "..\..\ForceIP\Build\VS2010\ForceIP_ForSetup.vcxproj", "{607A9CA3-DB40-10A8-6DF2-D6E6948FCB77}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AsynchronousGrab", "..\..\AsynchronousGrab\Build\VS2010\AsynchronousGrab_ForSetup.vcxproj", "{5F1B1ED7-9DD8-4F7E-B6D8-91B1A5B1CE2F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AsynchronousGrab_ForSetup", "..\..\AsynchronousGrab\Build\VS2010\AsynchronousGrab_ForSetup.vcxproj", "{5F1B1ED7-9DD8-4F7E-B6D8-91B1A5B1CE2F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListAncillaryDataFeatures", "..\..\ListAncillaryDataFeatures\Build\VS2010\ListAncillaryDataFeatures_ForSetup.vcxproj", "{0B027DEC-6DF3-4410-A9D9-36F796D28373}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListAncillaryDataFeatures_ForSetup", "..\..\ListAncillaryDataFeatures\Build\VS2010\ListAncillaryDataFeatures_ForSetup.vcxproj", "{0B027DEC-6DF3-4410-A9D9-36F796D28373}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialIO_ForSetup", "..\..\SerialIO\Build\VS2010\SerialIO_ForSetup.vcxproj", "{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,23 @@ Global
 		{0B027DEC-6DF3-4410-A9D9-36F796D28373}.Template|Win32.ActiveCfg = Release|x64
 		{0B027DEC-6DF3-4410-A9D9-36F796D28373}.Template|x64.ActiveCfg = Release|x64
 		{0B027DEC-6DF3-4410-A9D9-36F796D28373}.Template|x64.Build.0 = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug_OpenMP|Win32.ActiveCfg = Debug|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug_OpenMP|x64.ActiveCfg = Debug|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug_OpenMP|x64.Build.0 = Debug|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug|Win32.Build.0 = Debug|Win32
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug|x64.ActiveCfg = Debug|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Debug|x64.Build.0 = Debug|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release_OpenMP|Win32.ActiveCfg = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release_OpenMP|x64.ActiveCfg = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release_OpenMP|x64.Build.0 = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release|Win32.ActiveCfg = Release|Win32
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release|Win32.Build.0 = Release|Win32
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release|x64.ActiveCfg = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Release|x64.Build.0 = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Template|Win32.ActiveCfg = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Template|x64.ActiveCfg = Release|x64
+		{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}.Template|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

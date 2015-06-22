@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C2EDC41C-046B-4913-9182-9E939CD070D6}</ProjectGuid>
+    <ProjectGuid>{56F9288B-8475-4276-9CAA-F1D04FBAA5D5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SerialIO</RootNamespace>
   </PropertyGroup>
@@ -167,6 +167,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
+    <ClCompile Include="..\..\Source\ComPort_Windows.c" />
     <ClCompile Include="..\..\Source\SerialIO.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
@@ -183,6 +184,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\DiscoverGigECameras.h" />
     <ClInclude Include="..\..\..\Common\PrintVimbaVersion.h" />
+    <ClInclude Include="..\..\Source\ComPort.h" />
     <ClInclude Include="..\..\Source\SerialIO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
