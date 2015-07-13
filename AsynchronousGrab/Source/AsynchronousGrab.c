@@ -35,6 +35,7 @@
 #else
     #include <unistd.h>
     #include <time.h>
+    #include <pthread.h>
 #endif
 
 #include <VimbaC/Include/VimbaC.h>
@@ -64,7 +65,11 @@ VmbUint64_t     g_nFrameID                  = 0;                // ID of last fr
 VmbBool_t       g_bFrameIDValid             = VmbBoolFalse;     // Remember if there was a last ID
 #ifdef WIN32
 double          g_dFrequency                = 0.0;              //Frequency of tick counter in Win32
-#endif //WIN32
+HANDLE          g_hMutex;
+#else
+pthread_mutex_t g_Mutex;
+#endif
+
 //
 // Method: ProcessFrame
 //
@@ -142,6 +147,7 @@ VmbError_t ProcessFrame( VmbFrame_t * pFrame)
     free( DestinationBuffer );
     return -Result;
 }
+
 //
 // Method: GetTime
 //
@@ -160,6 +166,7 @@ double GetTime()
     return ( (double)now.tv_sec ) + ( (double)now.tv_nsec ) / 1000000000.0;
 #endif //WIN32
 }
+
 //
 // Method: FrameCallback
 //
@@ -177,12 +184,18 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
     // if you want to have smooth streaming keep the time you hold the frame short
     //
     VmbBool_t       bShowFrameInfos     = VmbBoolFalse;         // showing frame infos 
-    VmbErrorType    res                 = VmbErrorSuccess;      // accumulating results from functions
     double          dFPS                = 0.0;                  // frames per second calculated
     VmbBool_t       bFPSValid           = VmbBoolFalse;         // indicator if fps calculation was valid
     double          dFrameTime          = 0.0;                  // reference time for frames
     double          dTimeDiff           = 0.0;                  // time difference between frames
     VmbUint64_t     nFramesMissing      = 0;                    // number of missing frames
+
+    // Ensure that a frame callback is not interrupted by a VmbFrameRevoke during shutdown
+#ifdef WIN32
+    WaitForSingleObject( g_hMutex, INFINITE );
+#else
+    pthread_mutex_lock( &g_Mutex );
+#endif
 
     if( FrameInfos_Off != g_eFrameInfos )
     {
@@ -311,9 +324,16 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
     fflush( stdout );
     // requeue the frame so it can be filled again
     VmbCaptureFrameQueue( cameraHandle, pFrame, &FrameCallback );
+
+#ifdef WIN32
+    ReleaseMutex( g_hMutex );
+#else
+    pthread_mutex_unlock( &g_Mutex );
+#endif
 }
+
 //
-// Method StartContinuousImageAcquesition
+// Method StartContinuousImageAcquisition
 //
 // Purpose: starts image acquisition on a given camera
 //
@@ -325,7 +345,6 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
 //
 // Note: Vimba has to be uninitialized and the camera has to allow access mode full
 //
-
 VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing)
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
@@ -337,7 +356,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
     VmbInt64_t          nPayloadSize        = 0;                    // The size of one frame
     int                 i                   = 0;                    // Counting variable
 #ifdef WIN32
-    LARGE_INTEGER nFrequency;
+    LARGE_INTEGER       nFrequency;
 #endif //WIN32
 
     if( !g_bVimbaStarted )
@@ -353,12 +372,17 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
         g_bFrameIDValid             = VmbBoolFalse;
         g_eFrameInfos               = eFrameInfos;
         g_bEnableColorProcessing    = bEnableColorProcessing;
+#ifdef _WIN32
+        g_hMutex                    = CreateMutex( NULL, FALSE, NULL );
+#else
+        pthread_mutex_init(&m_Mutex, NULL);
+#endif
 
 #ifdef WIN32
         QueryPerformanceFrequency( &nFrequency );
         g_dFrequency        = (double)nFrequency.QuadPart;
-#endif //WIN32
-        // startup Vimba
+#endif  //WIN32
+        // Startup Vimba
         err = VmbStartup();
         // Print the version of Vimba
         PrintVimbaVersion();
@@ -512,10 +536,11 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
 
     return err;
 }
+
 //
-// Method: StopContinuouseImageAcquisition
+// Method: StopContinuousImageAcquisition
 //
-// Purpose: stops image acquisition that was started with StartContinuouseImageAcquisition
+// Purpose: stops image acquisition that was started with StartContinuousImageAcquisition
 //
 void StopContinuousImageAcquisition()
 {
@@ -542,6 +567,12 @@ void StopContinuousImageAcquisition()
             // Flush the capture queue
             VmbCaptureQueueFlush( g_CameraHandle );
 
+            // Ensure that revoking is not interrupted by a dangling frame callback 
+#ifdef WIN32
+            WaitForSingleObject( g_hMutex, INFINITE );
+#else
+            pthread_mutex_lock( &g_Mutex );
+#endif
             for( i = 0; i < NUM_FRAMES; i++ )
             {
                 if( NULL != g_Frames[i].buffer )
@@ -551,6 +582,11 @@ void StopContinuousImageAcquisition()
                     memset( &g_Frames[i], 0, sizeof( VmbFrame_t ));
                 }
             }
+#ifdef WIN32
+            ReleaseMutex( g_hMutex );
+#else
+            pthread_mutex_unlock( &g_Mutex );
+#endif
 
             // Close camera
             VmbCameraClose ( g_CameraHandle );
@@ -558,6 +594,11 @@ void StopContinuousImageAcquisition()
         }
         VmbShutdown();
         g_bVimbaStarted = VmbBoolFalse;
+#ifdef WIN32
+        CloseHandle( g_hMutex );
+#else
+        pthread_mutex_destroy(&g_Mutex);
+#endif
     }
 }
 
