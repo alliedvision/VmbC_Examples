@@ -375,7 +375,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
 #ifdef _WIN32
         g_hMutex                    = CreateMutex( NULL, FALSE, NULL );
 #else
-        pthread_mutex_init(&m_Mutex, NULL);
+        pthread_mutex_init(&g_Mutex, NULL);
 #endif
 
 #ifdef WIN32
