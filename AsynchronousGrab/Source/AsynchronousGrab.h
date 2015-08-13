@@ -41,4 +41,10 @@ typedef enum FrameInfos
 VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing );
 void StopContinuousImageAcquisition();
 
+VmbBool_t   CreateApiLock();
+void        DestroyApiLock();
+VmbBool_t   AquireApiLock();
+void        ReleaseApiLock();
+
+
 #endif

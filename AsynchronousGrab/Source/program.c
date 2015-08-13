@@ -31,6 +31,24 @@
 
 #include <AsynchronousGrab.h>
 #include "Common/ErrorCodeToMessage.h"
+
+#ifdef WIN32
+#include <windows.h>
+BOOL WINAPI consoleHandler( DWORD signal)
+{
+    switch( signal) 
+    {
+    case CTRL_C_EVENT:
+    case CTRL_CLOSE_EVENT:
+        AquireApiLock();
+        VmbShutdown();
+        ReleaseApiLock();
+    }
+    return TRUE;
+}
+
+#endif
+
 int main( int argc, char* argv[] )
 {
     VmbError_t      err                     = VmbErrorSuccess;
@@ -41,6 +59,10 @@ int main( int argc, char* argv[] )
     unsigned char   bPrintHelp              = 0;                // Output help?
     int             i                       = 0;                // Counter for some iteration
     char*           pParameter              = NULL;             // The command line parameter
+    CreateApiLock();
+#ifdef WIN32
+    SetConsoleCtrlHandler(consoleHandler,TRUE);
+#endif
 
     printf( "///////////////////////////////////////////\n" );
     printf( "/// Vimba API Asynchronous Grab Example ///\n" );
@@ -161,6 +183,6 @@ int main( int argc, char* argv[] )
             printf( "\nAn error occurred: %s\n", ErrorCodeToMessage( err ) );
         }
     }
-
+    ReleaseApiLock();
     return err;
 }

@@ -65,10 +65,65 @@ VmbUint64_t     g_nFrameID                  = 0;                // ID of last fr
 VmbBool_t       g_bFrameIDValid             = VmbBoolFalse;     // Remember if there was a last ID
 #ifdef WIN32
 double          g_dFrequency                = 0.0;              //Frequency of tick counter in Win32
-HANDLE          g_hMutex;
 #else
-pthread_mutex_t g_Mutex;
 #endif
+
+
+
+#ifdef WIN32
+    HANDLE          g_hMutex = INVALID_HANDLE_VALUE;
+
+    VmbBool_t CreateApiLock()
+    {
+        if( INVALID_HANDLE_VALUE != g_hMutex)
+        {
+            DestroyApiLock();
+        }
+        g_hMutex = CreateMutex( NULL, FALSE, NULL );
+        return INVALID_HANDLE_VALUE != g_hMutex;
+    }
+    void DestroyApiLock()
+    {
+        if( INVALID_HANDLE_VALUE != g_hMutex)
+        {
+            CloseHandle( g_hMutex );
+        }
+    }
+    VmbBool_t AquireApiLock()
+    {
+        if( WAIT_OBJECT_0 == WaitForSingleObject( g_hMutex, INFINITE ) )
+        {
+            return VmbBoolTrue;
+        }
+        return VmbBoolFalse;
+    }
+    void ReleaseApiLock()
+    {
+        ReleaseMutex( g_hMutex );
+    }
+#else
+    pthread_mutex_t g_Mutex = PTHREAD_MUTEX_INITIALIZER;
+    VmbBool_t CreateApiLock()
+    {
+        return VmbBoolTrue;
+    }
+    void DestroyApiLock()
+    {
+    }
+    VmbBool_t AquireApiLock()
+    {
+        if(0 == pthread_mutex_lock( &g_Mutex ) )
+        {
+            return VmbBoolTrue;
+        }
+        return VmbBoolFalse;
+    }
+    void ReleaseApiLock()
+    {
+        pthread_mutex_unlock( &g_Mutex );
+    }
+#endif
+
 
 //
 // Method: ProcessFrame
@@ -191,11 +246,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
     VmbUint64_t     nFramesMissing      = 0;                    // number of missing frames
 
     // Ensure that a frame callback is not interrupted by a VmbFrameRevoke during shutdown
-#ifdef WIN32
-    WaitForSingleObject( g_hMutex, INFINITE );
-#else
-    pthread_mutex_lock( &g_Mutex );
-#endif
+    AquireApiLock();
 
     if( FrameInfos_Off != g_eFrameInfos )
     {
@@ -325,11 +376,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
     // requeue the frame so it can be filled again
     VmbCaptureFrameQueue( cameraHandle, pFrame, &FrameCallback );
 
-#ifdef WIN32
-    ReleaseMutex( g_hMutex );
-#else
-    pthread_mutex_unlock( &g_Mutex );
-#endif
+    ReleaseApiLock();
 }
 
 //
@@ -372,11 +419,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
         g_bFrameIDValid             = VmbBoolFalse;
         g_eFrameInfos               = eFrameInfos;
         g_bEnableColorProcessing    = bEnableColorProcessing;
-#ifdef _WIN32
-        g_hMutex                    = CreateMutex( NULL, FALSE, NULL );
-#else
-        pthread_mutex_init(&g_Mutex, NULL);
-#endif
+
 
 #ifdef WIN32
         QueryPerformanceFrequency( &nFrequency );
@@ -568,11 +611,7 @@ void StopContinuousImageAcquisition()
             VmbCaptureQueueFlush( g_CameraHandle );
 
             // Ensure that revoking is not interrupted by a dangling frame callback 
-#ifdef WIN32
-            WaitForSingleObject( g_hMutex, INFINITE );
-#else
-            pthread_mutex_lock( &g_Mutex );
-#endif
+            AquireApiLock();
             for( i = 0; i < NUM_FRAMES; i++ )
             {
                 if( NULL != g_Frames[i].buffer )
@@ -582,12 +621,7 @@ void StopContinuousImageAcquisition()
                     memset( &g_Frames[i], 0, sizeof( VmbFrame_t ));
                 }
             }
-#ifdef WIN32
-            ReleaseMutex( g_hMutex );
-#else
-            pthread_mutex_unlock( &g_Mutex );
-#endif
-
+            ReleaseApiLock();
             // Close camera
             VmbCameraClose ( g_CameraHandle );
             g_CameraHandle = NULL;
