@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -31,6 +31,22 @@
 
 #include <VimbaC/Include/VmbCommonTypes.h>
 
+//
+// Starts Vimba API
+// Opens the given camera, if no camera ID was provided, the first camera found will be used
+// Sets the maximum possible Ethernet packet size
+// Adjusts the image format
+// Acquires one image synchronously
+// Writes the image as bitmap to file
+// Closes the camera in case of failure
+//
+// Parameters:
+//  [in]    pCameraID           The ID of the camera to work on. Can be NULL.
+//  [in]    pFileName           The path of the bitmap where the image is saved to
+//
+// Returns:
+//  An API status code
+//
 VmbError_t SynchronousGrab ( const char* pCameraID, const char* pFileName );
 
 #endif

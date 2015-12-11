@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -35,6 +35,11 @@
 #include <../../Common/PrintVimbaVersion.h>
 #include <../../Common/DiscoverGigECameras.h>
 
+//
+// Starts Vimba
+// Gets all connected cameras
+// And prints out information about the camera name, model name, serial number, ID and the corresponding interface ID
+//
 void ListCameras()
 {
     VmbError_t          err             = VmbErrorSuccess;
@@ -71,11 +76,11 @@ void ListCameras()
                     for ( i=0; i<nCount; ++i )                                              // And print them out
                     {
                         printf( "/// Camera Name: %s\n/// Model Name: %s\n/// Camera ID: %s\n/// Serial Number: %s\n/// @ Interface ID: %s\n\n\n",
-                                 pCameras[i].cameraName,
-                                 pCameras[i].modelName,
-                                 pCameras[i].cameraIdString,
-                                 pCameras[i].serialString,
-                                 pCameras[i].interfaceIdString );
+                                pCameras[i].cameraName,
+                                pCameras[i].modelName,
+                                pCameras[i].cameraIdString,
+                                pCameras[i].serialString,
+                                pCameras[i].interfaceIdString );
                     }
                 }
                 else

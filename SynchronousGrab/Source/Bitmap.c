@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2013 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -35,6 +35,18 @@
 #define BMP_HEADER_SIZE 54
 #define ALIGNMENT_SIZE  4
 
+//
+// Creates a MS Windows bitmap with header and color palette.
+// Fills it with the content of the given byte buffer
+// 
+// Parameters:
+//  [out]   pBitmap         A pointer to an AVTBitmap that will get filled
+//  [in]    pBuffer         The buffer that will be used to fill the created bitmap
+//
+// Returns:
+//  0 in case of error
+//  1 in case of success
+//
 unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
 {
     unsigned char   nNumColors      = 0;        // Number of colors of our image
@@ -202,6 +214,16 @@ unsigned char AVTCreateBitmap( AVTBitmap * const pBitmap, const void* pBuffer )
     return 1;
 }
 
+//
+// Releases (frees) a given bitmap
+//
+// Parameters:
+//  [in, out]   pBitmap     The bitmap whose memory will be freed
+//
+// Returns:
+//  0 in case of error
+//  1 in case of success
+//
 unsigned char AVTReleaseBitmap( AVTBitmap * const pBitmap )
 {
     if (    NULL != pBitmap
@@ -216,6 +238,17 @@ unsigned char AVTReleaseBitmap( AVTBitmap * const pBitmap )
     return 0;
 }
 
+//
+// Writes a given bitmap to file
+//
+// Parameters:
+//  [in] pBitmap            The AVTBitmap to write to file
+//  [in] pFileName          The destination (complete path) where to write the bitmap to
+//
+// Returns:
+//  0 in case of error
+//  1 in case of success
+//
 unsigned char AVTWriteBitmapToFile( AVTBitmap const * const pBitmap, char const * const pFileName )
 {
     FILE *file;

@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -29,7 +29,9 @@
 #include <stdio.h>
 #include <VimbaC/Include/VimbaC.h>
 
-// Purpose: Prints the Vimba version information.
+//
+// Prints out the version of the Vimba API
+//
 void PrintVimbaVersion()
 {
     VmbVersionInfo_t    version_info;

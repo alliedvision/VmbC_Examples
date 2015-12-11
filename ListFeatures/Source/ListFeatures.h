@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -29,6 +29,15 @@
 #ifndef LIST_FEATURES_H_
 #define LIST_FEATURES_H_
 
+//
+// Prints out all features and their values and details of a given camera.
+// If no camera ID is provided, the first camera will be used.
+// Starts and stops the API
+// Opens and closes the camera
+//
+// Parameters:
+//  [in]    pStrID          The ID of the camera to work
+//
 void ListFeatures( const char *pStrID );
 
 #endif

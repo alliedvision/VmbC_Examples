@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2013 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -32,6 +32,21 @@
 #ifndef FORCE_IP_H_
 #define FORCE_IP_H_
 
+//
+// Starts Vimba API
+// Seeks a GigE camera by its MAC address on the network
+// Sets the found camera's 
+// - IP address
+// - subnet mask
+// - gateway
+//
+// Parameters:
+//  [in]    strMAC          The MAC address of the camera to work on in decimal
+//                          or hex (with preceding 0x) representation
+//  [in]    strIP           The desired IP address for the camera
+//  [in]    strSubnet       The desired subnet mask of the IP address
+//  [in]    strGateway      The desired gateway. Optional, can be 0
+//
 void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway );
 
 #endif

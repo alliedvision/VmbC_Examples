@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -28,7 +28,17 @@
 #ifndef ERROR_CODE_TO_MESSAGE_H_
 #define ERROR_CODE_TO_MESSAGE_H_
     
-#include <VimbaC/Include/VimbaC.h>
+#include "VimbaC/Include/VimbaC.h"
+
+//
+// Translates Vimba error codes to readable error messages
+//
+// Parameters:
+//  [in]    eError      The error code to be converted to string
+//
+// Returns:
+//  A descriptive string representation of the error code
+//
 const char* ErrorCodeToMessage( VmbError_t eError );
 
 #endif

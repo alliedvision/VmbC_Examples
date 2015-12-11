@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2013 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -44,8 +44,18 @@
 #include <VimbaC/Include/VimbaC.h>
 #include "../../Common/PrintVimbaVersion.h"
 
+//
 // Converts a hexadecimal MAC address into its decimal representation.
 // Leaves decimal addresses untouched.
+//
+// Parameters:
+//  [in]    strMAC          The hexadecimal (with preceding 0x) or decimal MAC 
+//                          address to be converted to decimal. As string.
+//
+// Returns:
+//  0 in case of error
+//  The decimal representation of the MAC address on success as integer
+//
 unsigned long long mac_addr( const char* strMAC )
 {
     unsigned long long nMAC;
@@ -61,6 +71,21 @@ unsigned long long mac_addr( const char* strMAC )
     }
 }
 
+//
+// Starts Vimba API
+// Seeks a GigE camera by its MAC address on the network
+// Sets the found camera's 
+// - IP address
+// - subnet mask
+// - gateway
+//
+// Parameters:
+//  [in]    strMAC          The MAC address of the camera to work on in decimal
+//                          or hex (with preceding 0x) representation
+//  [in]    strIP           The desired IP address for the camera
+//  [in]    strSubnet       The desired subnet mask of the IP address
+//  [in]    strGateway      The desired gateway. Optional, can be 0
+//
 void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
 {
     VmbError_t          err             = VmbErrorSuccess;

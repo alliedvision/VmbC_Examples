@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -29,6 +29,11 @@
 #ifndef LIST_CAMERAS_H_
 #define LIST_CAMERAS_H_
 
+//
+// Starts Vimba
+// Gets all connected cameras
+// And prints out information about the camera name, model name, serial number, ID and the corresponding interface ID
+//
 void ListCameras();
 
 #endif
