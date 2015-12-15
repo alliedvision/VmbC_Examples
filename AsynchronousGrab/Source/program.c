@@ -165,7 +165,7 @@ int main( int argc, char* argv[] )
     }
     else
     {
-        err = StartContinuousImageAcquisition(pCameraID, eFrameInfos,bEnableColorProcessing);
+        err = StartContinuousImageAcquisition( pCameraID, eFrameInfos, bEnableColorProcessing );
         if ( VmbErrorSuccess == err )
         {
            printf( "Press <enter> to stop acquisition...\n" );

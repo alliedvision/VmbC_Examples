@@ -515,7 +515,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
                         {
                             for(i = 0; i < NUM_FRAMES; i++)
                             {
-                                g_Frames[i].buffer        = (unsigned char*)malloc( (VmbUint32_t)nPayloadSize );
+                                g_Frames[i].buffer = (unsigned char*)malloc( (VmbUint32_t)nPayloadSize );
                                 if( NULL == g_Frames[i].buffer )
                                 {
                                     err = VmbErrorResources;
