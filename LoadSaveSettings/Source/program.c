@@ -26,7 +26,7 @@
 =============================================================================*/
 
 #include <stdio.h>
-#include <conio.h>
+
 #include <ApiController.h>
 
 int main( int argc, char *argv[] )
@@ -44,7 +44,6 @@ int main( int argc, char *argv[] )
 	err = StartVimba();
 	if( VmbErrorSuccess != err )
 	{
-		_getch();
 		return -1;		
 	}
 	printf( "--> VimbaC has been started\n" );
@@ -53,7 +52,6 @@ int main( int argc, char *argv[] )
 	if( VmbErrorSuccess != err )
 	{
 		StopVimba();
-		_getch();
 		return -1;		
 	}
 	printf( "--> Camera has been opened\n" );
@@ -62,7 +60,6 @@ int main( int argc, char *argv[] )
 	if( VmbErrorSuccess != err )
 	{
 		StopVimba();
-		_getch();
 		return -1;
 	}
 	printf( "--> Camera settings have been saved\n" );
@@ -71,7 +68,6 @@ int main( int argc, char *argv[] )
 	if( VmbErrorSuccess != err )
 	{
 		StopVimba();
-		_getch();
 		return -1;
 	}
 	printf( "--> All feature values have been restored to default\n" );
@@ -80,7 +76,6 @@ int main( int argc, char *argv[] )
 	if( VmbErrorSuccess != err )
 	{
 		StopVimba();
-		_getch();
 		return -1;
 	}
 	printf( "--> Feature values have been loaded from given XML file\n" );
@@ -89,7 +84,6 @@ int main( int argc, char *argv[] )
 	if( VmbErrorSuccess != err )
 	{
 		StopVimba();
-		_getch();
 		return -1;
 	}
 	printf( "--> Camera has been closed\n" );
@@ -97,6 +91,5 @@ int main( int argc, char *argv[] )
 	StopVimba();
 	printf( "--> VimbaC has been stopped\n" );
 	
-	_getch();
 	return 0;
 }
