@@ -222,7 +222,6 @@ VmbError_t LoadCameraSettings( const char *fileName )
     VmbError_t err = VmbErrorSuccess;
 
 	VmbFeaturePersistSettings_t settings;
-	settings.loggingFile = "load.log";
 	settings.loggingLevel = 4;
 	settings.maxIterations = 5;
 	settings.persistType = VmbFeaturePersistNoLUT;
