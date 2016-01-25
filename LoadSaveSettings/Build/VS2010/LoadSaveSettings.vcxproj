@@ -19,13 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\ApiController.c" />
     <ClCompile Include="..\..\Source\DiscoverGigECameras.c" />
     <ClCompile Include="..\..\Source\PrintVimbaVersion.c" />
     <ClCompile Include="..\..\Source\program.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\ApiController.h" />
     <ClInclude Include="..\..\Source\DiscoverGigECameras.h" />
     <ClInclude Include="..\..\Source\PrintVimbaVersion.h" />
   </ItemGroup>

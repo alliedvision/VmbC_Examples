@@ -14,9 +14,6 @@
     <ClCompile Include="..\..\Source\program.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ApiController.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\DiscoverGigECameras.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -25,9 +22,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\ApiController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\DiscoverGigECameras.h">
       <Filter>Header Files</Filter>
     </ClInclude>

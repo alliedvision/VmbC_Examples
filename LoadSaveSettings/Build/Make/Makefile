@@ -29,8 +29,7 @@ LIB_DIRS			= $(BIN_DIR)
 
 DEFINES				=
 
-OBJ_FILES			= $(OBJ_DIR)/ApiController.o \
-				  $(OBJ_DIR)/program.o \
+OBJ_FILES			= $(OBJ_DIR)/program.o \
 				  $(OBJ_DIR)/PrintVimbaVersion.o \
 				  $(OBJ_DIR)/DiscoverGigECameras.o
 
