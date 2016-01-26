@@ -135,7 +135,7 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                                     err = VmbFeatureCommandRun( gVimbaHandle, "GeVForceIPAddressSend" );                    // Finally execute the command to write all settings to cam
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        printf( "IP address successfully changed to %s (%s).\n\n", strIP, strSubnet );
+                                        printf( "Command to change IP address to %s (%s) sent to camera.\n\n", strIP, strSubnet );
                                     }
                                     else
                                     {
