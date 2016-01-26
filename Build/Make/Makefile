@@ -20,7 +20,8 @@ EXAMPLES			= AsynchronousGrab \
 				  ListCameras \
 				  ListFeatures \
 				  ListAncillaryDataFeatures \
-				  SynchronousGrab
+				  SynchronousGrab \
+                  LoadSaveSettings
 
 $(PROJECT_ROOT_DIR)/%/Build/Make/$(BIN_DIR)/%: $(PROJECT_ROOT_DIR)/%/Build/Make/Makefile
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/$*/Build/Make)
@@ -45,6 +46,6 @@ clean:
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListFeatures/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListAncillaryDataFeatures/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/SynchronousGrab/Build/Make,clean)
-
+    $(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/LoadSaveSettings/Build/Make,clean)
 $(BIN_DIR):
 	$(call MACRO_MKDIR,$(BIN_DIR))

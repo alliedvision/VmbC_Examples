@@ -8,7 +8,8 @@ EXAMPLES		= AsynchronousGrab \
 			  ListCameras \
 			  ListFeatures \
 			  ListAncillaryDataFeatures \
-			  SynchronousGrab
+			  SynchronousGrab \
+              LoadSaveSettings
 
 make_%: $(EXAMPLES_DIR)/%/Build/Make/Makefile
 	$(MAKE) -C $(EXAMPLES_DIR)/$*/Build/Make
