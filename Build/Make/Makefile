@@ -46,6 +46,6 @@ clean:
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListFeatures/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/ListAncillaryDataFeatures/Build/Make,clean)
 	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/SynchronousGrab/Build/Make,clean)
-    $(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/LoadSaveSettings/Build/Make,clean)
+	$(call MACRO_MAKE,$(PROJECT_ROOT_DIR)/LoadSaveSettings/Build/Make,clean)
 $(BIN_DIR):
 	$(call MACRO_MKDIR,$(BIN_DIR))
