@@ -32,174 +32,174 @@
 
 int main( int argc, char *argv[] )
 {
-	VmbError_t err = VmbErrorSuccess;
-	VmbUint32_t nCount = 0;
-	VmbCameraInfo_t *pCameras = NULL;
-	VmbHandle_t handle = NULL;
-	const char *fileName = "current_settings.xml";
+    VmbError_t err = VmbErrorSuccess;
+    VmbUint32_t nCount = 0;
+    VmbCameraInfo_t *pCameras = NULL;
+    VmbHandle_t handle = NULL;
+    const char *fileName = "current_settings.xml";
 
-//	prepare settings struct to determine behaviour
-//	during loading or saving operation
-//	(This is optional. Passing NULL triggers default settings)
-	VmbFeaturePersistSettings_t settings;
-	settings.loggingLevel = 4;		//	full loggin details (trace, debug, warning, error and info messages)
-	settings.maxIterations = 5;		//	how many iterations during loading shall be performed at max 
-									//  (comparing desired with device value. in case of difference new iteration will be executed)
-	settings.persistType = VmbFeaturePersistNoLUT;		//	determines which features shall be considered
-														//	NoLUT means: all features except for lookUp table features
+//  prepare settings struct to determine behaviour
+//  during loading or saving operation
+//  (This is optional. Passing NULL triggers default settings)
+    VmbFeaturePersistSettings_t settings;
+    settings.loggingLevel = 4;      //  full loggin details (trace, debug, warning, error and info messages)
+    settings.maxIterations = 5;     //  how many iterations during loading shall be performed at max 
+                                    //  (comparing desired with device value. in case of difference new iteration will be executed)
+    settings.persistType = VmbFeaturePersistNoLUT;      //  determines which features shall be considered
+                                                        //  NoLUT means: all features except for lookUp table features
 
     printf( "\n" );
-	printf( "########################################\n" );
-	printf( "#                                      #\n" );
-	printf( "# Vimba API Load/Save Settings Example #\n" );
-	printf( "#                                      #\n" );
-	printf( "########################################\n" );
+    printf( "########################################\n" );
+    printf( "#                                      #\n" );
+    printf( "# Vimba API Load/Save Settings Example #\n" );
+    printf( "#                                      #\n" );
+    printf( "########################################\n" );
     printf( "\n" );
 
-//	start VimbaC API
+//  start VimbaC API
     err = VmbStartup();
     if( VmbErrorSuccess != err )
     {
         printf( "Could not start Vimba [error code: %i]", err );
-		return err;
+        return err;
     }
 
-	printf( "--> VimbaC has been started\n" );
-	
-//	check for GigE cameras
+    printf( "--> VimbaC has been started\n" );
+    
+//  check for GigE cameras
     err = DiscoverGigECameras();
     if( VmbErrorSuccess != err )
     {
-		VmbShutdown();
-        printf( "Could discover GigE cameras [error code: %i]", err );		
-		return err;
+        VmbShutdown();
+        printf( "Could discover GigE cameras [error code: %i]", err );
+        return err;
     }
-	
-//	get amount of connected cameras	
-	err = VmbCamerasList( NULL, 0, &nCount, sizeof(*pCameras) );
-	if( VmbErrorSuccess != err )
-	{
-		VmbShutdown();
-		printf( "Could not retrieve number of cameras [error code: %i]", err );
-		return err;
-	}
+    
+//  get amount of connected cameras
+    err = VmbCamerasList( NULL, 0, &nCount, sizeof(*pCameras) );
+    if( VmbErrorSuccess != err )
+    {
+        VmbShutdown();
+        printf( "Could not retrieve number of cameras [error code: %i]", err );
+        return err;
+    }
 
-//	in case no camera is connected
-	if( 0 == nCount )
-	{
-		VmbShutdown();
-		printf( "No Camera found [error code: %i]", err );
-		return err;
-	}
+//  in case no camera is connected
+    if( 0 == nCount )
+    {
+        VmbShutdown();
+        printf( "No Camera found [error code: %i]", err );
+        return err;
+    }
 
-//	allocate space for camera list
-	pCameras = (VmbCameraInfo_t *) malloc( nCount * sizeof(*pCameras) );
-	if( NULL == pCameras )
-	{
-		VmbShutdown();
-		printf( "No Camera found [error code: %i]", err );
-		return VmbErrorOther;
-	}
+//  allocate space for camera list
+    pCameras = (VmbCameraInfo_t *) malloc( nCount * sizeof(*pCameras) );
+    if( NULL == pCameras )
+    {
+        VmbShutdown();
+        printf( "No Camera found [error code: %i]", err );
+        return VmbErrorOther;
+    }
 
-//	retrieve camera list from Vimba
-	err = VmbCamerasList( pCameras, nCount, &nCount, sizeof(*pCameras) );
-	if( VmbErrorSuccess != err )
-	{
-		VmbShutdown();
-		printf( "Could not retrieve info pointers for connected cameras [error code: %i]", err );
-		return err;
-	}
+//  retrieve camera list from Vimba
+    err = VmbCamerasList( pCameras, nCount, &nCount, sizeof(*pCameras) );
+    if( VmbErrorSuccess != err )
+    {
+        VmbShutdown();
+        printf( "Could not retrieve info pointers for connected cameras [error code: %i]", err );
+        return err;
+    }
 
-//	open camera (first in list)	
-	err = VmbCameraOpen( pCameras[0].cameraIdString, VmbAccessModeFull, &handle );
-	if( VmbErrorSuccess != err )
-	{
-		VmbShutdown();
-		printf( "Could not open camera in Full Access mode [error code: %i]", err );
-		return err;
-	}
+//  open camera (first in list)
+    err = VmbCameraOpen( pCameras[0].cameraIdString, VmbAccessModeFull, &handle );
+    if( VmbErrorSuccess != err )
+    {
+        VmbShutdown();
+        printf( "Could not open camera in Full Access mode [error code: %i]", err );
+        return err;
+    }
 
-	printf( "--> Camera has been opened\n" );
+    printf( "--> Camera has been opened\n" );
 
 
-//	save current camera feature values	
-	err = VmbCameraSettingsSave( handle, fileName, NULL, 0 );
-	if( VmbErrorSuccess != err )
-	{
-		printf( "Could not save feature values to given XML file '%s' [error code: %i]", fileName, err );
-		err = VmbCameraClose( handle );
-		if( VmbErrorSuccess != err )
-		{
-			printf( "Could not close camera [error code: %i]", err );
-		}
-		VmbShutdown();		
-		return err;
-	}
+//  save current camera feature values
+    err = VmbCameraSettingsSave( handle, fileName, NULL, 0 );
+    if( VmbErrorSuccess != err )
+    {
+        printf( "Could not save feature values to given XML file '%s' [error code: %i]", fileName, err );
+        err = VmbCameraClose( handle );
+        if( VmbErrorSuccess != err )
+        {
+            printf( "Could not close camera [error code: %i]", err );
+        }
+        VmbShutdown();
+        return err;
+    }
 
-	printf( "--> Camera settings have been saved\n" );
+    printf( "--> Camera settings have been saved\n" );
 
-//	set all feature values to factory default
-	err = VmbFeatureEnumSet( handle, "UserSetSelector", "Default" );
-	if( VmbErrorSuccess != err )
-	{
-		printf( "Could not set feature value 'UserSetSelector' to 'Default' [error code: %i]", err );
-		err = VmbCameraClose( handle );
-		if( VmbErrorSuccess != err )
-		{
-			printf( "Could not close camera [error code: %i]", err );
-		}
-		VmbShutdown();		
-		return err;
-	}
-	err = VmbFeatureCommandRun( handle, "UserSetLoad" );
-	if( VmbErrorSuccess != err )
-	{
-		printf( "Could not run 'UserSetLoad' command [error code: %i]", err );
-		err = VmbCameraClose( handle );
-		if( VmbErrorSuccess != err )
-		{
-			printf( "Could not close camera [error code: %i]", err );
-		}
-		VmbShutdown();		
-		return err;
-	}
+//  set all feature values to factory default
+    err = VmbFeatureEnumSet( handle, "UserSetSelector", "Default" );
+    if( VmbErrorSuccess != err )
+    {
+        printf( "Could not set feature value 'UserSetSelector' to 'Default' [error code: %i]", err );
+        err = VmbCameraClose( handle );
+        if( VmbErrorSuccess != err )
+        {
+            printf( "Could not close camera [error code: %i]", err );
+        }
+        VmbShutdown();
+        return err;
+    }
+    err = VmbFeatureCommandRun( handle, "UserSetLoad" );
+    if( VmbErrorSuccess != err )
+    {
+        printf( "Could not run 'UserSetLoad' command [error code: %i]", err );
+        err = VmbCameraClose( handle );
+        if( VmbErrorSuccess != err )
+        {
+            printf( "Could not close camera [error code: %i]", err );
+        }
+        VmbShutdown();
+        return err;
+    }
 
-	printf( "--> All feature values have been restored to default\n" );
+    printf( "--> All feature values have been restored to default\n" );
 
-//	load feature values to selected camera from xml file
-	err = VmbCameraSettingsLoad( handle, fileName, &settings, sizeof(settings) );
-	if( VmbErrorSuccess != err )
-	{
-		printf( "Could not load feature values from given XML file '%s' [error code: %i]", fileName, err );
-		err = VmbCameraClose( handle );
-		if( VmbErrorSuccess != err )
-		{
-			printf( "Could not close camera [error code: %i]", err );
-		}
-		VmbShutdown();		
-		return err;
-	}
+//  load feature values to selected camera from xml file
+    err = VmbCameraSettingsLoad( handle, fileName, &settings, sizeof(settings) );
+    if( VmbErrorSuccess != err )
+    {
+        printf( "Could not load feature values from given XML file '%s' [error code: %i]", fileName, err );
+        err = VmbCameraClose( handle );
+        if( VmbErrorSuccess != err )
+        {
+            printf( "Could not close camera [error code: %i]", err );
+        }
+        VmbShutdown();
+        return err;
+    }
 
-	printf( "--> Feature values have been loaded from given XML file\n" );
-	
-//	close camera
-	err = VmbCameraClose( handle );
-	if( VmbErrorSuccess != err )
-	{
-		printf( "Could not close camera [error code: %i]", err );
-		VmbShutdown();
-		return err;
-	}
+    printf( "--> Feature values have been loaded from given XML file\n" );
+    
+//  close camera
+    err = VmbCameraClose( handle );
+    if( VmbErrorSuccess != err )
+    {
+        printf( "Could not close camera [error code: %i]", err );
+        VmbShutdown();
+        return err;
+    }
 
-	printf( "--> Camera has been closed\n" );
+    printf( "--> Camera has been closed\n" );
 
-//	shutdown VimbaC API
-	VmbShutdown();
-	printf( "--> VimbaC has been stopped\n" );
+//  shutdown VimbaC API
+    VmbShutdown();
+    printf( "--> VimbaC has been stopped\n" );
 
-//	free allocated space for camera list
-	free( pCameras );
-	pCameras = NULL;
+//  free allocated space for camera list
+    free( pCameras );
+    pCameras = NULL;
 
-	return 0;
+    return 0;
 }
