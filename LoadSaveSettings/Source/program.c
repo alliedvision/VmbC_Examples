@@ -60,7 +60,7 @@ int main( int argc, char *argv[] )
     err = VmbStartup();
     if( VmbErrorSuccess != err )
     {
-        printf( "Could not start Vimba [error code: %i]", err );
+        printf( "Could not start Vimba [error code: %i]\n", err );
         return err;
     }
 
@@ -71,7 +71,7 @@ int main( int argc, char *argv[] )
     if( VmbErrorSuccess != err )
     {
         VmbShutdown();
-        printf( "Could discover GigE cameras [error code: %i]", err );
+        printf( "Could discover GigE cameras [error code: %i]\n", err );
         return err;
     }
     
@@ -80,7 +80,7 @@ int main( int argc, char *argv[] )
     if( VmbErrorSuccess != err )
     {
         VmbShutdown();
-        printf( "Could not retrieve number of cameras [error code: %i]", err );
+        printf( "Could not retrieve number of cameras [error code: %i]\n", err );
         return err;
     }
 
@@ -88,7 +88,7 @@ int main( int argc, char *argv[] )
     if( 0 == nCount )
     {
         VmbShutdown();
-        printf( "No Camera found [error code: %i]", err );
+        printf( "No Camera found [error code: %i]\n", err );
         return err;
     }
 
@@ -97,7 +97,7 @@ int main( int argc, char *argv[] )
     if( NULL == pCameras )
     {
         VmbShutdown();
-        printf( "No Camera found [error code: %i]", err );
+        printf( "No Camera found [error code: %i]\n", err );
         return VmbErrorOther;
     }
 
@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
     if( VmbErrorSuccess != err )
     {
         VmbShutdown();
-        printf( "Could not retrieve info pointers for connected cameras [error code: %i]", err );
+        printf( "Could not retrieve info pointers for connected cameras [error code: %i]\n", err );
         return err;
     }
 
@@ -115,7 +115,7 @@ int main( int argc, char *argv[] )
     if( VmbErrorSuccess != err )
     {
         VmbShutdown();
-        printf( "Could not open camera in Full Access mode [error code: %i]", err );
+        printf( "Could not open camera in Full Access mode [error code: %i]\n", err );
         return err;
     }
 
@@ -126,11 +126,11 @@ int main( int argc, char *argv[] )
     err = VmbCameraSettingsSave( handle, fileName, NULL, 0 );
     if( VmbErrorSuccess != err )
     {
-        printf( "Could not save feature values to given XML file '%s' [error code: %i]", fileName, err );
+        printf( "Could not save feature values to given XML file '%s' [error code: %i]\n", fileName, err );
         err = VmbCameraClose( handle );
         if( VmbErrorSuccess != err )
         {
-            printf( "Could not close camera [error code: %i]", err );
+            printf( "Could not close camera [error code: %i]\n", err );
         }
         VmbShutdown();
         return err;
@@ -142,11 +142,11 @@ int main( int argc, char *argv[] )
     err = VmbFeatureEnumSet( handle, "UserSetSelector", "Default" );
     if( VmbErrorSuccess != err )
     {
-        printf( "Could not set feature value 'UserSetSelector' to 'Default' [error code: %i]", err );
+        printf( "Could not set feature value 'UserSetSelector' to 'Default' [error code: %i]\n", err );
         err = VmbCameraClose( handle );
         if( VmbErrorSuccess != err )
         {
-            printf( "Could not close camera [error code: %i]", err );
+            printf( "Could not close camera [error code: %i]\n", err );
         }
         VmbShutdown();
         return err;
@@ -154,11 +154,11 @@ int main( int argc, char *argv[] )
     err = VmbFeatureCommandRun( handle, "UserSetLoad" );
     if( VmbErrorSuccess != err )
     {
-        printf( "Could not run 'UserSetLoad' command [error code: %i]", err );
+        printf( "Could not run 'UserSetLoad' command [error code: %i]\n", err );
         err = VmbCameraClose( handle );
         if( VmbErrorSuccess != err )
         {
-            printf( "Could not close camera [error code: %i]", err );
+            printf( "Could not close camera [error code: %i]\n", err );
         }
         VmbShutdown();
         return err;
@@ -170,11 +170,11 @@ int main( int argc, char *argv[] )
     err = VmbCameraSettingsLoad( handle, fileName, &settings, sizeof(settings) );
     if( VmbErrorSuccess != err )
     {
-        printf( "Could not load feature values from given XML file '%s' [error code: %i]", fileName, err );
+        printf( "Could not load feature values from given XML file '%s' [error code: %i]\n", fileName, err );
         err = VmbCameraClose( handle );
         if( VmbErrorSuccess != err )
         {
-            printf( "Could not close camera [error code: %i]", err );
+            printf( "Could not close camera [error code: %i]\n", err );
         }
         VmbShutdown();
         return err;
@@ -186,7 +186,7 @@ int main( int argc, char *argv[] )
     err = VmbCameraClose( handle );
     if( VmbErrorSuccess != err )
     {
-        printf( "Could not close camera [error code: %i]", err );
+        printf( "Could not close camera [error code: %i]\n", err );
         VmbShutdown();
         return err;
     }
