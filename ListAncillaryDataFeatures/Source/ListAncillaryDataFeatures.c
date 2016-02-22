@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <Windows.h>
 
 #include <ListAncillaryDataFeatures.h>
 
@@ -52,6 +53,7 @@ void ListAncillaryDataFeatures( const char* pStrID )
     VmbFrame_t          frame;                                                                                  // A single frame
     VmbInt64_t          pls                 = 0;                                                                // The payload size of a frame
     VmbCameraInfo_t     info;                                                                                   // The name and other information of our camera
+    VmbBool_t           bIsCommandDone      = VmbBoolFalse;                                                     // Has a command finished execution
     // The volatile value of a feature
     double              doubleValue         = 0.0;                                                              // A float value
     char*               pStringValue        = NULL;                                                             // A string value
@@ -127,7 +129,7 @@ void ListAncillaryDataFeatures( const char* pStrID )
             {
                 if ( NULL != pStrID )
                 {
-                    err == VmbCameraInfoQuery( pStrID, &info, sizeof( VmbCameraInfo_t ) );                         // If we haven't queried the camera info yet, we do it now to display the camera name
+                    err = VmbCameraInfoQuery( pStrID, &info, sizeof( VmbCameraInfo_t ) );                       // If we haven't queried the camera info yet, we do it now to display the camera name
                 }
 
                 if ( VmbErrorSuccess == err )
@@ -137,13 +139,35 @@ void ListAncillaryDataFeatures( const char* pStrID )
                     err = VmbFeatureBoolSet( cameraHandle, "ChunkModeActive", VmbBoolTrue );                    // Enable ancillary data
                     if( VmbErrorSuccess == err )
                     {
-                        printf( "Capture a single frame\n" );                                                   // In order to fill the ancillary data we need to fill a frame
+                        // Set the GeV packet size to the highest possible value
+                        // (In this example we do not test whether this cam actually is a GigE cam)
+                        if ( VmbErrorSuccess == VmbFeatureCommandRun( cameraHandle, "GVSPAdjustPacketSize" ))
+                        {
+                            printf( "Adjusting packet size " );                                                 // Set the highest possible packet size
+                            do
+                            {
+                                if ( VmbErrorSuccess != VmbFeatureCommandIsDone(    cameraHandle,
+                                                                                    "GVSPAdjustPacketSize",
+                                                                                    &bIsCommandDone ))
+                                {
+                                    break;
+                                }
+#ifdef WIN32
+                                Sleep(200);
+#else
+                                usleep(200000);
+#endif
+                                printf( "." );
+                            } while ( VmbBoolFalse == bIsCommandDone );
+                        }
+
+                        printf( "\nCapture a single frame\n" );                                                 // In order to fill the ancillary data we need to fill a frame
 
                         err = VmbFeatureIntGet( cameraHandle, "PayloadSize", &pls );
                         if( VmbErrorSuccess == err )
                         {
                             frame.bufferSize = (VmbUint32_t)pls;
-                            frame.buffer = malloc( pls * sizeof(unsigned char) );
+                            frame.buffer = malloc( (VmbUint32_t)pls * sizeof(unsigned char) );
                             if ( NULL != frame.buffer )
                             {
                                 err = VmbCaptureStart ( cameraHandle );
@@ -226,7 +250,7 @@ void ListAncillaryDataFeatures( const char* pStrID )
                                                                                 if(     VmbErrorSuccess == err
                                                                                     &&  0 < size )
                                                                                 {
-                                                                                    pStringValue = (char*)malloc( sizeof *pStringValue * intValue );
+                                                                                    pStringValue = (char*)malloc( sizeof *pStringValue * (VmbUint32_t)intValue );
                                                                                     if( NULL != pStringValue )
                                                                                     {
                                                                                         err = VmbFeatureStringGet( ancillaryDataHandle, pFeatures[i].name, pStringValue, size, &size );
