@@ -28,7 +28,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <Windows.h>
+#ifdef WIN32
+    #include <Windows.h>
+#else
+    #include <unistd.h>
+#endif
 
 #include <ListAncillaryDataFeatures.h>
 
