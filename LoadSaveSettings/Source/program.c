@@ -37,6 +37,7 @@ int main( int argc, char *argv[] )
     VmbCameraInfo_t *pCameras = NULL;
     VmbHandle_t handle = NULL;
     const char *fileName = "current_settings.xml";
+    const char *cameraId = NULL;
 
 //  prepare settings struct to determine behaviour
 //  during loading or saving operation
@@ -110,8 +111,17 @@ int main( int argc, char *argv[] )
         return err;
     }
 
+//  get camera id string
+    cameraId = pCameras[0].cameraIdString;
+    if( NULL == cameraId )
+    {
+        VmbShutdown();
+        printf( "Could not retrieve camera id [error code: %i]\n", VmbErrorOther );
+        return err;
+    }
+
 //  open camera (first in list)
-    err = VmbCameraOpen( pCameras[0].cameraIdString, VmbAccessModeFull, &handle );
+    err = VmbCameraOpen( cameraId, VmbAccessModeFull, &handle );
     if( VmbErrorSuccess != err )
     {
         VmbShutdown();
@@ -119,7 +129,7 @@ int main( int argc, char *argv[] )
         return err;
     }
 
-    printf( "--> Camera has been opened\n" );
+    printf( "--> Camera with id '%s' has been opened\n", cameraId );
 
 
 //  save current camera feature values
