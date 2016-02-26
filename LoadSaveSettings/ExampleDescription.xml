@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Example Index="2" Id="C_LoadSaveSettings" Title="LoadSaveSettings" Language="C" Category="Helpers" >
+  <Description><![CDATA[
+        This example consists of a reusable class for<br>
+        <ul>
+            <li>storing the current settings of a given camera into an XML string and</li>
+            <li>restoring the camera settings from an XML string</li>
+        </ul>
+        and a console application demonstrating how to use the class.
+        ]]>
+    </Description>
+  <Application>
+    <Screenshot>VimbaC_Examples/ListFeatures/Screenshot.png</Screenshot>
+    <Executable>VimbaC_Examples/Bin/Win32/LoadSaveSettings.exe</Executable>
+  </Application>
+  <ProjectFile>
+    <Text>Microsoft Visual Studio 2010 Solution</Text>
+    <Link>VimbaC_Examples/LoadSaveSettings.sln/Build/VS2010/LoadSaveSettings.sln</Link>
+  </ProjectFile>
+</Example>
