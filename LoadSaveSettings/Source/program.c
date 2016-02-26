@@ -50,11 +50,9 @@ int main( int argc, char *argv[] )
                                                         //  NoLUT means: all features except for lookUp table features
 
     printf( "\n" );
-    printf( "########################################\n" );
-    printf( "#                                      #\n" );
-    printf( "# Vimba API Load/Save Settings Example #\n" );
-    printf( "#                                      #\n" );
-    printf( "########################################\n" );
+    printf( "////////////////////////////////////////////\n" );
+    printf( "/// Vimba API Load/Save Settings Example ///\n" );
+    printf( "////////////////////////////////////////////\n" );
     printf( "\n" );
 
 //  start VimbaC API
