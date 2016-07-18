@@ -40,6 +40,11 @@ ARCH		= arm
 AUTOWORDSIZE	= 32
 AUTOFLOATABI	= soft
 endif
+ifeq ($(UNAME),aarch64)
+ARCH		= arm
+AUTOWORDSIZE	= 64
+AUTOFLOATABI	= hard
+endif
 
 #Possible word sizes: 32, 64
 WORDSIZE        = $(AUTOWORDSIZE)
@@ -78,7 +83,11 @@ ifeq ($(ARCH),arm)
 ifeq ($(FLOATABI),soft)
 ARCH_CFLAGS	= -marm -mfloat-abi=soft -march=armv4t
 else ifeq ($(FLOATABI),hard)
+ifeq ($(WORDSIZE),32)
 ARCH_CFLAGS	= -mthumb -mfloat-abi=hard -march=armv7
+else ifeq ($(WORDSIZE),64)
+ARCH_CFLAGS	= -march=armv8-a
+endif
 endif
 endif
 
