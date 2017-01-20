@@ -4,7 +4,8 @@
   <Description>Console application to assign an IP address to a camera that is identified by its MAC address.</Description>
   <Application>
     <Screenshot>VimbaC_Examples/ForceIP/Screenshot.png</Screenshot>
-    <Executable>VimbaC_Examples/Bin/Win32/ForceIP.exe</Executable>
+    <ExecutableWin32>VimbaC_Examples/Bin/Win32/ForceIP.exe</ExecutableWin32>
+    <ExecutableWin64>VimbaC_Examples/Bin/Win64/ForceIP.exe</ExecutableWin64>
   </Application>
   <ProjectFile>
     <Text>Microsoft Visual Studio 2010 Solution</Text>
