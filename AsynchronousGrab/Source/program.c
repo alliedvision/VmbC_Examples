@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2013 - 2017 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -55,7 +55,8 @@ int main( int argc, char* argv[] )
 
     char*           pCameraID               = NULL;             // The ID of the camera to use
     FrameInfos      eFrameInfos             = FrameInfos_Off;   // Show frame infos
-    VmbBool_t       bEnableColorProcessing  = VmbBoolFalse;     // enables color processing of frames
+    VmbBool_t       bRGBValue               = VmbBoolFalse;     // Show RGB values 
+    VmbBool_t       bEnableColorProcessing  = VmbBoolFalse;     // Enables color processing of frames
     unsigned char   bPrintHelp              = 0;                // Output help?
     int             i                       = 0;                // Counter for some iteration
     char*           pParameter              = NULL;             // The command line parameter
@@ -94,6 +95,16 @@ int main( int argc, char* argv[] )
 
                 eFrameInfos = FrameInfos_Show;
             }
+            else if( 0 == strcmp( pParameter, "/r" ))
+            {
+                if( bPrintHelp )
+                {
+                    err = VmbErrorBadParameter;
+                    break;
+                }
+
+                bRGBValue = VmbBoolTrue;
+            }
             else if( 0 == strcmp( pParameter, "/c" ))
             {
                 if (bPrintHelp )
@@ -102,7 +113,8 @@ int main( int argc, char* argv[] )
                     break;
                 }
 
-                bEnableColorProcessing = VmbBoolTrue;
+                bEnableColorProcessing  = VmbBoolTrue;
+                bRGBValue               = VmbBoolTrue;
             }
             else if( 0 == strcmp( pParameter, "/a" ))
             {
@@ -119,7 +131,8 @@ int main( int argc, char* argv[] )
             {
                 if(     ( NULL != pCameraID )
                     ||  ( bPrintHelp )
-                    ||  ( VmbBoolTrue    != bEnableColorProcessing)
+                    ||  ( VmbBoolFalse   != bEnableColorProcessing )
+                    ||  ( VmbBoolFalse   != bRGBValue )
                     ||  ( FrameInfos_Off != eFrameInfos ))
                 {
                     err = VmbErrorBadParameter;
@@ -158,14 +171,15 @@ int main( int argc, char* argv[] )
     {
         printf( "Usage: AsynchronousGrab [CameraID] [/i] [/h]\n" );
         printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
-        printf( "              /c          enable color processing\n" );
+        printf( "              /r          Convert to RGB and show RGB values\n" );
+        printf( "              /c          Enable color processing (includes /r)\n" );
         printf( "              /i          Show frame infos\n" );
         printf( "              /a          Automatically only show frame infos of corrupt frames\n" );
         printf( "              /h          Print out help\n" );
     }
     else
     {
-        err = StartContinuousImageAcquisition( pCameraID, eFrameInfos, bEnableColorProcessing );
+        err = StartContinuousImageAcquisition( pCameraID, eFrameInfos, bEnableColorProcessing, bRGBValue );
         if ( VmbErrorSuccess == err )
         {
            printf( "Press <enter> to stop acquisition...\n" );
