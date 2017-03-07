@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2014 - 2017 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -375,7 +375,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
         // goto image processing
         ProcessFrame( pFrame);
     }
-    else if ( !g_eFrameInfos )
+    else if ( FrameInfos_Show != g_eFrameInfos )
     {
         // Print a dot every frame
         printf( "." );
