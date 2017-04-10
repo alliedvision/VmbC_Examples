@@ -58,7 +58,8 @@ VmbBool_t       g_bAcquiring                = VmbBoolFalse;     // Remember if V
 VmbHandle_t     g_CameraHandle              = NULL;             // A handle to our camera
 VmbFrame_t      g_Frames[NUM_FRAMES];                           // The frames we capture into
 FrameInfos      g_eFrameInfos               = FrameInfos_Off;   // Remember if we should print out frame infos
-VmbBool_t       g_bEnableColorProcessing    = VmbBoolFalse;     // enables color processing for frames
+VmbBool_t       g_bRGBValue                 = VmbBoolFalse;     // Show RGB values
+VmbBool_t       g_bEnableColorProcessing    = VmbBoolFalse;     // Enables color processing for frames
 double          g_dFrameTime                = 0.0;              // Timestamp of last frame
 VmbBool_t       g_bFrameTimeValid           = VmbBoolFalse;     // Remember if there was a last timestamp
 VmbUint64_t     g_nFrameID                  = 0;                // ID of last frame
@@ -313,7 +314,6 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
         printf("Frame ID:");
         if( VmbFrameFlagsFrameID & pFrame->receiveFlags )
         {
-
             printf( "%llu", pFrame->frameID );
         }
         else
@@ -369,9 +369,18 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
 
         printf( "\n" );
     }
-    // goto image processing
-    ProcessFrame( pFrame);
-    
+
+    if ( g_bRGBValue )
+    {
+        // goto image processing
+        ProcessFrame( pFrame);
+    }
+    else if ( FrameInfos_Show != g_eFrameInfos )
+    {
+        // Print a dot every frame
+        printf( "." );
+    }
+        
     fflush( stdout );
     // requeue the frame so it can be filled again
     VmbCaptureFrameQueue( cameraHandle, pFrame, &FrameCallback );
@@ -392,7 +401,7 @@ void VMB_CALL FrameCallback( const VmbHandle_t cameraHandle, VmbFrame_t* pFrame 
 //
 // Note: Vimba has to be uninitialized and the camera has to allow access mode full
 //
-VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing)
+VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing, VmbBool_t bRGBValue )
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
     VmbCameraInfo_t     *pCameras           = NULL;                 // A list of camera details
@@ -418,6 +427,7 @@ VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eF
         g_nFrameID                  = 0;
         g_bFrameIDValid             = VmbBoolFalse;
         g_eFrameInfos               = eFrameInfos;
+        g_bRGBValue                 = bRGBValue;
         g_bEnableColorProcessing    = bEnableColorProcessing;
 
 

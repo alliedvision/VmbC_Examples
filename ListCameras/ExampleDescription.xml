@@ -4,7 +4,8 @@
   <Description>Console application to list cameras currently connected to the system.</Description>
   <Application>
     <Screenshot>VimbaC_Examples/ListCameras/Screenshot.png</Screenshot>
-    <Executable>VimbaC_Examples/Bin/Win32/ListCameras.exe</Executable>
+    <ExecutableWin32>VimbaC_Examples/Bin/Win32/ListCameras.exe</ExecutableWin32>
+    <ExecutableWin64>VimbaC_Examples/Bin/Win64/ListCameras.exe</ExecutableWin64>
   </Application>
   <ProjectFile>
     <Text>Microsoft Visual Studio 2010 Solution</Text>

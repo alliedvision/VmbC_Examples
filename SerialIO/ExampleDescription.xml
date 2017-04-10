@@ -4,7 +4,8 @@
   <Description>Console application to test the serial port of a camera with a serial port of the PC.</Description>
   <Application>
     <Screenshot>VimbaC_Examples/SerialIO/Screenshot.png</Screenshot>
-    <Executable>VimbaC_Examples/Bin/Win32/SerialIO.exe</Executable>
+    <ExecutableWin32>VimbaC_Examples/Bin/Win32/SerialIO.exe</ExecutableWin32>
+    <ExecutableWin64>VimbaC_Examples/Bin/Win64/SerialIO.exe</ExecutableWin64>
   </Application>
   <ProjectFile>
     <Text>Microsoft Visual Studio 2010 Solution</Text>

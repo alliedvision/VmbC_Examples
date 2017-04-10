@@ -38,7 +38,7 @@ void PrintVimbaVersion()
     VmbError_t          result = VmbVersionQuery( &version_info, sizeof( version_info ));
     if( VmbErrorSuccess == result)
     {
-        printf( "Vimba C API Version Major: %u Minor: %u Patch: %u\n", version_info.major, version_info.minor,version_info.patch );
+        printf( "Vimba Version Major: %u Minor: %u Patch: %u\n", version_info.major, version_info.minor,version_info.patch );
     }
     else
     {

@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2017 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -38,7 +38,7 @@ typedef enum FrameInfos
     FrameInfos_Automatic
 } FrameInfos;
 
-VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing );
+VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing, VmbBool_t bRGBValue );
 void StopContinuousImageAcquisition();
 
 VmbBool_t   CreateApiLock();
