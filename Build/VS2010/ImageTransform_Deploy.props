@@ -9,6 +9,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(VIMBA_HOME)\VimbaImageTransform\Lib\Win$(PlatformArchitecture);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+	  <AdditionalDependencies>VimbaImageTransform.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent />
     <ResourceCompile />
