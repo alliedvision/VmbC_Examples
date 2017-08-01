@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Example Index="4" Id="C_ActionCommands" Title="ActionCommands" Language="C" Category="Examples" >
+  <Description>Application showing how to use Action Commands and trigger FrameStart of any camera</Description>
+  <Application>
+    <Screenshot>VimbaC_Examples/ActionCommands/Screenshot.png</Screenshot>
+    <ExecutableWin32>VimbaC_Examples/Bin/Win32/ActionCommands.exe</ExecutableWin32>
+    <ExecutableWin64>VimbaC_Examples/Bin/Win64/ActionCommands.exe</ExecutableWin64>
+  </Application>
+  <ProjectFile>
+    <Text>Microsoft Visual Studio 2010 Solution</Text>
+    <Link>VimbaC_Examples/ActionCommands/Build/VS2010/ActionCommands.sln</Link>
+  </ProjectFile>
+</Example>
