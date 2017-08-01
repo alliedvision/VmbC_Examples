@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialIO_ForSetup", "..\..\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadSaveSettings_ForSetup", "..\..\LoadSaveSettings\Build\VS2010\LoadSaveSettings_ForSetup.vcxproj", "{EE0EC4A9-1270-46C2-AC34-13EE389A25CB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActionCommands_ForSetup", "..\..\ActionCommands\Build\VS2010\ActionCommands_ForSetup.vcxproj", "{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_OpenMP|Win32 = Debug_OpenMP|Win32
@@ -167,6 +169,23 @@ Global
 		{EE0EC4A9-1270-46C2-AC34-13EE389A25CB}.Template|Win32.ActiveCfg = Release|x64
 		{EE0EC4A9-1270-46C2-AC34-13EE389A25CB}.Template|x64.ActiveCfg = Release|x64
 		{EE0EC4A9-1270-46C2-AC34-13EE389A25CB}.Template|x64.Build.0 = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug_OpenMP|Win32.ActiveCfg = Debug|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug_OpenMP|x64.ActiveCfg = Debug|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug_OpenMP|x64.Build.0 = Debug|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug|Win32.Build.0 = Debug|Win32
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug|x64.ActiveCfg = Debug|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Debug|x64.Build.0 = Debug|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release_OpenMP|Win32.ActiveCfg = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release_OpenMP|x64.ActiveCfg = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release_OpenMP|x64.Build.0 = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release|Win32.ActiveCfg = Release|Win32
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release|Win32.Build.0 = Release|Win32
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release|x64.ActiveCfg = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Release|x64.Build.0 = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Template|Win32.ActiveCfg = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Template|x64.ActiveCfg = Release|x64
+		{75F524CB-C61E-4310-A1FE-DBBE3DB7D5D2}.Template|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

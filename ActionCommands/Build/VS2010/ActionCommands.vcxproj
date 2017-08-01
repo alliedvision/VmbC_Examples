@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E06988BC-2C88-48AF-A09A-F6704F022D24}</ProjectGuid>
+    <ProjectGuid>{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ActionCommands</RootNamespace>
   </PropertyGroup>

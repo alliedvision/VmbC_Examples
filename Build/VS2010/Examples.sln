@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoadSaveSettings", "..\..\L
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialIO", "..\..\SerialIO\Build\VS2010\SerialIO.vcxproj", "{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActionCommands", "..\..\ActionCommands\Build\VS2010\ActionCommands.vcxproj", "{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -89,6 +91,14 @@ Global
 		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|Win32.Build.0 = Release|Win32
 		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|x64.ActiveCfg = Release|x64
 		{ECEC27E4-4D63-42DD-BFED-76AF19EFC03F}.Release|x64.Build.0 = Release|x64
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Debug|Win32.Build.0 = Debug|Win32
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Debug|x64.ActiveCfg = Debug|x64
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Debug|x64.Build.0 = Debug|x64
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Release|Win32.ActiveCfg = Release|Win32
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Release|Win32.Build.0 = Release|Win32
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Release|x64.ActiveCfg = Release|x64
+		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
