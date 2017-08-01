@@ -3,7 +3,8 @@ MAKE_INCLUDE_DIR        = $(CURDIR)
 
 include $(MAKE_INCLUDE_DIR)/Common.mk
 
-EXAMPLES		= AsynchronousGrab \
+EXAMPLES    = ActionCommands \
+              AsynchronousGrab \
 			  ForceIP \
 			  ListCameras \
 			  ListFeatures \
