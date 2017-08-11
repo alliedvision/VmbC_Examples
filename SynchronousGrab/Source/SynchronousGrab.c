@@ -238,7 +238,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                             }
                                             else
                                             {
-                                                printf( "Could not capture frame. Error code: %d", err );
+                                                printf( "Could not capture frame. Error code: %d\n", err );
                                             }
 
                                             // Stop Acquisition
@@ -250,7 +250,7 @@ VmbError_t SynchronousGrab( const char* pCameraID, const char* pFileName )
                                         }
                                         else
                                         {
-                                            printf( "Could not start acquisition. Error code: %d", err );
+                                            printf( "Could not start acquisition. Error code: %d\n", err );
                                         }
                                     }
                                     else
