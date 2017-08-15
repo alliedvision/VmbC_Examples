@@ -42,7 +42,7 @@ void PrintVimbaVersion()
     }
     else
     {
-        printf( "VmbVersionQuery failed with Reason: %x", result );
+        printf( "VmbVersionQuery failed with Reason: %x\n", result );
     }
 }
 
