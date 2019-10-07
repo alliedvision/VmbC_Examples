@@ -69,11 +69,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActionCommands", "..\..\Act
 		{8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01} = {8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EventHandling", "..\..\EventHandling\Build\VS2010\EventHandling.vcxproj", "{F236AC33-F95C-45AC-A972-4F9C5D319162}"
-	ProjectSection(ProjectDependencies) = postProject
-		{8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01} = {8DA8FED9-075B-44E5-AD40-4F1F8CB9DC01}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_OpenMP|Win32 = Debug_OpenMP|Win32
@@ -346,23 +341,6 @@ Global
 		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Template|Win32.ActiveCfg = Release|x64
 		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Template|x64.ActiveCfg = Release|x64
 		{EA3F773B-6021-4EE0-829D-E89EA3DFD1A6}.Template|x64.Build.0 = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug_OpenMP|Win32.ActiveCfg = Debug|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug_OpenMP|x64.ActiveCfg = Debug|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug_OpenMP|x64.Build.0 = Debug|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug|Win32.Build.0 = Debug|Win32
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug|x64.ActiveCfg = Debug|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Debug|x64.Build.0 = Debug|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release_OpenMP|Win32.ActiveCfg = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release_OpenMP|x64.ActiveCfg = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release_OpenMP|x64.Build.0 = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release|Win32.ActiveCfg = Release|Win32
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release|Win32.Build.0 = Release|Win32
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release|x64.ActiveCfg = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Release|x64.Build.0 = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Template|Win32.ActiveCfg = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Template|x64.ActiveCfg = Release|x64
-		{F236AC33-F95C-45AC-A972-4F9C5D319162}.Template|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
