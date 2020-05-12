@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 - 2016 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2013 - 2020 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -71,6 +71,25 @@ unsigned long long mac_addr( const char* strMAC )
     }
 }
 
+// Converts a IP address string into its decimal representation.
+//
+// Parameters:
+//  [in]    strIP           The string representation of the IP
+//
+//  Returns:
+//  The decimal representation of the IP address as integer.
+//
+unsigned int ip_addr( const char* strIP )
+{
+    unsigned long ip = inet_addr( strIP );
+
+    #ifdef _LITTLE_ENDIAN
+        ip = ntohl( ip );
+    #endif
+
+    return ip;
+}
+
 //
 // Starts Vimba API
 // Seeks a GigE camera by its MAC address on the network
@@ -99,9 +118,9 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
     err = VmbStartup();                                                                                                     // Initialize the Vimba API
     PrintVimbaVersion();                                                                                                    // Print Vimba Version
     nMAC            = mac_addr( strMAC );                                                                                   // The MAC address of the camera
-    nIP             = inet_addr( strIP );                                                                                   // The future IP address of the camera
-    nSubnet         = inet_addr( strSubnet );                                                                               // The future subnet mask of the camera
-    nGateway        = strGateway != NULL ? inet_addr( strGateway ) : 0;                                                     // A possible gateway
+    nIP             = ip_addr( strIP );                                                                                     // The future IP address of the camera
+    nSubnet         = ip_addr( strSubnet );                                                                                 // The future subnet mask of the camera
+    nGateway        = strGateway != NULL ? ip_addr( strGateway ) : 0;                                                       // A possible gateway
 
     if ( VmbErrorSuccess == err )
     {
@@ -112,18 +131,18 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
             {
                 if ( 0 != nMAC )
                 {
-                    err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressMAC", nMAC );                                   // Send MAC address to TL
+                    err = VmbFeatureIntSet( gVimbaHandle, "GevDeviceForceMACAddress", nMAC );                               // Send MAC address to TL
                     if ( VmbErrorSuccess == err )
                     {
-                        err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressIP", nIP );                                 // Send new IP address to TL
+                        err = VmbFeatureIntSet( gVimbaHandle, "GevDeviceForceIPAddress", nIP );                             // Send new IP address to TL
                         if ( VmbErrorSuccess == err )
                         {
-                            err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressSubnetMask", nSubnet );                 // Send new subnet mask to TL
+                            err = VmbFeatureIntSet( gVimbaHandle, "GevDeviceForceSubnetMask", nSubnet );                    // Send new subnet mask to TL
                             if ( VmbErrorSuccess == err )
                             {
                                 if( 0 != nGateway )
                                 {
-                                    err = VmbFeatureIntSet( gVimbaHandle, "GeVForceIPAddressGateway", nGateway );           // Send gateway address to TL
+                                    err = VmbFeatureIntSet( gVimbaHandle, "GevDeviceForceGateway", nGateway );              // Send gateway address to TL
                                     if ( VmbErrorSuccess != err )
                                     {
                                         printf( "Could not prepare the gateway settings. Reason: %d\n\n", err );
@@ -132,7 +151,7 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
 
                                 if ( VmbErrorSuccess == err )
                                 {
-                                    err = VmbFeatureCommandRun( gVimbaHandle, "GeVForceIPAddressSend" );                    // Finally execute the command to write all settings to cam
+                                    err = VmbFeatureCommandRun( gVimbaHandle, "GevDeviceForceIP" );                         // Finally execute the command to write all settings to cam
                                     if ( VmbErrorSuccess == err )
                                     {
                                         printf( "Command to change IP address to %s (%s) sent to camera.\n\n", strIP, strSubnet );

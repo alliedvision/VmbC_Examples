@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2013 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2020 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -60,7 +60,7 @@ int main( int argc, char* argv[] )
     }
     else
     {
-        ForceIP( argv[1], argv[2], argv[3], argc == 4 ? argv[4] : NULL );
+        ForceIP( argv[1], argv[2], argv[3], argc == 5 ? argv[4] : NULL );
     }
 
     return 0;
