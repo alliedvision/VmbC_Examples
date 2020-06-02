@@ -159,7 +159,11 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                                         do
                                         {
                                             err = VmbFeatureCommandIsDone( gVimbaHandle, "GevDeviceForceIP", &isDone);
-                                            Sleep(1000);
+                                            #ifdef WIN32
+                                                Sleep(1000);
+                                            #else
+                                                sleep(1);
+                                            #endif
                                             retryCount++;
                                             if(retryCount > 5)
                                             {
