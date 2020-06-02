@@ -90,6 +90,21 @@ unsigned int ip_addr( const char* strIP )
     return ip;
 }
 
+// Sleeps for the given seconds.
+//
+// Parameters:
+//  [in]    seconds         The number of seconds to sleep
+//
+void SleepForSeconds( const unsigned int seconds)
+{
+    #ifdef WIN32
+        Sleep(1000 * seconds);
+    #else
+        sleep(seconds);
+    #endif
+}
+
+
 //
 // Starts Vimba API
 // Seeks a GigE camera by its MAC address on the network
@@ -154,25 +169,23 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                                     err = VmbFeatureCommandRun( gVimbaHandle, "GevDeviceForceIP" );                         // Finally execute the command to write all settings to cam
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        VmbBool_t isDone = 0;
-                                        unsigned int retryCount = 0;
+                                        VmbBool_t       isDone        = 0;
+                                        unsigned int    retryCount = 0;
                                         do
                                         {
-                                            err = VmbFeatureCommandIsDone( gVimbaHandle, "GevDeviceForceIP", &isDone);
-                                            #ifdef WIN32
-                                                Sleep(1000);
-                                            #else
-                                                sleep(1);
-                                            #endif
-                                            retryCount++;
-                                            if(retryCount > 5)
-                                            {
-                                                printf("Timeout\n");
-                                                break;
-                                            }
+                                            SleepForSeconds(1);
+                                            err = VmbFeatureCommandIsDone( gVimbaHandle, "GevDeviceForceIP", &isDone);      // Check if the command is accepted by the camera
                                         }
-                                        while(isDone == VmbBoolFalse && err == VmbErrorSuccess);
-                                        printf("Error: %d, Done: %d", err, isDone);
+                                        while(retryCount++, isDone == VmbBoolFalse && err == VmbErrorSuccess && retryCount < 5);
+
+                                        if( isDone == VmbBoolTrue)
+                                        {
+                                            printf("ForceIP command sent successfully to the camera");
+                                        }
+                                        else
+                                        {
+                                            printf("ForceIP command could not be completed");
+                                        }
                                     }
                                     else
                                     {
