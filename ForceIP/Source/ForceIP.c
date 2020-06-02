@@ -154,7 +154,21 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
                                     err = VmbFeatureCommandRun( gVimbaHandle, "GevDeviceForceIP" );                         // Finally execute the command to write all settings to cam
                                     if ( VmbErrorSuccess == err )
                                     {
-                                        printf( "Command to change IP address to %s (%s) sent to camera.\n\n", strIP, strSubnet );
+                                        VmbBool_t isDone = 0;
+                                        unsigned int retryCount = 0;
+                                        do
+                                        {
+                                            err = VmbFeatureCommandIsDone( gVimbaHandle, "GevDeviceForceIP", &isDone);
+                                            Sleep(1000);
+                                            retryCount++;
+                                            if(retryCount > 5)
+                                            {
+                                                printf("Timeout\n");
+                                                break;
+                                            }
+                                        }
+                                        while(isDone == VmbBoolFalse && err == VmbErrorSuccess);
+                                        printf("Error: %d, Done: %d", err, isDone);
                                     }
                                     else
                                     {
