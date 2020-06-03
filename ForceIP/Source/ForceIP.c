@@ -180,11 +180,11 @@ void ForceIP( char* strMAC, char* strIP, char* strSubnet, char* strGateway )
 
                                         if( isDone == VmbBoolTrue)
                                         {
-                                            printf("ForceIP command sent successfully to the camera");
+                                            printf("ForceIP command sent successfully to the camera\n");
                                         }
                                         else
                                         {
-                                            printf("ForceIP command could not be completed");
+                                            printf("ForceIP command could not be completed\n");
                                         }
                                     }
                                     else
