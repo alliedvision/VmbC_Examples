@@ -27,7 +27,7 @@ LIBS				= VimbaC
 
 LIB_DIRS			= $(BIN_DIR)
 
-DEFINES				=
+DEFINES				= _$(call MACRO_TOUPPER,$(ENDIANESS))_ENDIAN
 
 OBJ_FILES			= $(OBJ_DIR)/ForceIP.o \
 				  $(OBJ_DIR)/program.o \

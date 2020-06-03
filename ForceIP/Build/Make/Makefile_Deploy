@@ -25,7 +25,7 @@ INCLUDE_DIRS        = -I$(SOURCE_DIR) \
 
 LIBS                = $(VIMBAC_LIBS)
 
-DEFINES             =
+DEFINES             = _LITTLE_ENDIAN
 
 CFLAGS              = $(COMMON_CFLAGS) \
                       $(VIMBAC_CFLAGS)
