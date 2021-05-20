@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/AsynchronousGrabQt">
+        <file>AsynchronousGrab.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AsynchronousGrabClass</class>
+ <widget class="QMainWindow" name="AsynchronousGrabClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1040</width>
+    <height>780</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1040</width>
+    <height>780</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1040</width>
+    <height>780</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>AsynchronousGrab (Qt version)</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="AsynchronousGrab.qrc">
+    <normaloff>:/AsynchronousGrabQt/AsynchronousGrab.png</normaloff>:/AsynchronousGrabQt/AsynchronousGrab.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QListWidget" name="m_ListBoxCameras">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>10</y>
+      <width>261</width>
+      <height>491</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="m_ListLog">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>580</y>
+      <width>1041</width>
+      <height>191</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="m_ButtonStartStop">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>540</y>
+      <width>261</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start Image Acquisition</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="m_LabelStream">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>10</y>
+      <width>771</width>
+      <height>561</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="m_ColorProcessingCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>510</y>
+      <width>121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ColorProcessing</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="AsynchronousGrab.qrc"/>
+ </resources>
+ <connections/>
+</ui>
