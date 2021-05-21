@@ -24,161 +24,153 @@
 #ifndef ASYNCHRONOUSGRAB_C_API_CONTROLLER_H
 #define ASYNCHRONOUSGRAB_C_API_CONTROLLER_H
 
+#include <QObject>
+
+#include <Memory>
 #include <string>
+#include <vector>
 
 #include "VimbaC/Include/VimbaC.h"
 
-#include <CameraObserver.h>
-#include <FrameObserver.h>
+#include "ApiCallResult.h"
+#include "ModuleData.h"
 
-namespace VmbC {
-namespace Examples {
-
-class ApiController
+namespace VmbC
 {
-  public:
-    ApiController();
-    ~ApiController();
+    namespace Examples
+    {
 
-    //
-    // Starts the Vimba API and loads all transport layers
-    //
-    // Returns:
-    //  An API status code
-    //
-    VmbErrorType        StartUp();
+        class ModuleTreeModel;
 
-    //
-    // Shuts down the API
-    //
-    void                ShutDown();
+        class ApiController
+        {
+        public:
+            ApiController();
+            ~ApiController();
 
-    //
-    // Opens the given camera
-    // Sets the maximum possible Ethernet packet size
-    // Adjusts the image format
-    // Sets up the observer that will be notified on every incoming frame
-    // Calls the API convenience function to start image acquisition
-    // Closes the camera in case of failure
-    //
-    // Parameters:
-    //  [in]    rStrCameraID    The ID of the camera to open as reported by Vimba
-    //
-    // Returns:
-    //  An API status code
-    //
-    VmbErrorType        StartContinuousImageAcquisition( const std::string &rStrCameraID );
+            /**
+             * \brief Starts the Vimba API and loads all transport layers
+             * \return the result of the API call
+             */
+            ApiCallResult Startup();
 
-    //
-    // Calls the API convenience function to stop image acquisition
-    // Closes the camera
-    //
-    // Returns:
-    //  An API status code
-    //
-    VmbErrorType        StopContinuousImageAcquisition();
+            /**
+             * \brief Shuts down the API
+             */
+            void Shutdown();
 
-    //
-    // Gets the width of a frame
-    //
-    // Returns:
-    //  The width as integer
-    //
-    int                 GetWidth() const;
+            /**
+             * \brief opens a camera and does some initializations.
+             *
+             * Opens the given camera
+             * Sets the maximum possible Ethernet packet size
+             * Adjusts the image format
+             * Sets up the observer that will be notified on every incoming frame
+             * Calls the API convenience function to start image acquisition
+             * Closes the camera in case of failure
+             *
+             * \param[in] cameraHandle the handle for the Camera to open
+             *
+             * \return the result of the API calls
+             */
+            ApiCallResult StartContinuousImageAcquisition(VmbHandle_t  const cameraHandle);
 
-    //
-    // Gets the height of a frame
-    //
-    // Returns:
-    //  The height as integer
-    //
-    int                 GetHeight() const;
+            /**
+             * \brief Closes the camera possibly stopping the acquisition, if necessary
+             *
+             * \return The result of the API calls
+             */
+            ApiCallResult StopContinuousImageAcquisition();
 
-    //
-    // Gets the pixel format of a frame
-    //
-    // Returns:
-    //  The pixel format as enum
-    //
-    VmbPixelFormatType  GetPixelFormat() const;
+            /**
+             * \brief Gets the width of a frame
+             *
+             *
+             * \return The width as integer
+             */
+            int GetWidth() const;
 
-    //
-    // Gets all cameras known to Vimba
-    //
-    // Returns:
-    //  A vector of camera shared pointers
-    //
-    CameraPtrVector     GetCameraList();
+            /**
+             * \brief Gets the height of a frame
+             *
+             * \return The height as integer
+             */
+            int GetHeight() const;
 
-    //
-    // Gets the oldest frame that has not been picked up yet
-    //
-    // Returns:
-    //  A frame shared pointer
-    //
-    FramePtr            GetFrame();
+            /**
+             * \brief Gets the pixel format of a frame
+             *
+             * \return The pixel format as enum
+             */
+            VmbPixelFormat_t GetPixelFormat() const;
 
-    //
-    // Queues a given frame to be filled by the API
-    //
-    // Parameters:
-    //  [in]    pFrame          The frame to queue
-    //
-    // Returns:
-    //  An API status code
-    //
-    VmbErrorType        QueueFrame( FramePtr pFrame );
+            /**
+             * \brief Gets all cameras known to Vmb for a given interface
+             *
+             * \return A vector of camera info structs
+             */
+            std::vector<std::unique_ptr<CameraData>> GetCameraList(InterfaceData* iface);
 
-    //
-    // Clears all remaining frames that have not been picked up
-    //
-    void                ClearFrameQueue();
-    
-    //
-    // Returns the camera observer as QObject pointer to connect their signals to the view's slots
-    //
-    QObject*            GetCameraObserver();
+            /**
+             * \brief gets all systems known to vmb
+             * \return a vector of system info structs
+             */
+            std::vector<std::unique_ptr<TlData>> GetSystemList();
 
-    //
-    // Returns the frame observer as QObject pointer to connect their signals to the view's slots
-    //
-    QObject*            GetFrameObserver();
+            /**
+             * \brief gets all interfaces for a given system known to vmb
+             * \return a vector of interface info structs
+             */
+            std::vector<std::unique_ptr<InterfaceData>> GetInterfaceList(TlData* system);
 
-    //
-    // Translates Vimba error codes to readable error messages
-    //
-    // Parameters:
-    //  [in]    eErr        The error code to be converted to string
-    //
-    // Returns:
-    //  A descriptive string representation of the error code
-    //
-    std::string         ErrorCodeToMessage( VmbErrorType eErr ) const;
+            /**
+             * \brief Gets the oldest frame that has not been picked up yet
+             *
+             * \return frame shared pointer
+             */
+            VmbFrame_t GetFrame();
 
-    //
-    // Gets the version of the Vimba API
-    //
-    // Returns:
-    //  The version as string
-    //
-    std::string         GetVersion() const;
-  private:
-    // A reference to our Vimba singleton
-    VimbaSystem&                m_system;
-    // The currently streaming camera
-    CameraPtr                   m_pCamera;
-    // Every camera has its own frame observer
-    IFrameObserverPtr           m_pFrameObserver;
-    // Our camera observer
-    ICameraListObserverPtr      m_pCameraObserver;
-    // The current pixel format
-    VmbInt64_t                  m_nPixelFormat;
-    // The current width
-    VmbInt64_t                  m_nWidth;
-    // The current height
-    VmbInt64_t                  m_nHeight;
-};
+            /**
+             * \brief Queues a given frame to be filled by the API
+             *
+             * \param[in] pFrame The frame to queue
+             *
+             * \return the result of the API call
+             */
+            ApiCallResult QueueFrame(VmbFrame_t pFrame);
 
-}} // namespace VmbC::Examples
+            /**
+             * \brief Clears all remaining frames that have not been picked up
+             */
+            void ClearFrameQueue();
+
+            /**
+             * \return the camera observer as QObject pointer to connect their signals to the view's slots
+             */
+            QObject* GetCameraObserver();
+
+            /**
+             * \return the frame observer as QObject pointer to connect their signals to the view's slots
+             */
+            QObject* GetFrameObserver();
+
+            /**
+             * \brief Gets the version of the Vimba API
+             *
+             * \return the version as string
+             */
+            std::string GetVersion() const;
+        private:
+            
+
+            // The current pixel format
+            VmbInt64_t                  m_pixelFormat;
+            // The current width
+            VmbInt64_t                  m_imageWidth;
+            // The current height
+            VmbInt64_t                  m_imageHeight;
+        };
+    } // namespace Examples
+} // namespace VmbC
 
 #endif

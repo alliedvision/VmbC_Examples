@@ -16,19 +16,23 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Entry point of the Asynchronous Grab Qt example using the Vmb C API
+ * \brief Definition of an entry of the event log view
  * \author Fabian Klein
  */
 
-#include <QApplication>
-#include <QMessageBox>
+#ifndef ASYNCHRONOUSGRAB_C_LOG_ENTRY_H
+#define ASYNCHRONOUSGRAB_C_LOG_ENTRY_H
 
-#include "UI/MainWindow.h"
-
-int main(int argc, char* argv[])
+namespace VmbC
 {
-    QApplication application(argc, argv);
-    MainWindow mainWindow;
-    mainWindow.show();
-    return application.exec();
-}
+    namespace Examples
+    {
+
+        class LogEntry
+        {
+        public:
+        };
+    } // namespace Examples
+} // namespace VmbC
+
+#endif

@@ -22,220 +22,335 @@
  * \author Fabian Klein
  */
 
-#include <ApiController.h>
 #include <sstream>
 #include <iostream>
-#include "Common/StreamSystemInfo.h"
-#include "Common/ErrorCodeToMessage.h"
 
-namespace VmbC {
-namespace Examples {
+#include "ApiController.h"
 
-enum    { NUM_FRAMES=3, };
+ //TODO #include "Common/StreamSystemInfo.h"
+ //TODO #include "Common/ErrorCodeToMessage.h"
 
-ApiController::ApiController()
-    // Get a reference to the Vimba singleton
-    : m_system( VimbaSystem::GetInstance() )
+namespace VmbC
 {
-}
-
-ApiController::~ApiController()
-{
-}
-
-std::string ApiController::ErrorCodeToMessage( VmbErrorType eErr ) const
-{
-    return AVT::VmbAPI::Examples::ErrorCodeToMessage( eErr );
-}
-
-VmbErrorType ApiController::StartUp()
-{
-    VmbErrorType res;
-
-    // Start Vimba
-    res = m_system.Startup();
-    if( VmbErrorSuccess == res )
+    namespace Examples
     {
-        // This will be wrapped in a shared_ptr so we don't delete it
-        SP_SET( m_pCameraObserver , new CameraObserver() );
-        // Register an observer whose callback routine gets triggered whenever a camera is plugged in or out
-        res = m_system.RegisterCameraListObserver( m_pCameraObserver );
-    }
 
-    return res;
-}
+        enum { NUM_FRAMES = 3, };
 
-void ApiController::ShutDown()
-{
-    // Release Vimba
-    m_system.Shutdown();
-}
-/*** helper function to set image size to a value that is dividable by modulo 2 and a multiple of the increment.
-\note this is needed because VimbaImageTransform does not support odd values for some input formats
-*/
-inline VmbErrorType SetValueIntMod2( const CameraPtr &camera, const std::string &featureName, VmbInt64_t &storage )
-{
-    VmbErrorType    res;
-    FeaturePtr      pFeature;
-    VmbInt64_t      minValue = 0;
-    VmbInt64_t      maxValue = 0;
-    VmbInt64_t      incrementValue = 0;
-
-    res = SP_ACCESS( camera )->GetFeatureByName( featureName.c_str(), pFeature );
-    if( VmbErrorSuccess != res )
-    {
-        return res;
-    }
-
-    res = SP_ACCESS( pFeature )->GetRange( minValue, maxValue );
-    if( VmbErrorSuccess != res )
-    {
-        return res;
-    }
-
-    res = SP_ACCESS( pFeature )->GetIncrement( incrementValue);
-    if( VmbErrorSuccess != res)
-    {
-        return res;
-    }
-
-    maxValue = maxValue - ( maxValue % incrementValue );
-    if( maxValue % 2 != 0)
-    {
-        maxValue -= incrementValue;
-    }
-
-    res = SP_ACCESS( pFeature )->SetValue( maxValue );
-    if( VmbErrorSuccess != res )
-    {
-        return res;
-    }
-
-    storage = maxValue;
-    return res;
-}
-
-VmbErrorType ApiController::StartContinuousImageAcquisition( const std::string &rStrCameraID )
-{
-    // Open the desired camera by its ID
-    VmbErrorType res = m_system.OpenCameraByID( rStrCameraID.c_str(), VmbAccessModeFull, m_pCamera );
-    if( VmbErrorSuccess == res )
-    {
-        // Set the GeV packet size to the highest possible value
-        // (In this example we do not test whether this cam actually is a GigE cam)
-        FeaturePtr pCommandFeature;
-        if( VmbErrorSuccess == SP_ACCESS( m_pCamera )->GetFeatureByName( "GVSPAdjustPacketSize", pCommandFeature ) )
+        ApiController::ApiController()
+            : m_imageWidth(0), m_imageHeight(0), m_pixelFormat(VmbPixelFormatLast)
         {
-            if( VmbErrorSuccess == SP_ACCESS( pCommandFeature )->RunCommand() )
+        }
+
+        ApiController::~ApiController()
+        {
+        }
+
+        ApiCallResult ApiController::Startup()
+        {
+            // TODO Start Vimba
+
+            return ApiCallResult();
+        }
+
+        void ApiController::Shutdown()
+        {
+            // TODO Release Vimba
+        }
+
+#ifdef TODO
+        inline VmbErrorType SetValueIntMod2(const CameraPtr& camera, const std::string& featureName, VmbInt64_t& storage)
+        {
+            VmbErrorType    res;
+            FeaturePtr      pFeature;
+            VmbInt64_t      minValue = 0;
+            VmbInt64_t      maxValue = 0;
+            VmbInt64_t      incrementValue = 0;
+
+            res = SP_ACCESS(camera)->GetFeatureByName(featureName.c_str(), pFeature);
+            if (VmbErrorSuccess != res)
             {
-                bool bIsCommandDone = false;
-                do
-                {
-                    if( VmbErrorSuccess != SP_ACCESS( pCommandFeature )->IsCommandDone( bIsCommandDone ) )
-                    {
-                        break;
-                    }
-                } while( false == bIsCommandDone );
+                return res;
             }
-        }
-        res = SetValueIntMod2( m_pCamera,"Width", m_nWidth );
-        if( VmbErrorSuccess == res )
-        {
-            res = SetValueIntMod2( m_pCamera, "Height", m_nHeight );
-            if( VmbErrorSuccess == res )
+
+            res = SP_ACCESS(pFeature)->GetRange(minValue, maxValue);
+            if (VmbErrorSuccess != res)
             {
-                // Store currently selected image format
-                FeaturePtr pFormatFeature;
-                res = SP_ACCESS( m_pCamera )->GetFeatureByName( "PixelFormat", pFormatFeature );
-                if( VmbErrorSuccess == res )
-                {
-                    res = SP_ACCESS( pFormatFeature )->GetValue( m_nPixelFormat );
-                    if ( VmbErrorSuccess == res )
-                    {
-                        // Create a frame observer for this camera (This will be wrapped in a shared_ptr so we don't delete it)
-                        SP_SET( m_pFrameObserver , new FrameObserver( m_pCamera ) );
-                        // Start streaming
-                        res = SP_ACCESS( m_pCamera )->StartContinuousImageAcquisition( NUM_FRAMES,  m_pFrameObserver );
-                    }
-                }
+                return res;
             }
+
+            res = SP_ACCESS(pFeature)->GetIncrement(incrementValue);
+            if (VmbErrorSuccess != res)
+            {
+                return res;
+            }
+
+            maxValue = maxValue - (maxValue % incrementValue);
+            if (maxValue % 2 != 0)
+            {
+                maxValue -= incrementValue;
+            }
+
+            res = SP_ACCESS(pFeature)->SetValue(maxValue);
+            if (VmbErrorSuccess != res)
+            {
+                return res;
+            }
+
+            storage = maxValue;
+            return res;
         }
-        if ( VmbErrorSuccess != res )
+#endif
+
+        ApiCallResult ApiController::StartContinuousImageAcquisition(VmbHandle_t const cameraHandle)
         {
-            // If anything fails after opening the camera we close it
-            SP_ACCESS( m_pCamera )->Close();
+            // TODO Open the desired camera by its handle
+
+            return ApiCallResult();
         }
-    }
 
-    return res;
-}
+        ApiCallResult ApiController::StopContinuousImageAcquisition()
+        {
 
-VmbErrorType ApiController::StopContinuousImageAcquisition()
-{
-    // Stop streaming
-    SP_ACCESS( m_pCamera )->StopContinuousImageAcquisition();
+            // TODO Stop streaming
 
-    // Close camera
-    return  m_pCamera->Close();
-}
+            // TODO Close camera
+            return ApiCallResult();
+        }
 
-CameraPtrVector ApiController::GetCameraList()
-{
-    CameraPtrVector cameras;
-    // Get all known cameras
-    if( VmbErrorSuccess == m_system.GetCameras( cameras ) )
-    {
-        // And return them
-        return cameras;
-    }
-    return CameraPtrVector();
-}
+        inline namespace TODO
+        {
+            VmbCameraInfo_t CreateCamera(const char* id, const char* name, const char* serial, const char* interfaceId, const char* modelName)
+            {
+                VmbCameraInfo_t cam;
+                cam.cameraIdString = id;
+                cam.cameraName = name;
+                cam.interfaceIdString = interfaceId;
+                cam.modelName = modelName;
+                cam.permittedAccess = VmbAccessModeFull;
+                cam.serialString = serial;
+                return cam;
+            }
+        };
 
-int ApiController::GetWidth() const
-{
-    return static_cast<int>(m_nWidth);
-}
+        int ApiController::GetWidth() const
+        {
+            return static_cast<int>(m_imageWidth);
+        }
 
-int ApiController::GetHeight() const
-{
-    return static_cast<int>(m_nHeight);
-}
+        int ApiController::GetHeight() const
+        {
+            return static_cast<int>(m_imageHeight);
+        }
 
-VmbPixelFormatType ApiController::GetPixelFormat() const
-{
-    return static_cast<VmbPixelFormatType>(m_nPixelFormat);
-}
+        VmbPixelFormat_t ApiController::GetPixelFormat() const
+        {
+            return static_cast<VmbPixelFormat_t>(m_pixelFormat);
+        }
 
-FramePtr ApiController::GetFrame()
-{
-    return SP_DYN_CAST( m_pFrameObserver, FrameObserver )->GetFrame();
-}
 
-void ApiController::ClearFrameQueue()
-{
-    SP_DYN_CAST( m_pFrameObserver,FrameObserver )->ClearFrameQueue();
-}
+        struct TODOHandle
+        {
+        };
+        TODOHandle sys1;
+        TODOHandle sys2;
 
-VmbErrorType ApiController::QueueFrame( FramePtr pFrame )
-{
-    return SP_ACCESS( m_pCamera )->QueueFrame( pFrame );
-}
+        TODOHandle iface1;
+        TODOHandle iface2;
+        TODOHandle iface3;
+        TODOHandle iface4;
 
-QObject* ApiController::GetCameraObserver()
-{
-    return SP_DYN_CAST( m_pCameraObserver, CameraObserver ).get();
-}
+        TODOHandle cam1;
+        TODOHandle cam2;
+        TODOHandle cam3;
+        TODOHandle cam4;
+        TODOHandle cam5;
+        TODOHandle cam6;
 
-QObject* ApiController::GetFrameObserver()
-{
-    return SP_DYN_CAST( m_pFrameObserver, FrameObserver ).get();
-}
+        std::vector<std::unique_ptr<CameraData>> ApiController::GetCameraList(InterfaceData* iface)
+        {
+            std::vector<std::unique_ptr<CameraData>> result;
+            auto& interfaceInfo = iface->GetInfo();
+            
+            size_t count;
+            std::unique_ptr<VmbCameraInfo_t[]> cameraInfo;
 
-std::string ApiController::GetVersion() const
-{
-    std::ostringstream os;
-    os << m_system;
-    return os.str();
-}
+#ifndef TODO
+            count = 3;
+#endif
+            cameraInfo = std::make_unique<VmbCameraInfo_t[]>(count);
 
-}} // namespace VmbC::Examples
+#ifndef TODO
+
+            static std::string const if1 { "Interface 1" };
+            static std::string const if2 { "Interface 2" };
+            static std::string const if3 { "Interface 3" };
+
+
+            if (if1 == interfaceInfo.interfaceName)
+            {
+                count = 2;
+                cameraInfo[0].cameraName = "Camera 1";
+                cameraInfo[1].cameraName = "Camera 2";
+            }
+            else if (if2 == interfaceInfo.interfaceName)
+            {
+                count = 1;
+                cameraInfo[0].cameraName = "Camera 3";
+            }
+            else if (if3 == interfaceInfo.interfaceName)
+            {
+                count = 3;
+                cameraInfo[0].cameraName = "Camera 4";
+                cameraInfo[1].cameraName = "Camera 5";
+                cameraInfo[2].cameraName = "Camera 6";
+            }
+            else
+            {
+                count = 0;
+            }
+#endif
+
+            result.reserve(count);
+
+            for (size_t i = 0; i != count; ++i)
+            {
+                auto cam = std::make_unique<CameraData>();
+                cam->Initialize(cameraInfo[i], iface);
+                result.emplace_back(std::move(cam));
+            }
+
+            return result;
+        }
+
+        std::vector<std::unique_ptr<TlData>> ApiController::GetSystemList()
+        {
+            std::vector<std::unique_ptr<TlData>> result;
+
+
+            size_t count;
+#ifndef TODO
+            count = 2;
+#endif
+
+            auto tlInfos = std::make_unique<VmbTransportLayerInfo_t[]>(count);
+
+#ifndef TODO
+            VmbTransportLayerInfo_t tlInfo;
+
+            tlInfo.transportLayerName = "System 1";
+            tlInfo.transportLayerHandle = &sys1;
+            tlInfos[0] = tlInfo;
+
+            tlInfo.transportLayerName = "System 2";
+            tlInfo.transportLayerHandle = &sys2;
+            tlInfos[1] = tlInfo;
+#endif
+
+            for (size_t i = 0; i != count; ++i)
+            {
+                auto sys = std::make_unique<TlData>();
+                sys->Initialize(tlInfos[i]);
+                result.emplace_back(std::move(sys));
+            }
+
+            return result;
+        }
+
+        std::vector<std::unique_ptr<InterfaceData>> ApiController::GetInterfaceList(TlData* system)
+        {
+            std::vector<std::unique_ptr<InterfaceData>> result;
+            auto& systemInfo = system->GetInfo();
+
+            size_t count;
+
+#ifndef TODO
+            count = 2;
+#endif
+
+            auto interfaceInfos = std::make_unique<VmbInterfaceInfo_t[]>(count);
+
+#ifndef TODO
+            
+            if (systemInfo.transportLayerHandle == &sys1)
+            {
+                auto& i1 = interfaceInfos[0];
+                auto& i2 = interfaceInfos[1];
+                i1.interfaceName = "Interface 1";
+                i2.interfaceName = "Interface 2";
+            }
+            else if (systemInfo.transportLayerHandle == &sys2)
+            {
+                auto& i1 = interfaceInfos[0];
+                auto& i2 = interfaceInfos[1];
+                i1.interfaceName = "Interface 3";
+                i2.interfaceName = "Interface 4";
+            }
+            else
+            {
+                count = 0;
+            }
+
+#endif
+
+            result.reserve(count);
+
+            for (size_t i = 0; i != count; ++i)
+            {
+                auto iface = std::make_unique<InterfaceData>();
+                iface->Initialize(interfaceInfos[i], system);
+                result.emplace_back(std::move(iface));
+            }
+
+            return result;
+        }
+
+        VmbFrame_t ApiController::GetFrame()
+        {
+            // TODO
+            return {};
+        }
+
+        void ApiController::ClearFrameQueue()
+        {
+            // TODO
+        }
+
+        ApiCallResult ApiController::QueueFrame(VmbFrame_t pFrame)
+        {
+            // TODO
+            return ApiCallResult();
+        }
+
+        QObject* ApiController::GetCameraObserver()
+        {
+            // TODO
+            return nullptr;
+        }
+
+        QObject* ApiController::GetFrameObserver()
+        {
+            // TODO
+            return nullptr;
+        }
+
+        std::string ApiController::GetVersion() const
+        {
+            std::ostringstream os;
+
+            VmbVersionInfo_t versionInfo;
+            auto const error = VmbVersionQuery(&versionInfo, sizeof(versionInfo));
+
+            if (error == VmbErrorSuccess)
+            {
+                os
+                    << versionInfo.major << '.'
+                    << versionInfo.minor << '.'
+                    << versionInfo.patch;
+            }
+
+            return os.str();
+        }
+
+    } // namespace Examples
+} // namespace VmbC

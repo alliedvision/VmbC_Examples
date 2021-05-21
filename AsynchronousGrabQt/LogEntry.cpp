@@ -16,19 +16,15 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Entry point of the Asynchronous Grab Qt example using the Vmb C API
+ * \brief Implementation of ModuleData.
  * \author Fabian Klein
  */
 
-#include <QApplication>
-#include <QMessageBox>
+#include "LogEntry.h"
 
-#include "UI/MainWindow.h"
-
-int main(int argc, char* argv[])
+namespace VmbC
 {
-    QApplication application(argc, argv);
-    MainWindow mainWindow;
-    mainWindow.show();
-    return application.exec();
-}
+    namespace Examples
+    {
+    } // namespace Examples
+} // namespace VmbC

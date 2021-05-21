@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/AsynchronousGrabQt">
-        <file>AsynchronousGrab.png</file>
+        <file alias="sampleImage.jpg">calGrid2.jpg</file>
     </qresource>
 </RCC>

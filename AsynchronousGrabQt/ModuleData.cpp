@@ -16,19 +16,36 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Entry point of the Asynchronous Grab Qt example using the Vmb C API
+ * \brief Implementation of ModuleData.
  * \author Fabian Klein
  */
 
-#include <QApplication>
-#include <QMessageBox>
+#include "ModuleData.h"
 
-#include "UI/MainWindow.h"
-
-int main(int argc, char* argv[])
+namespace VmbC
 {
-    QApplication application(argc, argv);
-    MainWindow mainWindow;
-    mainWindow.show();
-    return application.exec();
-}
+    namespace Examples
+    {
+        ModuleData* ModuleData::GetParent()
+        {
+            return m_parent;
+        }
+
+        ModuleData::ModuleData()
+            : m_parent(nullptr)
+        {
+        }
+
+        void ModuleData::Visitor::Visit(VmbCameraInfo_t const& data)
+        {
+        }
+
+        void ModuleData::Visitor::Visit(VmbInterfaceInfo_t const& data)
+        {
+        }
+
+        void ModuleData::Visitor::Visit(VmbTransportLayerInfo_t const& data)
+        {
+        }
+    } // namespace Examples
+} // namespace VmbC
