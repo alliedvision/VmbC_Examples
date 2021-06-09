@@ -16,42 +16,45 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Definition of an entry of the event log view
+ * \brief Definition of a model for filling a TreeView with model data
  * \author Fabian Klein
  */
 
-#ifndef ASYNCHRONOUSGRAB_C_LOG_ENTRY_H
-#define ASYNCHRONOUSGRAB_C_LOG_ENTRY_H
+#ifndef ASYNCHRONOUSGRAB_C_LIST_ENTRY_LIST_MODEL_H
+#define ASYNCHRONOUSGRAB_C_LIST_ENTRY_LIST_MODEL_H
 
-#include "VimbaC/Include/VimbaC.h"
+#include <vector>
 
-#include <string>
+#include <QAbstractTableModel>
+#include <QVariant>
+
+#include "LogEntry.h"
 
 namespace VmbC
 {
     namespace Examples
     {
 
-        class LogEntry
+        class LogEntryListModel : public QAbstractTableModel
         {
         public:
-            LogEntry(std::string const& message, VmbError_t error = VmbErrorSuccess)
-                : m_frame(message), m_errorCode(error) 
-            {
-            }
+            static constexpr int ErrorCodeColumn = 0;
+            static constexpr int MessageColumn = 1;
 
-            std::string const& GetMessage() const noexcept
-            {
-                return m_frame;
-            }
+            LogEntryListModel(QObject* parent = nullptr);
 
-            VmbError_t GetErrorCode() const noexcept
-            {
-                return m_errorCode;
-            }
+            int columnCount(QModelIndex const& parent) const override;
+            int rowCount(QModelIndex const& parent) const override;
+            QVariant data(QModelIndex const& index, int role) const override;
+            QVariant headerData(int section, Qt::Orientation, int role) const override;
+
+            LogEntryListModel& operator<<(LogEntry&& entry);
         private:
-            std::string m_frame;
-            VmbError_t m_errorCode;
+
+            /**
+             * \brief a list of all log entries
+             */
+            std::vector<LogEntry> m_data;
         };
     } // namespace Examples
 } // namespace VmbC

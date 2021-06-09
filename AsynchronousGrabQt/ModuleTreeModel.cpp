@@ -161,11 +161,37 @@ namespace VmbC
             return result;
         }
 
+        Qt::ItemFlags ModuleTreeModel::flags(QModelIndex const& index) const
+        {
+            Qt::ItemFlags flags = Qt::ItemFlag::ItemIsEnabled;
+
+            if (index.isValid())
+            {
+                auto ptr = index.internalPointer();
+                if (ptr != nullptr)
+                {
+                    static_cast<Item*>(ptr)->m_module->Accept(FlagUpdateVisitor(flags));
+                }
+            }
+
+            return flags;
+        }
+
+        ModuleData const* ModuleTreeModel::GetModule(QModelIndex const& modelIndex)
+        {
+            if (!modelIndex.isValid())
+            {
+                return nullptr;
+            }
+            auto ptr = modelIndex.internalPointer();
+            return (ptr == nullptr) ? nullptr : static_cast<Item*>(ptr)->m_module.get();
+        }
+
         void ModuleTreeModel::DataRetrievalVisitor::Visit(VmbCameraInfo_t const& data)
         {
             switch (m_role)
             {
-            case Qt::DisplayRole:
+            case Qt::ItemDataRole::DisplayRole:
                 m_result = QString(data.cameraName);
                 break;
             }
@@ -175,7 +201,7 @@ namespace VmbC
         {
             switch (m_role)
             {
-            case Qt::DisplayRole:
+            case Qt::ItemDataRole::DisplayRole:
                 m_result = QString(data.interfaceName);
                 break;
             }
@@ -185,8 +211,11 @@ namespace VmbC
         {
             switch (m_role)
             {
-            case Qt::DisplayRole:
+            case Qt::ItemDataRole::DisplayRole:
                 m_result = QString(data.transportLayerName);
+                break;
+            case Qt::ItemDataRole::ToolTipRole:
+                m_result = QString::fromStdString(std::string("transportLayerName: ") + data.transportLayerName);
                 break;
             }
         }
@@ -194,6 +223,11 @@ namespace VmbC
         ModuleTreeModel::DataRetrievalVisitor::DataRetrievalVisitor(Qt::ItemDataRole role, QVariant& result)
             : m_role(role), m_result(result)
         {
+        }
+
+        void ModuleTreeModel::FlagUpdateVisitor::Visit(VmbCameraInfo_t const& data)
+        {
+            m_flags |= (Qt::ItemFlag::ItemNeverHasChildren | Qt::ItemFlag::ItemIsSelectable);
         }
 } // namespace Examples
 } // namespace VmbC

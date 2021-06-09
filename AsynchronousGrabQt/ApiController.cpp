@@ -22,13 +22,10 @@
  * \author Fabian Klein
  */
 
-#include <sstream>
-#include <iostream>
+#include <algorithm>
 
 #include "ApiController.h"
-
- //TODO #include "Common/StreamSystemInfo.h"
- //TODO #include "Common/ErrorCodeToMessage.h"
+#include "VmbException.h"
 
 namespace VmbC
 {
@@ -37,301 +34,88 @@ namespace VmbC
 
         enum { NUM_FRAMES = 3, };
 
-        ApiController::ApiController()
-            : m_imageWidth(0), m_imageHeight(0), m_pixelFormat(VmbPixelFormatLast)
+        ApiController::ApiController(MainWindow& mainWindow)
+            : m_libraryLife {}
         {
         }
 
-        ApiController::~ApiController()
+        namespace
         {
-        }
 
-        ApiCallResult ApiController::Startup()
-        {
-            // TODO Start Vimba
-
-            return ApiCallResult();
-        }
-
-        void ApiController::Shutdown()
-        {
-            // TODO Release Vimba
-        }
-
-#ifdef TODO
-        inline VmbErrorType SetValueIntMod2(const CameraPtr& camera, const std::string& featureName, VmbInt64_t& storage)
-        {
-            VmbErrorType    res;
-            FeaturePtr      pFeature;
-            VmbInt64_t      minValue = 0;
-            VmbInt64_t      maxValue = 0;
-            VmbInt64_t      incrementValue = 0;
-
-            res = SP_ACCESS(camera)->GetFeatureByName(featureName.c_str(), pFeature);
-            if (VmbErrorSuccess != res)
+            template<typename InfoType, typename RetrievalFunctor>
+            std::vector<std::unique_ptr<ModuleDataImpl<InfoType>>> ListModulesImpl(RetrievalFunctor retrievalFunction, const char* functionName)
             {
-                return res;
+                VmbUint32_t count;
+
+                VmbError_t error = retrievalFunction(nullptr, 0, &count, sizeof(InfoType));
+                if (error != VmbErrorSuccess)
+                {
+                    throw VmbException::ForOperation(error, functionName);
+                }
+
+                std::vector<InfoType> buffer(count);
+
+                VmbUint32_t filledCount;
+
+                error = retrievalFunction(buffer.data(), count, &filledCount, sizeof(InfoType));
+
+                // for simplicity we ignore the case where the list grows between calls
+                if (error != VmbErrorSuccess && error != VmbErrorMoreData)
+                {
+                    throw VmbException::ForOperation(error, functionName);
+                }
+
+                if (filledCount < count)
+                {
+                    buffer.resize(filledCount);
+                }
+
+                std::vector<std::unique_ptr<ModuleDataImpl<InfoType>>> result(buffer.size());
+
+                std::transform(buffer.begin(), buffer.end(), result.begin(), [](InfoType const& info)
+                               {
+                                   return std::make_unique<ModuleDataImpl<InfoType>>(info);
+                               });
+
+                return result;
             }
 
-            res = SP_ACCESS(pFeature)->GetRange(minValue, maxValue);
-            if (VmbErrorSuccess != res)
+            template<typename InfoType>
+            std::vector<std::unique_ptr<ModuleDataImpl<InfoType>>> ListModules();
+
+            template<>
+            std::vector<std::unique_ptr<ModuleDataImpl<VmbTransportLayerInfo_t>>> ListModules<VmbTransportLayerInfo_t>()
             {
-                return res;
+                return ListModulesImpl<VmbTransportLayerInfo_t>(VmbTransportLayersList, "VmbTransportLayersList");
             }
 
-            res = SP_ACCESS(pFeature)->GetIncrement(incrementValue);
-            if (VmbErrorSuccess != res)
+            template<>
+            std::vector<std::unique_ptr<ModuleDataImpl<VmbInterfaceInfo_t>>> ListModules<VmbInterfaceInfo_t>()
             {
-                return res;
+                return ListModulesImpl<VmbInterfaceInfo_t>(VmbInterfacesList, "VmbInterfacesList");
             }
 
-            maxValue = maxValue - (maxValue % incrementValue);
-            if (maxValue % 2 != 0)
+            template<>
+            std::vector<std::unique_ptr<ModuleDataImpl<VmbCameraInfo_t>>> ListModules<VmbCameraInfo_t>()
             {
-                maxValue -= incrementValue;
+                return ListModulesImpl<VmbCameraInfo_t>(VmbCamerasList, "VmbCamerasList");
             }
 
-            res = SP_ACCESS(pFeature)->SetValue(maxValue);
-            if (VmbErrorSuccess != res)
-            {
-                return res;
-            }
-
-            storage = maxValue;
-            return res;
-        }
-#endif
-
-        ApiCallResult ApiController::StartContinuousImageAcquisition(VmbHandle_t const cameraHandle)
-        {
-            // TODO Open the desired camera by its handle
-
-            return ApiCallResult();
-        }
-
-        ApiCallResult ApiController::StopContinuousImageAcquisition()
-        {
-
-            // TODO Stop streaming
-
-            // TODO Close camera
-            return ApiCallResult();
-        }
-
-        inline namespace TODO
-        {
-            VmbCameraInfo_t CreateCamera(const char* id, const char* name, const char* serial, const char* interfaceId, const char* modelName)
-            {
-                VmbCameraInfo_t cam;
-                cam.cameraIdString = id;
-                cam.cameraName = name;
-                cam.interfaceIdString = interfaceId;
-                cam.modelName = modelName;
-                cam.permittedAccess = VmbAccessModeFull;
-                cam.serialString = serial;
-                return cam;
-            }
         };
 
-        int ApiController::GetWidth() const
+        std::vector<std::unique_ptr<CameraData>> ApiController::GetCameraList()
         {
-            return static_cast<int>(m_imageWidth);
-        }
-
-        int ApiController::GetHeight() const
-        {
-            return static_cast<int>(m_imageHeight);
-        }
-
-        VmbPixelFormat_t ApiController::GetPixelFormat() const
-        {
-            return static_cast<VmbPixelFormat_t>(m_pixelFormat);
-        }
-
-
-        struct TODOHandle
-        {
-        };
-        TODOHandle sys1;
-        TODOHandle sys2;
-
-        TODOHandle iface1;
-        TODOHandle iface2;
-        TODOHandle iface3;
-        TODOHandle iface4;
-
-        TODOHandle cam1;
-        TODOHandle cam2;
-        TODOHandle cam3;
-        TODOHandle cam4;
-        TODOHandle cam5;
-        TODOHandle cam6;
-
-        std::vector<std::unique_ptr<CameraData>> ApiController::GetCameraList(InterfaceData* iface)
-        {
-            std::vector<std::unique_ptr<CameraData>> result;
-            auto& interfaceInfo = iface->GetInfo();
-            
-            size_t count;
-            std::unique_ptr<VmbCameraInfo_t[]> cameraInfo;
-
-#ifndef TODO
-            count = 3;
-#endif
-            cameraInfo = std::make_unique<VmbCameraInfo_t[]>(count);
-
-#ifndef TODO
-
-            static std::string const if1 { "Interface 1" };
-            static std::string const if2 { "Interface 2" };
-            static std::string const if3 { "Interface 3" };
-
-
-            if (if1 == interfaceInfo.interfaceName)
-            {
-                count = 2;
-                cameraInfo[0].cameraName = "Camera 1";
-                cameraInfo[1].cameraName = "Camera 2";
-            }
-            else if (if2 == interfaceInfo.interfaceName)
-            {
-                count = 1;
-                cameraInfo[0].cameraName = "Camera 3";
-            }
-            else if (if3 == interfaceInfo.interfaceName)
-            {
-                count = 3;
-                cameraInfo[0].cameraName = "Camera 4";
-                cameraInfo[1].cameraName = "Camera 5";
-                cameraInfo[2].cameraName = "Camera 6";
-            }
-            else
-            {
-                count = 0;
-            }
-#endif
-
-            result.reserve(count);
-
-            for (size_t i = 0; i != count; ++i)
-            {
-                auto cam = std::make_unique<CameraData>();
-                cam->Initialize(cameraInfo[i], iface);
-                result.emplace_back(std::move(cam));
-            }
-
-            return result;
+            return ListModules<VmbCameraInfo_t>();
         }
 
         std::vector<std::unique_ptr<TlData>> ApiController::GetSystemList()
         {
-            std::vector<std::unique_ptr<TlData>> result;
-
-
-            size_t count;
-#ifndef TODO
-            count = 2;
-#endif
-
-            auto tlInfos = std::make_unique<VmbTransportLayerInfo_t[]>(count);
-
-#ifndef TODO
-            VmbTransportLayerInfo_t tlInfo;
-
-            tlInfo.transportLayerName = "System 1";
-            tlInfo.transportLayerHandle = &sys1;
-            tlInfos[0] = tlInfo;
-
-            tlInfo.transportLayerName = "System 2";
-            tlInfo.transportLayerHandle = &sys2;
-            tlInfos[1] = tlInfo;
-#endif
-
-            for (size_t i = 0; i != count; ++i)
-            {
-                auto sys = std::make_unique<TlData>();
-                sys->Initialize(tlInfos[i]);
-                result.emplace_back(std::move(sys));
-            }
-
-            return result;
+            return ListModules<VmbTransportLayerInfo_t>();
         }
 
-        std::vector<std::unique_ptr<InterfaceData>> ApiController::GetInterfaceList(TlData* system)
+        std::vector<std::unique_ptr<InterfaceData>> ApiController::GetInterfaceList()
         {
-            std::vector<std::unique_ptr<InterfaceData>> result;
-            auto& systemInfo = system->GetInfo();
-
-            size_t count;
-
-#ifndef TODO
-            count = 2;
-#endif
-
-            auto interfaceInfos = std::make_unique<VmbInterfaceInfo_t[]>(count);
-
-#ifndef TODO
-            
-            if (systemInfo.transportLayerHandle == &sys1)
-            {
-                auto& i1 = interfaceInfos[0];
-                auto& i2 = interfaceInfos[1];
-                i1.interfaceName = "Interface 1";
-                i2.interfaceName = "Interface 2";
-            }
-            else if (systemInfo.transportLayerHandle == &sys2)
-            {
-                auto& i1 = interfaceInfos[0];
-                auto& i2 = interfaceInfos[1];
-                i1.interfaceName = "Interface 3";
-                i2.interfaceName = "Interface 4";
-            }
-            else
-            {
-                count = 0;
-            }
-
-#endif
-
-            result.reserve(count);
-
-            for (size_t i = 0; i != count; ++i)
-            {
-                auto iface = std::make_unique<InterfaceData>();
-                iface->Initialize(interfaceInfos[i], system);
-                result.emplace_back(std::move(iface));
-            }
-
-            return result;
-        }
-
-        VmbFrame_t ApiController::GetFrame()
-        {
-            // TODO
-            return {};
-        }
-
-        void ApiController::ClearFrameQueue()
-        {
-            // TODO
-        }
-
-        ApiCallResult ApiController::QueueFrame(VmbFrame_t pFrame)
-        {
-            // TODO
-            return ApiCallResult();
-        }
-
-        QObject* ApiController::GetCameraObserver()
-        {
-            // TODO
-            return nullptr;
-        }
-
-        QObject* ApiController::GetFrameObserver()
-        {
-            // TODO
-            return nullptr;
+            return ListModules<VmbInterfaceInfo_t>();
         }
 
         std::string ApiController::GetVersion() const

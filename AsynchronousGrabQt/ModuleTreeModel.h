@@ -47,6 +47,13 @@ namespace VmbC
             int rowCount(QModelIndex const& parent) const override;
             int columnCount(QModelIndex const& parent) const override;
             QVariant data(QModelIndex const& index, int role) const override;
+            Qt::ItemFlags flags(QModelIndex const& index) const override;
+
+            /**
+             * \brief get the module data at the given model index
+             * \return a pointer to the module data object or null, if the index is invalid
+             */
+            static ModuleData const* GetModule(QModelIndex const& modelIndex);
         private:
             struct DataRetrievalVisitor : ModuleData::Visitor
             {
@@ -60,6 +67,19 @@ namespace VmbC
                 void Visit(VmbInterfaceInfo_t const& data) override;
 
                 void Visit(VmbTransportLayerInfo_t const& data) override;
+            };
+
+            struct FlagUpdateVisitor : ModuleData::Visitor
+            {
+                Qt::ItemFlags& m_flags;
+
+                FlagUpdateVisitor(Qt::ItemFlags& flags)
+                    : m_flags(flags)
+                {
+                }
+
+                void Visit(VmbCameraInfo_t const& data) override;
+
             };
 
             /**

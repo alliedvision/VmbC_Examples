@@ -24,17 +24,24 @@
 #ifndef ASYNCHRONOUSGRAB_C_MAIN_WINDOW_H
 #define ASYNCHRONOUSGRAB_C_MAIN_WINDOW_H
 
+#include <memory>
+#include <mutex>
+
+
 #include <QMainWindow>
 
 #include "VimbaC/Include/VimbaC.h"
 
 #include "ApiController.h"
+#include "AcquisitionManager.h"
+#include "support/NotNull.h"
 
 using VmbC::Examples::ApiController;
 
 QT_BEGIN_NAMESPACE
 
 class QListView;
+class QItemSelection;
 class QTreeView;
 
 namespace Ui
@@ -44,90 +51,103 @@ namespace Ui
 
 QT_END_NAMESPACE
 
+namespace VmbC
+{
+    namespace Examples
+    {
+        class ApiController;
+        class Image;
+        class LogEntryListModel;
+        class VmbException;
+    }
+}
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
-    MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+    MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = Qt::Widget);
+
     ~MainWindow();
 
+    /**
+     * \brief Asynchonously schedule rendering of image 
+     * \param a smart pointer containing the image to render; an existing image for reuse may be swapped into the smart pointer
+     */
+    void RenderImage(std::unique_ptr<VmbC::Examples::Image>& image);
 private:
     using Gui = Ui::AsynchronousGrabGui;
 
     /**
      * \brief variable for holding the content from UI/res/AsynchronousGrabGui.ui
      */
-    Gui* m_ui;
+    VmbC::Examples::NotNull<Gui> m_ui;
 
     /**
      * \brief Our controller that wraps API access
      */
-    ApiController m_apiController;
+    std::unique_ptr<ApiController> m_apiController;
+
+    bool m_renderingRequired{ false };
+
+    std::unique_ptr<VmbC::Examples::Image> m_onscreenImage;
+    std::unique_ptr<VmbC::Examples::Image> m_renderingImage;
+    std::unique_ptr<VmbC::Examples::Image> m_queuedImage;
 
     /**
-     * \brief A list of known cameras
+     * \brief mutex for synchonizing access to m_queuedImage
      */
-    std::vector<std::string> m_cameras;
+    std::mutex m_imageSynchronizer;
 
-    /**
-     * \brief Are we streaming?
-     */
-    bool m_bIsStreaming;
+    VmbC::Examples::AcquisitionManager m_acquisitionManager;
 
-    /**
-     * \brief Our Qt image to display
-     */
-    QImage m_image;
+    VmbC::Examples::NotNull<VmbC::Examples::LogEntryListModel> m_log;
 
     /**
      * \brief Queries and lists all known camera
      */
-    void InitializeCameraListBox();
+    void SetupCameraTree();
 
     /**
-     * \brief Prints out a given logging string, error code and the descriptive representation of that error code
+     * \brief Log an exception thrown because of a VmbC libary function call
      *
-     * \param[in] strMsg A given message to be printed out
-     * \param[in] eErr The API status code
+     * \param[in] exception the exception thrown
      */
-    void Log(std::string strMsg, VmbError_t eErr);
+    void Log(VmbC::Examples::VmbException const& exception);
 
     /**
      * \brief Prints out a given logging string
      *
      * \param[in] strMsg A given message to be printed out
      */
-    void Log(std::string strMsg);
+    void Log(std::string const& strMsg);
 
     /**
-     * \brief Copies the content of a byte buffer to a Qt image with respect to the image's alignment
-     *
-     * \param[in] pInbuffer The byte buffer as received from the cam
-     * \param[in] ePixelFormat The pixel format of the frame
-     * \param[out] OutImage The filled Qt image
+     * \brief setup api with info retrieved from controller
      */
-    VmbErrorType CopyToImage(VmbUchar_t* pInBuffer, VmbPixelFormat_t ePixelFormat, QImage& pOutImage, const float* Matrix = NULL);
+    void SetupUi(VmbC::Examples::ApiController& controller);
+
+    void SetupLogView();
+
+    void StartAcquisition(VmbCameraInfo_t const& cameraInfo);
+
+    void StopAcquisition();
 
 private slots:
-    /**
-     * \brief The event handler for starting / stopping acquisition
-     */
-    void OnBnClickedButtonStartstop();
 
     /**
-     * \brief This event handler (Qt slot) is triggered through a Qt signal posted by the frame observer
-     *
-     * \param[in] status The frame receive status (complete, incomplete, ...)
+     * \brief Slot for selection changes in the camera tree
      */
-    void OnFrameReady(int status);
+    void CameraSelected(QItemSelection const& newSelection);
 
     /**
-     * This event handler (Qt slot) is triggered through a Qt signal posted by the camera observer
-     *
-     * \param[in] reason The reason why the callback of the observer was triggered (plug-in, plug-out, ...)
+     * \brief Slot for clicks of the start / stop acquisition button
      */
-    void OnCameraListChanged(int reason);
+    void StartStopClicked();
+
+    void RenderImage();
+signals:
+    void ImageReady();
 };
 
 #endif // ASYNCHRONOUSGRAB_C_MAIN_WINDOW_H

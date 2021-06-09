@@ -27,21 +27,39 @@ project(AsynchronousGrabQtC)
 find_package(Vmb MODULE REQUIRED COMPONENTS C ImageTransform)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
-add_executable(AsynchronousGrabQtC
+set(SOURCES)
+set(HEADERS)
 
-    # sources
-    ApiController.cpp
-    LogEntry.cpp
+# add source+header combination in this dir
+foreach(_FILE_NAME IN ITEMS
+    AcquisitionManager
+    ApiController
+    Image
+    ImageTranscoder
+    LogEntry
+    LogEntryListModel
+    ModuleData
+    ModuleTreeModel
+    VmbException
+    VmbLibraryLifetime
+)
+    list(APPEND SOURCES "${_FILE_NAME}.cpp")
+    list(APPEND HEADERS "${_FILE_NAME}.h")
+endforeach()
+
+# add sources without corresponding header
+list(APPEND SOURCES
     main.cpp
-    ModuleData.cpp
-    ModuleTreeModel.cpp
+)
 
-    # headers
-    ApiController.h
-    ApiCallResult.h
-    LogEntry.h
-    ModuleData.h
-    ModuleTreeModel.h
+# add headers without corresponding source
+list(APPEND HEADERS
+    support/NotNull.h
+)
+
+add_executable(AsynchronousGrabQtC
+    ${SOURCES}
+    ${HEADERS}
 )
 
 target_link_libraries(AsynchronousGrabQtC PRIVATE Qt5::Widgets Vmb::C Vmb::ImageTransform)
@@ -55,7 +73,8 @@ get_filename_component(_VMB_QT_BIN_DIR ${_VMB_QT_BIN_DIR} DIRECTORY)
 set_target_properties(AsynchronousGrabQtC
     PROPERTIES
         CXX_STANDARD 11
-        VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};${_VMB_QT_BIN_DIR}/bin;$ENV{PATH}"
+        VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};${_VMB_QT_BIN_DIR}/bin;C:/Users/Fabian Klein/Desktop/Deliverables/run;$ENV{PATH}" #TODO
+        VS_DEBUGGER_WORKING_DIRECTORY "C:/Users/Fabian Klein/Desktop/Deliverables/run" #TODO
 )
 
 # provide target_sources that suits our needs in case it's not yet built in 
@@ -123,3 +142,6 @@ source_group(Resources FILES ${UI_RESOURCES} ${UI_FILES})
 source_group("Source Files\\UI" FILES ${UI_SOURCES})
 source_group("Header Files\\UI" FILES ${MOC_HEADERS})
 source_group("Generated" FILES ${GENERATED_UI_SOURCES})
+
+# use executable as default startup project in Visual Studio
+set_property(DIRECTORY . PROPERTY VS_STARTUP_PROJECT AsynchronousGrabQtC)

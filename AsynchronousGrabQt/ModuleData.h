@@ -27,6 +27,8 @@
 
 #include "VimbaC/Include/VimbaC.h"
 
+class MainWindow;
+
 namespace VmbC
 {
     namespace Examples
@@ -73,7 +75,10 @@ namespace VmbC
                 visitor.Visit(m_info);
             }
 
-            ModuleDataImpl() = default;
+            ModuleDataImpl(InfoType const& info)
+                : m_info(info)
+            {
+            }
 
             InfoType const& GetInfo() const
             {
@@ -87,21 +92,19 @@ namespace VmbC
              */
             InfoType m_info;
 
-            /**
-             * \brief initialize the info about this module
-             */
-            void Initialize(InfoType const& info, ModuleData* parent = nullptr)
+            void SetParent(ModuleData* parent)
             {
-                m_info = info;
                 m_parent = parent;
             }
+           
+            friend class MainWindow;
 
-            friend class ApiController;
         };
 
         using CameraData = ModuleDataImpl<VmbCameraInfo_t>;
         using InterfaceData = ModuleDataImpl<VmbInterfaceInfo_t>;
         using TlData = ModuleDataImpl<VmbTransportLayerInfo_t>;
+
     } // namespace Examples
 } // namespace VmbC
 

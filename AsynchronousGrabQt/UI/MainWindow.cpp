@@ -26,271 +26,241 @@
 
 =============================================================================*/
 
-#include <sstream>
+#include <algorithm>
+
+#include <QItemSelection>
+#include <QPixmap>
 
 #include "ui_AsynchronousGrabGui.h"
 
+#include "Image.h"
+#include "LogEntryListModel.h"
 #include "MainWindow.h"
 #include "ModuleTreeModel.h"
+#include "VmbException.h"
 
 #include <QTreeWidgetItem>
 
-//TODO #include "VmbTransform.h"
-//TODO #define NUM_COLORS 3
-//TODO #define BIT_DEPTH 8
+using VmbC::Examples::VmbException;
+using VmbC::Examples::LogEntry;
+using VmbC::Examples::LogEntryListModel;
 
-using VmbC::Examples::ApiCallResult;
+namespace Text
+{
+    QString StartAcquisition()
+    {
+        return "Start Acquisition";
+    }
+
+    QString StopAcquisition()
+    {
+        return "Stop Acquisition";
+    }
+
+    QString WindowTitleStartupError()
+    {
+        return "Vmb C AsynchronousGrab API Version";
+    }
+
+    QString WindowTitle(std::string const& vmbCVersion)
+    {
+        return QString::fromStdString("Vmb C AsynchronousGrab API Version " + vmbCVersion);
+    }
+}
+
+namespace
+{
+    struct SelectableCheckVisitor : VmbC::Examples::ModuleData::Visitor
+    {
+        bool m_selectable { false };
+
+        void Visit(VmbCameraInfo_t const&) override
+        {
+            m_selectable = true;
+        }
+    };
+
+    struct CameraInfoRetrievalVisitor : VmbC::Examples::ModuleData::Visitor
+    {
+        VmbCameraInfo_t const* m_info { nullptr };
+
+        void Visit(VmbCameraInfo_t const& info) override
+        {
+            m_info = &info;
+        }
+    };
+}
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags),
-    m_bIsStreaming(false),
-    m_ui(new Gui())
+    m_ui(new Gui()),
+    m_acquisitionManager(*this),
+    m_log(new LogEntryListModel())
 {
     m_ui->setupUi(this);
+    SetupLogView();
 
-    // TODO Connect GUI events with event handlers QObject::connect( ui.m_ButtonStartStop, SIGNAL( clicked() ), this, SLOT( OnBnClickedButtonStartstop() ) );
-
-    // Start Vimba
-    auto result = m_apiController.Startup();
-    setWindowTitle(QString("Vmb C AsynchronousGrab API Version ") + QString::fromStdString(m_apiController.GetVersion()));
-    Log("Starting Vimba", result.GetErrorCode());
-
-    if (result)
+    try
     {
-        // Connect new camera found event with event handler
-        // TODO QObject::connect( m_ApiController.GetCameraObserver(), SIGNAL( CameraListChangedSignal(int) ), this, SLOT( OnCameraListChanged(int) ) );
+        m_apiController = std::make_unique<ApiController>(*this);
+    }
+    catch (VmbException const& ex)
+    {
+        Log(ex);
+    }
 
-        // Initially get all connected cameras
-        InitializeCameraListBox();
-        std::stringstream strMsg;
-        strMsg << "Cameras found..." << m_cameras.size();
-        Log(strMsg.str());
+    if (m_apiController)
+    {
+        SetupUi(*(m_apiController.get()));
+        SetupCameraTree();
+    }
+    else
+    {
+        setWindowTitle(Text::WindowTitleStartupError());
+    }
+}
+
+void MainWindow::StartStopClicked()
+{
+    if (m_acquisitionManager.IsAcquisitionActive())
+    {
+        StopAcquisition();
+    }
+    else
+    {
+        auto selectionModel = m_ui->m_cameraSelectionTree->selectionModel();
+        if (selectionModel->hasSelection())
+        {
+            auto selection = selectionModel->selectedRows();
+            if (!selection.isEmpty())
+            {
+                auto modelData = VmbC::Examples::ModuleTreeModel::GetModule(selection.at(0));
+                if (modelData != nullptr)
+                {
+                    CameraInfoRetrievalVisitor visitor;
+                    modelData->Accept(visitor);
+                    
+                    if (visitor.m_info != nullptr)
+                    {
+                        StartAcquisition(*(visitor.m_info));
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+void MainWindow::RenderImage()
+{
+    {
+        std::lock_guard<std::mutex> lock(m_imageSynchronizer);
+
+        if (m_queuedImage && m_renderingRequired)
+        {
+            m_renderingRequired = false;
+            std::swap(m_queuedImage, m_renderingImage);
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    QImage qImage(m_renderingImage->GetData(), m_renderingImage->GetWidth(), m_renderingImage->GetBytesPerLine(), QImage::Format::Format_RGB888);
+    m_ui->m_renderLabel->setPixmap(QPixmap::fromImage(qImage));
+
+    std::swap(m_onscreenImage, m_renderingImage);
+}
+
+void MainWindow::SetupUi(VmbC::Examples::ApiController& controller)
+{
+    setWindowTitle(Text::WindowTitle(m_apiController->GetVersion()));
+    
+    QObject::connect(m_ui->m_acquisitionStartStopButton, &QPushButton::clicked, this, &MainWindow::StartStopClicked);
+    QObject::connect(this, &MainWindow::ImageReady, this, static_cast<void (MainWindow::*)()>(&MainWindow::RenderImage), Qt::ConnectionType::QueuedConnection);
+}
+
+void MainWindow::SetupLogView()
+{
+    auto old = m_ui->m_eventLog->model();;
+    m_ui->m_eventLog->setModel(m_log);
+    delete old;
+}
+
+void MainWindow::StartAcquisition(VmbCameraInfo_t const& cameraInfo)
+{
+    bool success = false;
+
+    try
+    {
+        m_acquisitionManager.StartAcquisition(cameraInfo);
+        success = true;
+    }
+    catch (VmbException const& ex)
+    {
+        Log(ex);
+    }
+
+    if (success)
+    {
+        Log("Acquisition Started");
+        // update button text
+        m_ui->m_acquisitionStartStopButton->setText(Text::StopAcquisition());
+    }
+}
+
+void MainWindow::StopAcquisition()
+{
+    m_acquisitionManager.StopAcquisition();
+
+    Log("Acquisition Stopped");
+
+    auto& button = *(m_ui->m_acquisitionStartStopButton);
+
+    button.setText(Text::StartAcquisition());
+    button.setEnabled(m_ui->m_cameraSelectionTree->selectionModel()->hasSelection());
+}
+
+void MainWindow::CameraSelected(QItemSelection const& newSelection)
+{
+    if (!m_acquisitionManager.IsAcquisitionActive())
+    {
+        m_ui->m_acquisitionStartStopButton->setText(Text::StartAcquisition());
+
+        bool disableBtn = newSelection.empty() ;
+        if (!disableBtn)
+        {
+            auto moduleData = VmbC::Examples::ModuleTreeModel::GetModule(newSelection.at(0).topLeft());
+
+            SelectableCheckVisitor visitor;
+            moduleData->Accept(visitor);
+            disableBtn = !visitor.m_selectable;
+        }
+
+        m_ui->m_acquisitionStartStopButton->setDisabled(disableBtn);
     }
 }
 
 MainWindow::~MainWindow()
 {
-    // if we are streaming stop streaming
-    if (m_bIsStreaming)
-    {
-        OnBnClickedButtonStartstop();
-    }
-
-    // Before we close the application we stop Vimba
-    m_apiController.Shutdown();
+    m_acquisitionManager.StopAcquisition();
 }
 
-void MainWindow::OnBnClickedButtonStartstop()
+void MainWindow::RenderImage(std::unique_ptr<VmbC::Examples::Image>& image)
 {
-#ifdef TODO
-    int nRow = ui.m_ListBoxCameras->currentRow();
-
-    if (-1 < nRow)
+    if (image)
     {
-        if (false == m_bIsStreaming)
-        {
-            // Start acquisition
-            auto result = m_apiController.StartContinuousImageAcquisition(m_cameras[nRow]);
-            // Set up Qt image
-            if (VmbErrorSuccess == result)
-            {
-                m_image = QImage(m_apiController.GetWidth(),
-                                 m_apiController.GetHeight(),
-                                 QImage::Format_RGB888);
+        std::lock_guard<std::mutex> lock(m_imageSynchronizer);
 
-                QObject::connect(m_apiController.GetFrameObserver(), SIGNAL(FrameReceivedSignal(int)), this, SLOT(OnFrameReady(int)));
-            }
-            Log("Starting Acquisition", result.GetErrorCode());
-            m_bIsStreaming = VmbErrorSuccess == result;
-        }
-        else
-        {
-            m_bIsStreaming = false;
-            // Stop acquisition
-            auto result = m_apiController.StopContinuousImageAcquisition();
-            // Clear all frames that we have not picked up so far
-            m_apiController.ClearFrameQueue();
-            m_image = QImage();
-            Log("Stopping Acquisition", result.GetErrorCode());
-        }
-
-        if (false == m_bIsStreaming)
-        {
-            ui.m_ButtonStartStop->setText(QString("Start Image Acquisition"));
-        }
-        else
-        {
-            ui.m_ButtonStartStop->setText(QString("Stop Image Acquisition"));
-        }
+        std::swap(m_queuedImage, image);
+        m_renderingRequired = true;
     }
-#endif
+
+    emit ImageReady();
 }
 
-void MainWindow::OnFrameReady(int status)
-{
-#ifdef TODO
-    if (true == m_bIsStreaming)
-    {
-        // Pick up frame
-        FramePtr pFrame = m_apiController.GetFrame();
-        if (SP_ISNULL(pFrame))
-        {
-            Log("frame pointer is NULL, late frame ready message");
-            return;
-        }
-        // See if it is not corrupt
-        if (VmbFrameStatusComplete == status)
-        {
-            VmbUchar_t* pBuffer;
-            VmbErrorType err = SP_ACCESS(pFrame)->GetImage(pBuffer);
-            if (VmbErrorSuccess == err)
-            {
-                VmbUint32_t nSize;
-                err = SP_ACCESS(pFrame)->GetImageSize(nSize);
-                if (VmbErrorSuccess == err)
-                {
-                    VmbPixelFormatType ePixelFormat = m_apiController.GetPixelFormat();
-                    if (!m_image.isNull())
-                    {
-                        // Copy it
-                        // We need that because Qt might repaint the view after we have released the frame already
-                        if (ui.m_ColorProcessingCheckBox->checkState() == Qt::Checked)
-                        {
-                            static const VmbFloat_t Matrix[] = { 8.0f, 0.1f, 0.1f, // this matrix just makes a quick color to mono conversion
-                                                                    0.1f, 0.8f, 0.1f,
-                                                                    0.0f, 0.0f, 1.0f };
-                            if (VmbErrorSuccess != CopyToImage(pBuffer, ePixelFormat, m_image, Matrix))
-                            {
-                                ui.m_ColorProcessingCheckBox->setChecked(false);
-                            }
-                        }
-                        else
-                        {
-                            CopyToImage(pBuffer, ePixelFormat, m_image);
-                        }
-
-                        // Display it
-                        const QSize s = ui.m_LabelStream->size();
-                        ui.m_LabelStream->setPixmap(QPixmap::fromImage(m_image).scaled(s, Qt::KeepAspectRatio));
-                    }
-                }
-            }
-        }
-        else
-        {
-            // If we receive an incomplete image we do nothing but logging
-            Log("Failure in receiving image", VmbErrorOther);
-        }
-
-        // And queue it to continue streaming
-        m_apiController.QueueFrame(pFrame);
-    }
-#endif
-}
-
-void MainWindow::OnCameraListChanged(int reason)
-{
-
-#ifdef TODO
-    bool bUpdateList = false;
-
-    // We only react on new cameras being found and known cameras being unplugged
-    if (AVT::VmbAPI::UpdateTriggerPluggedIn == reason)
-    {
-        Log("Camera list changed. A new camera was discovered by Vimba.");
-        bUpdateList = true;
-    }
-    else if (AVT::VmbAPI::UpdateTriggerPluggedOut == reason)
-    {
-        Log("Camera list changed. A camera was disconnected from Vimba.");
-        if (true == m_bIsStreaming)
-        {
-            OnBnClickedButtonStartstop();
-        }
-        bUpdateList = true;
-    }
-
-    if (true == bUpdateList)
-    {
-        UpdateCameraListBox();
-    }
-
-    ui.m_ButtonStartStop->setEnabled(0 < m_cameras.size() || m_bIsStreaming);
-#endif
-}
-
-VmbErrorType MainWindow::CopyToImage(VmbUchar_t* pInBuffer, VmbPixelFormat_t ePixelFormat, QImage& pOutImage, const float* Matrix /*= NULL */)
-{
-
-#ifdef TODO
-    const int           nHeight = m_apiController.GetHeight();
-    const int           nWidth = m_apiController.GetWidth();
-
-    VmbImage            SourceImage, DestImage;
-    VmbError_t          Result;
-    SourceImage.Size = sizeof(SourceImage);
-    DestImage.Size = sizeof(DestImage);
-
-    Result = VmbSetImageInfoFromPixelFormat(ePixelFormat, nWidth, nHeight, &SourceImage);
-    if (VmbErrorSuccess != Result)
-    {
-        Log("Could not set source image info", static_cast<VmbErrorType>(Result));
-        return static_cast<VmbErrorType>(Result);
-    }
-    QString             OutputFormat;
-    const int           bytes_per_line = pOutImage.bytesPerLine();
-    switch (pOutImage.format())
-    {
-    default:
-        Log("unknown output format", VmbErrorBadParameter);
-        return VmbErrorBadParameter;
-    case QImage::Format_RGB888:
-        if (nWidth * 3 != bytes_per_line)
-        {
-            Log("image transform does not support stride", VmbErrorWrongType);
-            return VmbErrorWrongType;
-        }
-        OutputFormat = "RGB24";
-        break;
-    }
-    Result = VmbSetImageInfoFromString(OutputFormat.toStdString().c_str(), OutputFormat.length(), nWidth, nHeight, &DestImage);
-    if (VmbErrorSuccess != Result)
-    {
-        Log("could not set output image info", static_cast<VmbErrorType>(Result));
-        return static_cast<VmbErrorType>(Result);
-    }
-    SourceImage.Data = pInBuffer;
-    DestImage.Data = pOutImage.bits();
-    // do color processing?
-    if (NULL != Matrix)
-    {
-        VmbTransformInfo TransformParameter;
-        Result = VmbSetColorCorrectionMatrix3x3(Matrix, &TransformParameter);
-        if (VmbErrorSuccess == Result)
-        {
-            Result = VmbImageTransform(&SourceImage, &DestImage, &TransformParameter, 1);
-        }
-        else
-        {
-            Log("could not set matrix t o transform info ", static_cast<VmbErrorType>(Result));
-            return static_cast<VmbErrorType>(Result);
-        }
-    }
-    else
-    {
-        Result = VmbImageTransform(&SourceImage, &DestImage, NULL, 0);
-    }
-    if (VmbErrorSuccess != Result)
-    {
-        Log("could not transform image", static_cast<VmbErrorType>(Result));
-        return static_cast<VmbErrorType>(Result);
-    }
-    return static_cast<VmbErrorType>(Result);
-#endif
-    return VmbErrorSuccess;
-}
-
-void MainWindow::InitializeCameraListBox()
+void MainWindow::SetupCameraTree()
 {
 
     using VmbC::Examples::ModuleTreeModel;
@@ -304,91 +274,89 @@ void MainWindow::InitializeCameraListBox()
     // read module info and populate moduleData
     try
     {
-        auto systems = m_apiController.GetSystemList();
-        for (auto& system : systems)
-        {
-            try
-            {
-                auto interfaces = m_apiController.GetInterfaceList(system.get());
+        auto systems = m_apiController->GetSystemList();
+        auto interfaces = m_apiController->GetInterfaceList();
+        auto cameras = m_apiController->GetCameraList();
 
-                for (auto& iface : interfaces)
-                {
-                    try
-                    {
-                        auto cameras = m_apiController.GetCameraList(iface.get());
+        auto const systemsBegin = systems.begin();
+        auto const systemsEnd = systems.end();
 
-                        for (auto& cam : cameras)
-                        {
-                            moduleData.emplace_back(std::move(cam));
-                        }
-                    }
-                    catch (std::exception const& ex)
-                    {
-                        // TODO
-                    }
-                    moduleData.emplace_back(std::move(iface));
-                }
-            }
-            catch (std::exception const& ex)
-            {
-                // TODO
-            }
-            moduleData.emplace_back(std::move(system));
-        }
+        auto ifEnd = std::stable_partition(interfaces.begin(), interfaces.end(),
+                                           [this, systemsBegin, systemsEnd](std::unique_ptr<InterfaceData> const& ifPtr)
+                                           {
+                                               auto iface = ifPtr.get();
+                                               auto parentIter = std::find_if(systemsBegin, systemsEnd, [iface](std::unique_ptr<TlData> const& sysPtr)
+                                                                              {
+                                                                                  // TODO
+                                                                                  return true;
+                                                                              });
+                                               if (parentIter == systemsEnd)
+                                               {
+                                                   Log(std::string("parent module not found for interface ") + iface->GetInfo().interfaceName + " ignoring interface");
+                                                   return false;
+                                               }
+                                               else
+                                               {
+                                                   iface->SetParent(parentIter->get());
+                                                   return true;
+                                               }
+                                           });
+
+        auto ifBegin = interfaces.begin();
+
+        auto camerasEnd = std::stable_partition(cameras.begin(), cameras.end(),
+                                           [this, ifBegin, ifEnd](std::unique_ptr<CameraData> const& camPtr)
+                                           {
+                                               auto cam = camPtr.get();
+                                               auto parentIter = std::find_if(ifBegin, ifEnd, [cam](std::unique_ptr<InterfaceData> const& ifacePtr)
+                                                                              {
+                                                                                  // TODO: use handle?
+                                                                                  return std::strcmp(ifacePtr->GetInfo().interfaceIdString, cam->GetInfo().interfaceIdString) == 0;
+                                                                              });
+                                               if (parentIter == ifEnd)
+                                               {
+                                                   Log(std::string("parent module not found for camera ") + cam->GetInfo().cameraName + " ignoring camera");
+                                                   return false;
+                                               }
+                                               else
+                                               {
+                                                   cam->SetParent(parentIter->get());
+                                                   return true;
+                                               }
+                                           });
+
+        moduleData.resize(systems.size()
+                          + std::distance(ifBegin, ifEnd)
+                          + std::distance(cameras.begin(), camerasEnd)
+        );
+
+        // move data of all modules reachable from a tl to moduleData
+        auto pos = std::move(systems.begin(), systems.end(), moduleData.begin());
+        pos = std::move(ifBegin, ifEnd, pos);
+        std::move(cameras.begin(), camerasEnd, pos);
     }
-    catch (std::exception const& ex)
+    catch (VmbException const& ex)
     {
-        // TODO
+        Log(ex);
     }
 
     ModuleTreeModel* model = new ModuleTreeModel(std::move(moduleData));
 
     m_ui->m_cameraSelectionTree->setModel(model);
+    m_ui->m_cameraSelectionTree->expandAll();
 
-#ifdef TODO
-    // Get all cameras currently connected to Vimba
-    CameraPtrVector cameras = m_apiController.GetCameraList();
+    auto selectionModel = m_ui->m_cameraSelectionTree->selectionModel();
+    QObject::connect(selectionModel, &QItemSelectionModel::selectionChanged, this, &MainWindow::CameraSelected);
 
-    // Simply forget about all cameras known so far
-    ui.m_ListBoxCameras->clear();
-    m_cameras.clear();
-
-    // And query the camera details again
-    for (CameraPtrVector::const_iterator iter = cameras.begin();
-         cameras.end() != iter;
-         ++iter)
-    {
-        std::string strCameraName;
-        std::string strCameraID;
-        if (VmbErrorSuccess != (*iter)->GetName(strCameraName))
-        {
-            strCameraName = "[NoName]";
-        }
-        // If for any reason we cannot get the ID of a camera we skip it
-        if (VmbErrorSuccess == (*iter)->GetID(strCameraID))
-        {
-            ui.m_ListBoxCameras->addItem(QString::fromStdString(strCameraName + " " + strCameraID));
-            m_cameras.push_back(strCameraID);
-        }
-    }
-
-    ui.m_ButtonStartStop->setEnabled(0 < m_cameras.size() || m_bIsStreaming);
-
-#endif
+    m_ui->m_cameraSelectionTree->setDisabled(false);
 }
 
-void MainWindow::Log(std::string strMsg, VmbError_t eErr)
+void MainWindow::Log(VmbC::Examples::VmbException const& exception)
 {
-#ifdef TODO
-    strMsg += "..." + m_apiController.ErrorCodeToMessage(eErr);
-    ui.m_ListLog->insertItem(0, QString::fromStdString(strMsg));
-#endif
+    (*m_log) << LogEntry(exception.what(), exception.GetExitCode());
 }
 
-void MainWindow::Log(std::string strMsg)
+void MainWindow::Log(std::string const& strMsg)
 {
-
-#ifdef TODO
-    ui.m_ListLog->insertItem(0, QString::fromStdString(strMsg));
-#endif
+    (*m_log) << LogEntry(strMsg);
 }
