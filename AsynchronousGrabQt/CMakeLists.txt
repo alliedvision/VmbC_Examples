@@ -93,7 +93,6 @@ endif()
 set(GENERATED_UI_SOURCES)
 set(MOC_HEADERS)
 set(UI_FILES)
-set(UI_RESOURCES)
 set(UI_SOURCES)
 
 # uic generation
@@ -108,6 +107,7 @@ endforeach()
 # moc compilation
 foreach(_MOC_SRC IN ITEMS
     MainWindow
+    ImageLabel
 )
     set(_SRC UI/${_MOC_SRC}.h)
     list(APPEND MOC_HEADERS ${_SRC})
@@ -115,14 +115,7 @@ foreach(_MOC_SRC IN ITEMS
     qt5_wrap_cpp(GENERATED_UI_SOURCES ${_SRC} TARGET AsynchronousGrabQtC)
 endforeach()
 
-# rcc code generation
-foreach(_RCC_SRC IN ITEMS
-    AsynchronousGrab
-)
-    set(_SRC UI/res/${_RCC_SRC}.qrc)
-    list(APPEND UI_RESOURCES ${_SRC})
-    qt5_add_resources(GENERATED_UI_SOURCES ${_SRC})
-endforeach()
+list(APPEND UI_SOURCES imagelabel.h)
 
 set_source_files_properties(${GENERATED_UI_SOURCES}
     PROPERTIES
@@ -132,13 +125,12 @@ set_source_files_properties(${GENERATED_UI_SOURCES}
 target_sources(AsynchronousGrabQtC PRIVATE
     ${GENERATED_UI_SOURCES}
     ${MOC_HEADERS}
-    ${UI_RESOURCES}
     ${UI_FILES}
     ${UI_SOURCES}
 )
 
 # source groups for IDE
-source_group(Resources FILES ${UI_RESOURCES} ${UI_FILES})
+source_group(Resources FILES ${UI_FILES})
 source_group("Source Files\\UI" FILES ${UI_SOURCES})
 source_group("Header Files\\UI" FILES ${MOC_HEADERS})
 source_group("Generated" FILES ${GENERATED_UI_SOURCES})

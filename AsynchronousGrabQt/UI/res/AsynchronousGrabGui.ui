@@ -34,18 +34,15 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout" rowstretch="1,0" columnstretch="0,1" rowminimumheight="0,100" columnminimumwidth="200,0">
     <item row="0" column="1">
-     <widget class="QLabel" name="m_renderLabel">
+     <widget class="ImageLabel" name="m_renderLabel">
       <property name="text">
        <string/>
       </property>
       <property name="textFormat">
        <enum>Qt::MarkdownText</enum>
       </property>
-      <property name="pixmap">
-       <pixmap resource="AsynchronousGrab.qrc">:/AsynchronousGrabQt/sampleImage.jpg</pixmap>
-      </property>
       <property name="scaledContents">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -122,8 +119,6 @@
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="AsynchronousGrab.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -16,36 +16,37 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Definition of a class responsible for starting/stopping VmbC
+ * \brief QLabel subclass that provides a signal for getting size updates
  * \author Fabian Klein
  */
 
-#ifndef ASYNCHRONOUSGRAB_C_VMB_LIBRARY_LIFETIME_H
-#define ASYNCHRONOUSGRAB_C_VMB_LIBRARY_LIFETIME_H
+#ifndef ASYNCHRONOUSGRAB_C_IMAGE_LABEL_H
+#define ASYNCHRONOUSGRAB_C_IMAGE_LABEL_H
 
-namespace VmbC
+#include <QLabel>
+#include <QSize>
+
+/**
+ * \brief Widget for displaying a the images received from a camera.
+ *        Provides a signal for listening to size updates
+ */
+class ImageLabel : public QLabel
 {
-    namespace Examples
-    {
+    Q_OBJECT
+public:
+    ImageLabel(QWidget* parent = 0, Qt::WindowFlags flags = Qt::Widget);
+protected:
+    /**
+     * \brief adds sizeChanged signal emission to QLabel::resizeEvent
+     */
+    void resizeEvent(QResizeEvent* event) override;
+signals:
+    /**
+     * \brief signal triggered during the resize event
+     * \param value the new size after the resize event
+     */
+    void sizeChanged(QSize value);
 
-        /**
-         * \brief class for managing the initialization and deinitialization of
-         *        the Vmb C library 
-         */
-        class VmbLibraryLifetime
-        {
-        public:
-            VmbLibraryLifetime();
-
-            ~VmbLibraryLifetime();
-
-            VmbLibraryLifetime(VmbLibraryLifetime const&) = delete;
-            VmbLibraryLifetime(VmbLibraryLifetime &&) = delete;
-            VmbLibraryLifetime& operator=(VmbLibraryLifetime const&) = delete;
-            VmbLibraryLifetime& operator=(VmbLibraryLifetime&&) = delete;
-        private:
-        };
-    }
-}
+};
 
 #endif

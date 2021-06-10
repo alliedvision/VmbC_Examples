@@ -1,5 +1,7 @@
 #include <cstdlib>
 
+#include "VimbaImageTransform/Include/VmbTransform.h"
+
 #include "Image.h"
 #include "VmbException.h"
 
@@ -7,41 +9,75 @@ namespace VmbC
 {
     namespace Examples
     {
-        Image::~Image()
+
+        Image::Image(VmbPixelFormat_t pixelFormat) noexcept
+            : m_pixelFormat(pixelFormat)
         {
-            std::free(m_data);
+            m_image.Size = sizeof(m_image);
+            m_image.Data = nullptr;
         }
 
-        void Image::Resize(int newWidth, int newHeight)
+        Image::Image(VmbFrame_t const& frame)
+            : m_dataOwned(false),
+            m_pixelFormat(frame.pixelFormat)
         {
-            if (newWidth < 0 || newHeight < 0)
+            m_image.Size = sizeof(m_image);
+            m_image.Data = frame.buffer;
+            
+            auto error = VmbSetImageInfoFromPixelFormat(frame.pixelFormat, frame.width, frame.height, &m_image);
+            if (error != VmbErrorSuccess)
             {
-                throw VmbException("Negative width or height provided");
+                throw VmbException::ForOperation(error, "VmbSetImageInfoFromPixelFormat");
             }
-            size_t requiredCapacity = static_cast<size_t>(newWidth) * static_cast<size_t>(newHeight);
+        }
+
+        Image::~Image()
+        {
+            if (m_dataOwned)
+            {
+                std::free(m_image.Data);
+            }
+        }
+
+        void Image::Convert(Image const& conversionSource)
+        {
+            if (&conversionSource == this)
+            {
+                return;
+            }
+            auto error = VmbSetImageInfoFromPixelFormat(m_pixelFormat, conversionSource.GetWidth(), conversionSource.GetHeight(), &m_image);
+            if (error != VmbErrorSuccess)
+            {
+                throw VmbException::ForOperation(error, "VmbSetImageInfoFromPixelFormat");
+            }
+
+            size_t requiredCapacity = GetBytesPerLine() * GetHeight();
             if (requiredCapacity > m_capacity)
             {
-                if (m_data == nullptr)
+                void* newData;
+                if (m_image.Data == nullptr)
                 {
-                    m_data = static_cast<unsigned char*>(std::malloc(requiredCapacity));
-                    if (m_data == nullptr)
-                    {
-                        throw std::bad_alloc();
-                    }
+                    newData = std::malloc(requiredCapacity);
                 }
                 else
                 {
-                    void* newData = std::realloc(m_data, requiredCapacity);
-                    if (newData == nullptr)
-                    {
-                        throw std::bad_alloc();
-                    }
-                    m_data = static_cast<unsigned char*>(newData);
+                    newData = std::realloc(m_image.Data, requiredCapacity);
                 }
+
+                if (newData == nullptr)
+                {
+                    throw std::bad_alloc();
+                }
+
+                m_image.Data = newData;
                 m_capacity = requiredCapacity;
             }
-            m_width = newWidth;
-            m_height = newHeight;
+
+            error = VmbImageTransform(&conversionSource.m_image, &m_image, nullptr, 0);
+            if (error != VmbErrorSuccess)
+            {
+                throw VmbException::ForOperation(error, "VmbImageTransform");
+            }
         }
     }
 }

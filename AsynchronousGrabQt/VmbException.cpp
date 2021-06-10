@@ -16,7 +16,7 @@ namespace VmbC
 
         VmbException VmbException::ForOperation(VmbError_t exitCode, std::string const& operation)
         {
-            return VmbException(operation + " call unsuccessful; exit code " = std::to_string(exitCode), exitCode);
+            return VmbException(operation + " call unsuccessful; exit code " + std::to_string(exitCode), exitCode);
         }
     }
 }

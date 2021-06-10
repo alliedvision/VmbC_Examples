@@ -113,6 +113,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
     {
         SetupUi(*(m_apiController.get()));
         SetupCameraTree();
+        m_acquisitionManager.SetOutputSize(m_ui->m_renderLabel->size());
+        QObject::connect(m_ui->m_renderLabel, &ImageLabel::sizeChanged, this, &MainWindow::ImageLabelSizeChanged);
     }
     else
     {
@@ -151,15 +153,21 @@ void MainWindow::StartStopClicked()
 
 }
 
+void MainWindow::ImageLabelSizeChanged(QSize newSize)
+{
+    m_acquisitionManager.SetOutputSize(newSize);
+}
+
 void MainWindow::RenderImage()
 {
+    QPixmap pixmap;
     {
         std::lock_guard<std::mutex> lock(m_imageSynchronizer);
 
-        if (m_queuedImage && m_renderingRequired)
+        if (m_renderingRequired)
         {
             m_renderingRequired = false;
-            std::swap(m_queuedImage, m_renderingImage);
+            std::swap(pixmap, m_queuedImage);
         }
         else
         {
@@ -167,10 +175,7 @@ void MainWindow::RenderImage()
         }
     }
 
-    QImage qImage(m_renderingImage->GetData(), m_renderingImage->GetWidth(), m_renderingImage->GetBytesPerLine(), QImage::Format::Format_RGB888);
-    m_ui->m_renderLabel->setPixmap(QPixmap::fromImage(qImage));
-
-    std::swap(m_onscreenImage, m_renderingImage);
+    m_ui->m_renderLabel->setPixmap(pixmap);
 }
 
 void MainWindow::SetupUi(VmbC::Examples::ApiController& controller)
@@ -244,20 +249,30 @@ void MainWindow::CameraSelected(QItemSelection const& newSelection)
 
 MainWindow::~MainWindow()
 {
+    QObject::disconnect(m_ui->m_renderLabel, &ImageLabel::sizeChanged, this, &MainWindow::ImageLabelSizeChanged);
     m_acquisitionManager.StopAcquisition();
 }
 
-void MainWindow::RenderImage(std::unique_ptr<VmbC::Examples::Image>& image)
+void MainWindow::RenderImage(QPixmap image)
 {
-    if (image)
+    bool notify = false;
+
     {
         std::lock_guard<std::mutex> lock(m_imageSynchronizer);
 
-        std::swap(m_queuedImage, image);
-        m_renderingRequired = true;
+        m_queuedImage = std::move(image);
+        
+        if (!m_renderingRequired)
+        {
+            notify = true;
+            m_renderingRequired = true;
+        }
     }
 
-    emit ImageReady();
+    if (notify)
+    {
+        emit ImageReady();
+    }
 }
 
 void MainWindow::SetupCameraTree()

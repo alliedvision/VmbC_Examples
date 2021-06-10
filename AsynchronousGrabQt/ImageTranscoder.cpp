@@ -8,7 +8,10 @@
 #include "ImageTranscoder.h"
 #include "VmbException.h"
 
-#include "VimbaImageTransform/Include/VmbTransform.h"
+#include <QImage>
+#include <QPixmap>
+
+#include "VimbaC/Include/VimbaC.h"
 
 namespace VmbC
 {
@@ -17,7 +20,6 @@ namespace VmbC
         ImageTranscoder::ImageTranscoder(AcquisitionManager& manager)
             : m_acquisitionManager(manager)
         {
-            m_thread = std::thread(&ImageTranscoder::TranscodeLoop, std::ref(*this));
         }
 
         void ImageTranscoder::PostImage(VmbHandle_t const cameraHandle, VmbFrameCallback callback, VmbFrame_t const* frame)
@@ -29,15 +31,17 @@ namespace VmbC
 
                 auto message = std::make_unique<TransformationTask>(cameraHandle, callback, *frame);
 
-                std::lock_guard<std::mutex> lock(m_inputMutex);
-                if (m_terminated)
                 {
-                    message->m_canceled = true;
-                }
-                else
-                {
-                    m_task = std::move(message);
-                    notify = true;
+                    std::lock_guard<std::mutex> lock(m_inputMutex);
+                    if (m_terminated)
+                    {
+                        message->m_canceled = true;
+                    }
+                    else
+                    {
+                        m_task = std::move(message);
+                        notify = true;
+                    }
                 }
             }
 
@@ -47,15 +51,51 @@ namespace VmbC
             }
         }
 
-        ImageTranscoder::~ImageTranscoder()
+        void ImageTranscoder::Start()
         {
-            // tell the thread about the shutdown
             {
                 std::lock_guard<std::mutex> lock(m_inputMutex);
+                if (!m_terminated)
+                {
+                    throw VmbException("ImageTranscoder is still running");
+                }
+                m_terminated = false;
+            }
+            m_thread = std::thread(&ImageTranscoder::TranscodeLoop, std::ref(*this));
+        }
+
+        void ImageTranscoder::Stop() noexcept
+        {
+            {
+                std::lock_guard<std::mutex> lock(m_inputMutex);
+                if (m_terminated)
+                {
+                    return;
+                }
                 m_terminated = true;
+                if (m_task)
+                {
+                    m_task->m_canceled;
+                    m_task.reset();
+                }
             }
             m_inputCondition.notify_all();
             m_thread.join();
+        }
+
+        void ImageTranscoder::SetOutputSize(QSize size)
+        {
+            std::lock_guard<std::mutex> lock(m_sizeMutex);
+            m_outputSize = size;
+        }
+
+        ImageTranscoder::~ImageTranscoder()
+        {
+            // tell the thread about the shutdown
+            if (!m_terminated)
+            {
+                Stop();
+            }
         }
 
         void ImageTranscoder::TranscodeLoopMember()
@@ -83,7 +123,18 @@ namespace VmbC
 
                     if (task)
                     {
-                        TranscodeImage(*task);
+                        try
+                        {
+                            TranscodeImage(*task);
+                        }
+                        catch (VmbException const&)
+                        {
+                            // todo?
+                        }
+                        catch (std::bad_alloc&)
+                        {
+                            // todo?
+                        }
                     }
 
                     lock.lock();
@@ -101,49 +152,36 @@ namespace VmbC
 
         void ImageTranscoder::TranscodeImage(TransformationTask& task)
         {
+            constexpr auto targetFormat = VmbPixelFormatType::VmbPixelFormatArgb8; // equivalent of QImage::Format_RGB32
+
             VmbFrame_t const& frame = task.m_frame;
-            VmbImage imageIn;
-            if (VmbSetImageInfoFromPixelFormat(frame.pixelFormat, frame.width, frame.height, &imageIn) != VmbErrorSuccess)
-            {
-                return;
-            }
-            imageIn.Data = frame.buffer;
+
+            Image const source(task.m_frame);
 
             // allocate new image, if necessary
             if (!m_transformTarget)
             {
-                m_transformTarget = std::make_unique<Image>();
-            }
-            try
-            {
-                m_transformTarget->Resize(static_cast<int>(frame.width), static_cast<int>(frame.height));
-            }
-            catch (VmbException const&)
-            {
-                // todo ?
-                return;
-            }
-            catch (std::bad_alloc const&)
-            {
-                // todo ?
-                return;
+                m_transformTarget = std::make_unique<Image>(targetFormat);
             }
 
-            VmbImage imageOut;
-            if (VmbSetImageInfoFromPixelFormat(VmbPixelFormatRgb8, frame.width, frame.height, &imageOut) != VmbErrorSuccess)
-            {
-                return;
-            }
-            imageOut.Data = m_transformTarget->GetMutableData();
+            m_transformTarget->Convert(source);
 
-            if (VmbImageTransform(&imageIn, &imageOut, nullptr, 0) == VmbErrorSuccess)
+            QImage qImage(m_transformTarget->GetData(),
+                          m_transformTarget->GetWidth(),
+                          m_transformTarget->GetHeight(),
+                          m_transformTarget->GetBytesPerLine(),
+                          QImage::Format::Format_RGB32);
+
+            QPixmap pixmap = QPixmap::fromImage(qImage, Qt::ImageConversionFlag::ColorOnly);
+
+            QSize size;
+           
             {
-                m_acquisitionManager.ConvertedFrameReceived(m_transformTarget);
+                std::lock_guard<std::mutex> lock(m_sizeMutex);
+                size = m_outputSize;
             }
-            else
-            {
-                // todo ?
-            }
+
+            m_acquisitionManager.ConvertedFrameReceived(pixmap.scaled(size, Qt::AspectRatioMode::KeepAspectRatio));
         }
 
         void ImageTranscoder::TranscodeLoop(ImageTranscoder& transcoder)

@@ -38,12 +38,14 @@ namespace VmbC
 
         void AcquisitionManager::StartAcquisition(VmbCameraInfo_t const& cameraInfo)
         {
-            m_openCamera.reset(); // if a camera is open, close it first
+            StopAcquisition(); // if a camera is open, close it first
             m_openCamera = std::make_unique<CameraAccessLifetime>(cameraInfo, *this);
+            m_imageTranscoder.Start();
         }
 
-        void AcquisitionManager::StopAcquisition()
+        void AcquisitionManager::StopAcquisition() noexcept
         {
+            m_imageTranscoder.Stop();
             m_openCamera.reset();
         }
 
@@ -55,12 +57,18 @@ namespace VmbC
 
         AcquisitionManager::~AcquisitionManager()
         {
-            m_openCamera.reset(); // make sure the camera gets closed before anything else gets destroyed
+            StopAcquisition();
+            m_openCamera.reset();
         }
 
-        void AcquisitionManager::ConvertedFrameReceived(std::unique_ptr<Image>& image)
+        void AcquisitionManager::ConvertedFrameReceived(QPixmap image)
         {
             m_renderWindow.RenderImage(image);
+        }
+
+        void AcquisitionManager::SetOutputSize(QSize size)
+        {
+            m_imageTranscoder.SetOutputSize(size);
         }
 
         void VMB_CALL AcquisitionManager::FrameCallback(VmbHandle_t const cameraHandle, VmbFrame_t* frame)
@@ -87,7 +95,16 @@ namespace VmbC
             {
                 throw VmbException::ForOperation(error, "VmbCameraOpen");
             }
-            m_streamLife = std::make_unique<StreamLifetime>(m_cameraHandle, acquisitionManager);
+
+            try
+            {
+                m_streamLife = std::make_unique<StreamLifetime>(m_cameraHandle, acquisitionManager);
+            }
+            catch (...)
+            {
+                VmbCameraClose(m_cameraHandle);
+                throw;
+            }
         }
 
         AcquisitionManager::CameraAccessLifetime::~CameraAccessLifetime()
@@ -198,10 +215,10 @@ namespace VmbC
             {
                 RunCommand(camHandle, "AcquisitionStart");
             }
-            catch (VmbException const& ex)
+            catch (VmbException const&)
             {
                 VmbCaptureEnd(camHandle);
-                throw ex;
+                throw;
             }
         }
 

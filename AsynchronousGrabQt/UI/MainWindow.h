@@ -16,8 +16,7 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief The main window of the AsynchronousGrab example of
- *              VmbC.
+ * \brief The main window of the AsynchronousGrab example of VmbC.
  * \author Fabian Klein
  */
 
@@ -27,8 +26,8 @@
 #include <memory>
 #include <mutex>
 
-
 #include <QMainWindow>
+#include <QPixmap>
 
 #include "VimbaC/Include/VimbaC.h"
 
@@ -62,6 +61,10 @@ namespace VmbC
     }
 }
 
+/**
+ * \brief The GUI. Displays the available cameras, the image received and an
+ *        event log.
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -72,9 +75,8 @@ public:
 
     /**
      * \brief Asynchonously schedule rendering of image 
-     * \param a smart pointer containing the image to render; an existing image for reuse may be swapped into the smart pointer
      */
-    void RenderImage(std::unique_ptr<VmbC::Examples::Image>& image);
+    void RenderImage(QPixmap image);
 private:
     using Gui = Ui::AsynchronousGrabGui;
 
@@ -89,18 +91,26 @@ private:
     std::unique_ptr<ApiController> m_apiController;
 
     bool m_renderingRequired{ false };
-
-    std::unique_ptr<VmbC::Examples::Image> m_onscreenImage;
-    std::unique_ptr<VmbC::Examples::Image> m_renderingImage;
-    std::unique_ptr<VmbC::Examples::Image> m_queuedImage;
+    
+    /**
+     * \brief the next image to be rendered 
+     */
+    QPixmap m_queuedImage;
 
     /**
      * \brief mutex for synchonizing access to m_queuedImage
      */
     std::mutex m_imageSynchronizer;
 
+    /**
+     * \brief Object for managing the acquisition; this includes the transfer
+     *        of converted images to this object
+     */
     VmbC::Examples::AcquisitionManager m_acquisitionManager;
 
+    /**
+     * \brief the model used for the QTableView to display log messages.
+     */
     VmbC::Examples::NotNull<VmbC::Examples::LogEntryListModel> m_log;
 
     /**
@@ -127,10 +137,19 @@ private:
      */
     void SetupUi(VmbC::Examples::ApiController& controller);
 
+    /**
+     * \brief initialized the QTableView used for logging 
+     */
     void SetupLogView();
 
+    /**
+     * \brief start the acquisition for a given camera
+     */
     void StartAcquisition(VmbCameraInfo_t const& cameraInfo);
 
+    /**
+     * \brief stop the acquistion 
+     */
     void StopAcquisition();
 
 private slots:
@@ -145,8 +164,22 @@ private slots:
      */
     void StartStopClicked();
 
+    /**
+     * \brief Slot for the size changes of the label used for rendering the images
+     */
+    void ImageLabelSizeChanged(QSize newSize);
+
+    /**
+     * \brief Slot for replacing the pixmap of the label used for rendering.
+     * 
+     * Thread affinity with this object required
+     */
     void RenderImage();
 signals:
+    /**
+     * \brief signal emitted from a background thread to notify the gui about
+     *        a new image being available for rendering
+     */
     void ImageReady();
 };
 
