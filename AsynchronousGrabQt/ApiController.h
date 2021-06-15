@@ -26,9 +26,10 @@
 
 #include <QObject>
 
-#include <Memory>
+#include <memory>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "VimbaC/Include/VimbaC.h"
 
