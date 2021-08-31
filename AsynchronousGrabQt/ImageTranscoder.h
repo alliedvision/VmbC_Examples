@@ -18,7 +18,6 @@
  *
  * \brief Definition of a class responsible converting VmbC image data to
  *        QPixmap in a background thread
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_IMAGE_TRANSCODER_H

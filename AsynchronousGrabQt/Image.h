@@ -18,7 +18,6 @@
  *
  * \brief Definition of a class responsible for accessing VimbaImageTransform
  *        functionality
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_IMAGE_H
@@ -34,7 +33,7 @@ namespace VmbC
 
         /**
          * \brief Image data that can be used as source and target for image
-         *        transformations via VimbaImageTransform library
+         *        transformations via VmbImageTransform library
          */
         class Image
         {

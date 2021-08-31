@@ -19,7 +19,6 @@
  * \brief Definition of a class responsible for managing the acquisition and
  *        scheduling transformation and transfering converted frames to the
  *        gui.
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_ACQUISITION_MANAGER_H

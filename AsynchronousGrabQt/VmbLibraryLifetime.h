@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief Definition of a class responsible for starting/stopping VmbC
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_VMB_LIBRARY_LIFETIME_H

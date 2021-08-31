@@ -18,7 +18,6 @@
  *
  * \brief Definition of the ApiController helper class that demonstrates how
  *        to implement an asynchronous, continuous image acquisition with VmbC.
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_API_CONTROLLER_H
@@ -70,7 +69,7 @@ namespace VmbC
             std::vector<std::unique_ptr<InterfaceData>> GetInterfaceList();
 
             /**
-             * \brief Gets the version of the Vimba API
+             * \brief Gets the version of the Vmb API
              *
              * \return the version as string
              */
