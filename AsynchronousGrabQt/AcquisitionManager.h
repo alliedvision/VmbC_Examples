@@ -31,7 +31,7 @@
 #include <QPixmap>
 #include <QSize>
 
-#include "VimbaC/Include/VimbaC.h"
+#include <VimbaC/Include/VimbaC.h>
 
 #include "ImageTranscoder.h"
 

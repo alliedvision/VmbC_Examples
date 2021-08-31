@@ -1,15 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 - 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        ListFeatures.h
+  File:        PrintVmbVersion.h
 
-  Description: The ListFeatures example will list all available features of a
-               camera that are found by VimbaC.
+  Description: Print Vmb version.
 
 -------------------------------------------------------------------------------
 
@@ -26,18 +25,12 @@
 
 =============================================================================*/
 
-#ifndef LIST_FEATURES_H_
-#define LIST_FEATURES_H_
+#ifndef PRINT_VMB_VERSION_H_
+#define PRINT_VMB_VERSION_H_
 
-//
-// Prints out all features and their values and details of a given camera.
-// If no camera ID is provided, the first camera will be used.
-// Starts and stops the API
-// Opens and closes the camera
-//
-// Parameters:
-//  [in]    pStrID          The ID of the camera to work
-//
-void ListFeatures( const char *pStrID );
+/**
+ * \brief Prints out the version of the Vmb API
+ */
+void PrintVmbVersion();
 
 #endif

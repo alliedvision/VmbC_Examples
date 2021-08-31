@@ -11,7 +11,7 @@
 #include <QImage>
 #include <QPixmap>
 
-#include "VimbaC/Include/VimbaC.h"
+#include <VimbaC/Include/VimbaC.h>
 
 namespace VmbC
 {

@@ -29,7 +29,7 @@
 #include <QMainWindow>
 #include <QPixmap>
 
-#include "VimbaC/Include/VimbaC.h"
+#include <VimbaC/Include/VimbaC.h>
 
 #include "ApiController.h"
 #include "AcquisitionManager.h"

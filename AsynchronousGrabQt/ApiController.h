@@ -31,7 +31,7 @@
 #include <vector>
 #include <sstream>
 
-#include "VimbaC/Include/VimbaC.h"
+#include <VimbaC/Include/VimbaC.h>
 
 #include "ModuleData.h"
 #include "VmbLibraryLifetime.h"

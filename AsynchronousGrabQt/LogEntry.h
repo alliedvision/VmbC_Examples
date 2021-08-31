@@ -23,7 +23,7 @@
 #ifndef ASYNCHRONOUSGRAB_C_LOG_ENTRY_H
 #define ASYNCHRONOUSGRAB_C_LOG_ENTRY_H
 
-#include "VimbaC/Include/VimbaC.h"
+#include <VimbaC/Include/VimbaC.h>
 
 #include <string>
 

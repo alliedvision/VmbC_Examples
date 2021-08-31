@@ -26,7 +26,7 @@
 #include <exception>
 #include <string>
 
-#include "VimbaC/Include/VimbaC.h"
+#include <VimbaC/Include/VimbaC.h>
 
 namespace VmbC
 {

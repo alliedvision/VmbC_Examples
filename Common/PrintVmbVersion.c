@@ -1,14 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2014 - 2016 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2014 - 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        PrintVimbaVersion.h
+  File:        PrintVmbVersion.h
 
-  Description: Print Vimba version.
+  Description: Print Vmb version.
 
 -------------------------------------------------------------------------------
 
@@ -25,20 +25,19 @@
 
 =============================================================================*/
 
-#include "PrintVimbaVersion.h"
+#include "PrintVmbVersion.h"
+
 #include <stdio.h>
+
 #include <VimbaC/Include/VimbaC.h>
 
-//
-// Prints out the version of the Vimba API
-//
-void PrintVimbaVersion()
+void PrintVmbVersion()
 {
     VmbVersionInfo_t    version_info;
     VmbError_t          result = VmbVersionQuery( &version_info, sizeof( version_info ));
     if( VmbErrorSuccess == result)
     {
-        printf( "Vimba Version Major: %u Minor: %u Patch: %u\n", version_info.major, version_info.minor,version_info.patch );
+        printf( "Vmb Version Major: %u Minor: %u Patch: %u\n", version_info.major, version_info.minor, version_info.patch );
     }
     else
     {
