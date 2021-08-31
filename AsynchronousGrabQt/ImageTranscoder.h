@@ -54,7 +54,7 @@ namespace VmbC
              * \brief Asynchronously schedule the conversion of a frame 
              * \param callback the callback to use the old frame that is reenqueued
              */
-            void PostImage(VmbHandle_t const cameraHandle, VmbFrameCallback callback, VmbFrame_t const* frame);
+            void PostImage(VmbHandle_t streamHandle, VmbFrameCallback callback, VmbFrame_t const* frame);
 
             /**
              * \brief start with the conversion process 
@@ -87,7 +87,7 @@ namespace VmbC
              */
             struct TransformationTask
             {
-                VmbHandle_t m_cameraHandle;
+                VmbHandle_t m_streamHandle;
                 VmbFrameCallback m_callback;
                 VmbFrame_t const& m_frame;
 
@@ -97,7 +97,7 @@ namespace VmbC
                  */
                 bool m_canceled{ false };
                 
-                TransformationTask(VmbHandle_t const cameraHandle, VmbFrameCallback callback, VmbFrame_t const& frame);
+                TransformationTask(VmbHandle_t const streamHandle, VmbFrameCallback callback, VmbFrame_t const& frame);
 
                 ~TransformationTask();
             };

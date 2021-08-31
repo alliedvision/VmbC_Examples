@@ -22,14 +22,14 @@ namespace VmbC
         {
         }
 
-        void ImageTranscoder::PostImage(VmbHandle_t const cameraHandle, VmbFrameCallback callback, VmbFrame_t const* frame)
+        void ImageTranscoder::PostImage(VmbHandle_t const streamHandle, VmbFrameCallback callback, VmbFrame_t const* frame)
         {
             bool notify = false;
 
             if (frame != nullptr && frame->receiveStatus == VmbFrameStatusComplete && (frame->receiveFlags & VmbFrameFlagsDimension) == VmbFrameFlagsDimension)
             {
 
-                auto message = std::make_unique<TransformationTask>(cameraHandle, callback, *frame);
+                auto message = std::make_unique<TransformationTask>(streamHandle, callback, *frame);
 
                 {
                     std::lock_guard<std::mutex> lock(m_inputMutex);
@@ -189,8 +189,8 @@ namespace VmbC
             transcoder.TranscodeLoopMember();
         }
 
-        ImageTranscoder::TransformationTask::TransformationTask(VmbHandle_t const cameraHandle, VmbFrameCallback callback, VmbFrame_t const& frame)
-            : m_cameraHandle(cameraHandle),
+        ImageTranscoder::TransformationTask::TransformationTask(VmbHandle_t const streamHandle, VmbFrameCallback callback, VmbFrame_t const& frame)
+            : m_streamHandle(streamHandle),
             m_callback(callback),
             m_frame(frame)
         {
@@ -200,7 +200,7 @@ namespace VmbC
         {
             if (!m_canceled)
             {
-                VmbCaptureFrameQueue(m_cameraHandle, &m_frame, m_callback);
+                VmbCaptureFrameQueue(m_streamHandle, &m_frame, m_callback);
             }
         }
     }

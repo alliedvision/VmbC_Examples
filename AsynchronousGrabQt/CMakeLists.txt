@@ -73,8 +73,7 @@ get_filename_component(_VMB_QT_BIN_DIR ${_VMB_QT_BIN_DIR} DIRECTORY)
 set_target_properties(AsynchronousGrabQtC
     PROPERTIES
         CXX_STANDARD 11
-        VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};${_VMB_QT_BIN_DIR}/bin;C:/Users/Fabian Klein/Desktop/Deliverables/run;$ENV{PATH}" #TODO
-        VS_DEBUGGER_WORKING_DIRECTORY "C:/Users/Fabian Klein/Desktop/Deliverables/run" #TODO
+        VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};${_VMB_QT_BIN_DIR}/bin;$ENV{PATH}"
 )
 
 # provide target_sources that suits our needs in case it's not yet built in 

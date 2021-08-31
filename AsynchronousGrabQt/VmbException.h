@@ -38,6 +38,10 @@ namespace VmbC
         class VmbException : public std::exception
         {
         public:
+            VmbException() = default;
+            VmbException(VmbException&&) = default;
+            VmbException& operator=(VmbException&&) = default;
+
             /**
              * \brief create an exception with a custom message and a given VmbC error code 
              */
@@ -61,7 +65,7 @@ namespace VmbC
                 return m_exitCode;
             }
         private:
-            VmbError_t m_exitCode;
+            VmbError_t m_exitCode{ VmbErrorSuccess };
             std::string m_errorMessage;
         };
     }

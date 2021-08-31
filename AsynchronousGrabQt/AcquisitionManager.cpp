@@ -71,21 +71,21 @@ namespace VmbC
             m_imageTranscoder.SetOutputSize(size);
         }
 
-        void VMB_CALL AcquisitionManager::FrameCallback(VmbHandle_t const cameraHandle, VmbFrame_t* frame)
+        void VMB_CALL AcquisitionManager::FrameCallback(VmbHandle_t /* cameraHandle */, VmbHandle_t const streamHandle, VmbFrame_t* frame)
         {
             if (frame != nullptr)
             {
                 AcquisitionContext context(*frame);
                 if (context.m_acquisitionManager != nullptr)
                 {
-                    context.m_acquisitionManager->FrameReceived(cameraHandle, frame);
+                    context.m_acquisitionManager->FrameReceived(streamHandle, frame);
                 }
             }
         }
 
-        void AcquisitionManager::FrameReceived(VmbHandle_t const cameraHandle, VmbFrame_t const* frame)
+        void AcquisitionManager::FrameReceived(VmbHandle_t const streamHandle, VmbFrame_t const* frame)
         {
-            m_imageTranscoder.PostImage(cameraHandle, &AcquisitionManager::FrameCallback, frame);
+            m_imageTranscoder.PostImage(streamHandle, &AcquisitionManager::FrameCallback, frame);
         }
 
         AcquisitionManager::CameraAccessLifetime::CameraAccessLifetime(VmbCameraInfo_t const& camInfo, AcquisitionManager& acquisitionManager)
@@ -96,14 +96,50 @@ namespace VmbC
                 throw VmbException::ForOperation(error, "VmbCameraOpen");
             }
 
-            try
+            // refresh camera info to get streams
+            VmbCameraInfo_t refreshedCameraInfo;
+            bool errorHappened = false;
+            VmbException ex;
+            error = VmbCameraInfoQuery(camInfo.cameraIdString, &refreshedCameraInfo, sizeof(refreshedCameraInfo)); // TODO use extended id?
+            if (error != VmbErrorSuccess)
             {
-                m_streamLife = std::make_unique<StreamLifetime>(m_cameraHandle, acquisitionManager);
+                errorHappened = true;
+                ex = VmbException::ForOperation(error, "VmbCameraOpen");
             }
-            catch (...)
+
+            if (!errorHappened)
+            {
+                errorHappened = true;
+                if (refreshedCameraInfo.localDeviceHandle == nullptr)
+                {
+                    ex = VmbException("The id could not be used to query the info of the correct camera");
+                }
+                else if (refreshedCameraInfo.streamCount == 0)
+                {
+                    ex = VmbException("The camera does not provide a stream");
+                }
+                else
+                {
+                    errorHappened = false;
+                }
+            }
+
+            if (!errorHappened)
+            {
+                try
+                {
+                    m_streamLife = std::make_unique<StreamLifetime>(refreshedCameraInfo.streamHandles[0], m_cameraHandle, acquisitionManager);
+                }
+                catch (...)
+                {
+                    VmbCameraClose(m_cameraHandle);
+                    throw;
+                }
+            }
+            else
             {
                 VmbCameraClose(m_cameraHandle);
-                throw;
+                throw ex;
             }
         }
 
@@ -113,14 +149,13 @@ namespace VmbC
             VmbCameraClose(m_cameraHandle);
         }
 
-        AcquisitionManager::StreamLifetime::StreamLifetime(VmbHandle_t const camHandle, AcquisitionManager& acquisitionManager)
+        AcquisitionManager::StreamLifetime::StreamLifetime(VmbHandle_t const streamHandle, VmbHandle_t const cameraHandle, AcquisitionManager& acquisitionManager)
         {
-            // todo: get from stream
-            VmbInt64_t value;
-            VmbError_t error = VmbFeatureIntGet(camHandle, "PayloadSize", &value);
+            VmbUint32_t value;
+            VmbError_t error = VmbPayloadSizeGet(streamHandle, &value);
             if (error != VmbErrorSuccess)
             {
-                throw VmbException("Could not retrieve PayloadSize camera feature", error);
+                throw VmbException::ForOperation(error, "VmbPayloadSizeGet");
             }
 
             if (value < 0 || (static_cast<uint64_t>(value) > (std::numeric_limits<size_t>::max)()))
@@ -130,7 +165,7 @@ namespace VmbC
 
             m_payloadSize = static_cast<size_t>(value);
 
-            m_acquisitionLife = std::make_unique<AcquisitionLifetime>(camHandle, m_payloadSize, acquisitionManager);
+            m_acquisitionLife = std::make_unique<AcquisitionLifetime>(cameraHandle, m_payloadSize, acquisitionManager);
         }
 
         AcquisitionManager::StreamLifetime::~StreamLifetime()

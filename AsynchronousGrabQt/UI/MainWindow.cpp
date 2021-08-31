@@ -302,8 +302,7 @@ void MainWindow::SetupCameraTree()
                                                auto iface = ifPtr.get();
                                                auto parentIter = std::find_if(systemsBegin, systemsEnd, [iface](std::unique_ptr<TlData> const& sysPtr)
                                                                               {
-                                                                                  // TODO
-                                                                                  return true;
+                                                                                  return sysPtr->GetInfo().transportLayerHandle == iface->GetInfo().transportLayerHandle;
                                                                               });
                                                if (parentIter == systemsEnd)
                                                {
@@ -325,8 +324,7 @@ void MainWindow::SetupCameraTree()
                                                auto cam = camPtr.get();
                                                auto parentIter = std::find_if(ifBegin, ifEnd, [cam](std::unique_ptr<InterfaceData> const& ifacePtr)
                                                                               {
-                                                                                  // TODO: use handle?
-                                                                                  return std::strcmp(ifacePtr->GetInfo().interfaceIdString, cam->GetInfo().interfaceIdString) == 0;
+                                                                                  return ifacePtr->GetInfo().interfaceHandle == cam->GetInfo().interfaceHandle;
                                                                               });
                                                if (parentIter == ifEnd)
                                                {

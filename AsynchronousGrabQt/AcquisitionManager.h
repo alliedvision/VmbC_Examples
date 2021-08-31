@@ -119,7 +119,7 @@ namespace VmbC
             class StreamLifetime
             {
             public:
-                StreamLifetime(VmbHandle_t const camHandle, AcquisitionManager& acquisitionManager);
+                StreamLifetime(VmbHandle_t streamHandle, VmbHandle_t cameraHandle, AcquisitionManager& acquisitionManager);
                 ~StreamLifetime();
 
             private:
@@ -172,7 +172,7 @@ namespace VmbC
             /**
              * \brief callback to receive the notification about new frames from VmbC 
              */
-            static void VMB_CALL FrameCallback(VmbHandle_t const cameraHandle, VmbFrame_t* frame);
+            static void VMB_CALL FrameCallback(VmbHandle_t cameraHandle, VmbHandle_t streamHandle, VmbFrame_t* frame);
 
             /**
              * \brief member function that receives the notification new frames from VmbC  
