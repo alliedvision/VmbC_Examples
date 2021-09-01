@@ -6,9 +6,9 @@
 
 -------------------------------------------------------------------------------
 
-  File:        program.cpp
+  File:        main.c
 
-  Description: Main entry point of ListFeatures example of VimbaC.
+  Description: Main entry point of ListFeatures example of VmbC.
 
 -------------------------------------------------------------------------------
 
