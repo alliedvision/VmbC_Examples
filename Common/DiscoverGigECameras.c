@@ -26,11 +26,6 @@
 =============================================================================*/
 
 #include <stdio.h>
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
 
 #include <VimbaC/Include/VimbaC.h>
 
@@ -44,7 +39,7 @@ VmbError_t DiscoverGigECameras()
     VmbError_t  err     = VmbErrorSuccess;
     VmbBool_t   isGigE  = VmbBoolFalse;
 
-    err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &isGigE );                 // Is Vimba connected to a GigE transport layer?
+    err = VmbFeatureBoolGet( gVimbaHandle, "GeVTLIsPresent", &isGigE );                 // Is Vmb connected to a GigE transport layer?
     if ( VmbErrorSuccess == err )
     {
         if( VmbBoolTrue == isGigE )
@@ -66,7 +61,7 @@ VmbError_t DiscoverGigECameras()
     }
     else
     {
-        printf( "Could not query Vimba for the presence of a GigE transport layer. Reason: %d\n\n", err );
+        printf( "Could not query Vmb for the presence of a GigE transport layer. Reason: %d\n\n", err );
     }
 
     return err;

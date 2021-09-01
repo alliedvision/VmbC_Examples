@@ -1,14 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2017 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        program.cpp
+  File:        MainWindow.cpp
 
-  Description: Main entry point of ListFeatures example of VimbaC.
+  Description: Qt dialog class for the GUI of the MainWindow example of
+               VimbaCPP.
 
 -------------------------------------------------------------------------------
 
@@ -25,31 +26,17 @@
 
 =============================================================================*/
 
-#include <stdio.h>
+#include <QResizeEvent>
 
-#include <ListFeatures.h>
+#include "Ui/ImageLabel.h"
 
-int main( int argc, char* argv[] )
+ImageLabel::ImageLabel(QWidget* parent, Qt::WindowFlags flags)
+    : QLabel(parent, flags)
 {
-    printf( "\n" );
-    printf( "///////////////////////////////////////\n" );
-    printf( "/// Vimba API List Features Example ///\n" );
-    printf( "///////////////////////////////////////\n" );
-    printf( "\n" );
+}
 
-    if( 2 < argc )
-    {
-        printf( "Usage: ListFeatures [CameraID]\n\n" );
-        printf( "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n" );
-    }
-    else if ( 2 == argc )
-    {
-        ListFeatures( (const char*)argv[1] );
-    }
-    else
-    {
-        ListFeatures( NULL );
-    }
-
-    printf( "\n" );
+void ImageLabel::resizeEvent(QResizeEvent* event)
+{
+    QLabel::resizeEvent(event);
+    emit sizeChanged(event->size());
 }

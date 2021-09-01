@@ -1,0 +1,46 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(VmbCExamples)
+
+set(VMB_C_EXAMPLES_LIST IGNORE CACHE STRING
+    "a semicolon separated list of examples to configure; takes precedence over other settings to enable or disable examples"
+)
+
+set(VMB_C_ALL_EXAMPLES)
+
+# function takes the directory and optionally aliases other than the directory the example can be refered by
+function(vmb_c_example DIRECTORY)
+    set(VMB_C_EXAMPLE_IGNORE_${DIRECTORY} False CACHE BOOL "Ignore the ${DIRECTORY} example; VMB_C_EXAMPLES_LIST takes precedence over this property")
+    foreach(_ALIAS IN LISTS DIRECTORY ARGN)
+        set(VMB_C_ALIAS_${_ALIAS} ${DIRECTORY} PARENT_SCOPE)
+    endforeach()
+    if (NOT VMB_C_EXAMPLE_IGNORE_${DIRECTORY})
+        set(VMB_C_ALL_EXAMPLES ${VMB_C_ALL_EXAMPLES} ${DIRECTORY} PARENT_SCOPE)
+    endif()
+endfunction()
+
+# Actual examples list
+vmb_c_example(AsynchronousGrabQt Qt)
+vmb_c_example(ListFeatures FeatureList FeaturesList)
+
+# overwrite list of examples set based on individual ignores
+if(VMB_C_EXAMPLES_LIST)
+    set(VMB_C_ALL_EXAMPLES)
+    foreach(_EXAMPLE IN LISTS VMB_C_EXAMPLES_LIST)
+        set(_DIR ${VMB_C_ALIAS_${_EXAMPLE}})
+        if (NOT _DIR)
+            message(FATAL_ERROR "${_EXAMPLE} found in VMB_C_EXAMPLES_LIST is not a known example")
+        endif()
+    endforeach()
+endif()
+
+# finally add the necessary subdirectories
+list(REMOVE_DUPLICATES VMB_C_ALL_EXAMPLES)
+
+if (NOT VMB_C_ALL_EXAMPLES)
+    message(FATAL_ERROR "no active examples")
+endif()
+
+foreach(_EXAMPLE IN LISTS VMB_C_ALL_EXAMPLES)
+    add_subdirectory(${_EXAMPLE})
+endforeach()
