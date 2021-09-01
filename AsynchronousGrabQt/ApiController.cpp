@@ -74,7 +74,7 @@ namespace VmbC
 
                 std::transform(buffer.begin(), buffer.end(), result.begin(), [](InfoType const& info)
                                {
-                                   return std::make_unique<ModuleDataImpl<InfoType>>(info);
+                                   return std::unique_ptr<ModuleDataImpl<InfoType>>(new ModuleDataImpl<InfoType>(info));
                                });
 
                 return result;

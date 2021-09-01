@@ -63,6 +63,10 @@ add_executable(AsynchronousGrabQtC
 )
 
 target_link_libraries(AsynchronousGrabQtC PRIVATE Qt5::Widgets Vmb::C Vmb::ImageTransform)
+if (UNIX)
+    target_link_libraries(AsynchronousGrabQtC PRIVATE pthread)
+endif()
+
 target_include_directories(AsynchronousGrabQtC PRIVATE . ${CMAKE_CURRENT_BINARY_DIR})
 
 # find out binary dir of qt

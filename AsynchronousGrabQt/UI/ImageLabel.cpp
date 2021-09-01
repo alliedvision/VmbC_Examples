@@ -28,7 +28,7 @@
 
 #include <QResizeEvent>
 
-#include "Ui/ImageLabel.h"
+#include "UI/ImageLabel.h"
 
 ImageLabel::ImageLabel(QWidget* parent, Qt::WindowFlags flags)
     : QLabel(parent, flags)
