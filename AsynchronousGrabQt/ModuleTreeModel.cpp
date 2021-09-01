@@ -170,7 +170,8 @@ namespace VmbC
                 auto ptr = index.internalPointer();
                 if (ptr != nullptr)
                 {
-                    static_cast<Item*>(ptr)->m_module->Accept(FlagUpdateVisitor(flags));
+                    FlagUpdateVisitor visitor(flags);
+                    static_cast<Item*>(ptr)->m_module->Accept(visitor);
                 }
             }
 

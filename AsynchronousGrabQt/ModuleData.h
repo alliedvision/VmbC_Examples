@@ -85,19 +85,16 @@ namespace VmbC
                 return m_info;
             }
 
+            void SetParent(ModuleData* parent)
+            {
+                m_parent = parent;
+            }
         private:
 
             /**
              * \brief Vmb C Api struct holding the info about the module
              */
             InfoType m_info;
-
-            void SetParent(ModuleData* parent)
-            {
-                m_parent = parent;
-            }
-           
-            friend class MainWindow;
 
         };
 

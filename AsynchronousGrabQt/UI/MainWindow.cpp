@@ -102,7 +102,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags flags)
 
     try
     {
-        m_apiController = std::make_unique<ApiController>(*this);
+        m_apiController.reset(new ApiController(*this));
     }
     catch (VmbException const& ex)
     {

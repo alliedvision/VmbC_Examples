@@ -29,7 +29,7 @@ namespace VmbC
             if (frame != nullptr && frame->receiveStatus == VmbFrameStatusComplete && (frame->receiveFlags & VmbFrameFlagsDimension) == VmbFrameFlagsDimension)
             {
 
-                auto message = std::make_unique<TransformationTask>(streamHandle, callback, *frame);
+                auto message = std::unique_ptr<TransformationTask>(new TransformationTask(streamHandle, callback, *frame));
 
                 {
                     std::lock_guard<std::mutex> lock(m_inputMutex);
@@ -161,7 +161,7 @@ namespace VmbC
             // allocate new image, if necessary
             if (!m_transformTarget)
             {
-                m_transformTarget = std::make_unique<Image>(targetFormat);
+                m_transformTarget.reset(new Image(targetFormat));
             }
 
             m_transformTarget->Convert(source);

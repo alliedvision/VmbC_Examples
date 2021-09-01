@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstring>
 #include <limits>
 #include <string>
 
@@ -39,7 +40,7 @@ namespace VmbC
         void AcquisitionManager::StartAcquisition(VmbCameraInfo_t const& cameraInfo)
         {
             StopAcquisition(); // if a camera is open, close it first
-            m_openCamera = std::make_unique<CameraAccessLifetime>(cameraInfo, *this);
+            m_openCamera.reset(new CameraAccessLifetime(cameraInfo, *this));
             m_imageTranscoder.Start();
         }
 
@@ -128,7 +129,7 @@ namespace VmbC
             {
                 try
                 {
-                    m_streamLife = std::make_unique<StreamLifetime>(refreshedCameraInfo.streamHandles[0], m_cameraHandle, acquisitionManager);
+                    m_streamLife.reset(new StreamLifetime(refreshedCameraInfo.streamHandles[0], m_cameraHandle, acquisitionManager));
                 }
                 catch (...)
                 {
@@ -165,7 +166,7 @@ namespace VmbC
 
             m_payloadSize = static_cast<size_t>(value);
 
-            m_acquisitionLife = std::make_unique<AcquisitionLifetime>(cameraHandle, m_payloadSize, acquisitionManager);
+            m_acquisitionLife.reset(new AcquisitionLifetime(cameraHandle, m_payloadSize, acquisitionManager));
         }
 
         AcquisitionManager::StreamLifetime::~StreamLifetime()

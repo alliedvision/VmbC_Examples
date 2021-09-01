@@ -39,7 +39,7 @@
        <string/>
       </property>
       <property name="textFormat">
-       <enum>Qt::MarkdownText</enum>
+       <enum>Qt::PlainText</enum>
       </property>
       <property name="scaledContents">
        <bool>false</bool>
