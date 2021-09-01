@@ -19,7 +19,6 @@
  * \brief Definition of a class responsible for managing the acquisition and
  *        scheduling transformation and transfering converted frames to the
  *        gui.
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_ACQUISITION_MANAGER_H
@@ -132,15 +131,14 @@ namespace VmbC
              */
             struct Frame
             {
-                Frame();
                 Frame(size_t payloadSize);
                 ~Frame();
 
                 Frame(Frame const&) = delete;
                 Frame& operator=(Frame const&) = delete;
 
-                Frame(Frame&& other) noexcept;
-                Frame& operator=(Frame&& other) noexcept;
+                Frame(Frame&& other) = delete;
+                Frame& operator=(Frame&& other) = delete;
 
                 VmbFrame_t m_frame;
             };
@@ -155,7 +153,7 @@ namespace VmbC
                 ~AcquisitionLifetime();
 
             private:
-                std::vector<Frame> m_frames;
+                std::vector<std::unique_ptr<Frame>> m_frames;
                 VmbHandle_t m_camHandle;
             };
 

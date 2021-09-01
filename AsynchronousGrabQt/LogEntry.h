@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief Definition of an entry of the event log view
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_LOG_ENTRY_H

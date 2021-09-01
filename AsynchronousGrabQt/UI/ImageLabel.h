@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief QLabel subclass that provides a signal for getting size updates
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_IMAGE_LABEL_H

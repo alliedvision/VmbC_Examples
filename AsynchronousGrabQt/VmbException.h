@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief Definition of a custom exception type used in this example
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_VMB_EXCEPTION_H

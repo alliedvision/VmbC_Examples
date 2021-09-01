@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief Definition of base class for modules
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_MODULE_DATA_H

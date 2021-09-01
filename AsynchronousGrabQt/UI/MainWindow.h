@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief The main window of the AsynchronousGrab example of VmbC.
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_MAIN_WINDOW_H

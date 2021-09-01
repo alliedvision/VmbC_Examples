@@ -202,16 +202,17 @@ namespace VmbC
             m_frames.reserve(BufferCount);
             for (size_t count = BufferCount; count > 0; --count)
             {
-                m_frames.emplace_back(payloadSize);
+                auto frame = std::unique_ptr<Frame>(new Frame(payloadSize));
+                m_frames.emplace_back(std::move(frame));
             }
 
             VmbError_t error = VmbErrorSuccess;
             for (auto& frame : m_frames)
             {
                 AcquisitionContext context(&acquisitionManager);
-                context.FillFrame(frame.m_frame);
+                context.FillFrame(frame->m_frame);
 
-                error = VmbFrameAnnounce(camHandle, &(frame.m_frame), sizeof(frame.m_frame));
+                error = VmbFrameAnnounce(camHandle, &(frame->m_frame), sizeof(frame->m_frame));
                 if (error != VmbErrorSuccess)
                 {
                     break;
@@ -234,7 +235,7 @@ namespace VmbC
 
             for (auto& frame : m_frames)
             {
-                error = VmbCaptureFrameQueue(camHandle, &(frame.m_frame), &AcquisitionManager::FrameCallback);
+                error = VmbCaptureFrameQueue(camHandle, &(frame->m_frame), &AcquisitionManager::FrameCallback);
                 if (error == VmbErrorSuccess)
                 {
                     ++numberEnqueued;
@@ -272,11 +273,6 @@ namespace VmbC
             VmbFrameRevokeAll(m_camHandle);
         }
 
-        AcquisitionManager::Frame::Frame()
-        {
-            m_frame.buffer = nullptr;
-        }
-
         AcquisitionManager::Frame::Frame(size_t payloadSize)
         {
             if (payloadSize > (std::numeric_limits<VmbUint32_t>::max)())
@@ -296,24 +292,5 @@ namespace VmbC
             std::free(m_frame.buffer);
         }
 
-        AcquisitionManager::Frame::Frame(Frame&& other) noexcept
-        {
-            std::memcpy(&m_frame, &(other.m_frame), sizeof(m_frame));
-            other.m_frame.buffer = nullptr;
-        }
-
-        AcquisitionManager::Frame& AcquisitionManager::Frame::operator=(Frame&& other) noexcept
-        {
-            // free existing buffer
-            std::free(m_frame.buffer);
-
-            // get info from other and take ownership of buffer
-            std::memcpy(&m_frame, &(other.m_frame), sizeof(m_frame));
-
-            // remove ownership of buffer from other
-            other.m_frame.buffer = nullptr;
-
-            return *this;
-        }
     }
 }

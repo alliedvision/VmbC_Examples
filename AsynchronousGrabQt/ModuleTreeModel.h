@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief Definition of a model for filling a TreeView with model data
- * \author Fabian Klein
  */
 
 #ifndef ASYNCHRONOUSGRAB_C_MODULE_TREE_MODEL_H

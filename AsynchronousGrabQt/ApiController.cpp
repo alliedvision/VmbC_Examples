@@ -19,7 +19,6 @@
  * \brief Implementation file for the ApiController helper class that
  *        demonstrates how to implement an asynchronous, continuous image
  *        acquisition with VmbC.
- * \author Fabian Klein
  */
 
 #include <algorithm>

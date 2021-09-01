@@ -17,7 +17,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * \brief Entry point of the Asynchronous Grab Qt example using the Vmb C API
- * \author Fabian Klein
  */
 
 #include <QApplication>
