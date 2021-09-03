@@ -22,6 +22,7 @@ endfunction()
 # Actual examples list
 vmb_c_example(AsynchronousGrabQt Qt)
 vmb_c_example(ListFeatures FeatureList FeaturesList)
+vmb_c_example(ListCameras)
 
 # overwrite list of examples set based on individual ignores
 if(VMB_C_EXAMPLES_LIST)

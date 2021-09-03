@@ -1,15 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        ListCameras.h
+  File:        TransportLayerTypeToString.c
 
-  Description: The ListCameras example will list all available cameras that
-               are found by VimbaC.
+  Description: Convert VmbTransportLayerType_t to string.
 
 -------------------------------------------------------------------------------
 
@@ -26,14 +25,36 @@
 
 =============================================================================*/
 
-#ifndef LIST_CAMERAS_H_
-#define LIST_CAMERAS_H_
+#include "TransportLayerTypeToString.h"
 
-//
-// Starts Vimba
-// Gets all connected cameras
-// And prints out information about the camera name, model name, serial number, ID and the corresponding interface ID
-//
-void ListCameras();
 
-#endif
+char const* TransportLayerTypeToString(VmbTransportLayerType_t tlType)
+{
+    switch (tlType)
+    {
+    case VmbTransportLayerTypeCL:
+        return "Camera Link";
+    case VmbTransportLayerTypeCLHS:
+        return "Camera Link HS";
+    case VmbTransportLayerTypeCustom:
+        return "Custom";
+    case VmbTransportLayerTypeCXP:
+        return "CoaXPress";
+    case VmbTransportLayerTypeEthernet:
+        return "Generic Ethernet";
+    case VmbTransportLayerTypeGEV:
+        return "GigE Vision";
+    case VmbTransportLayerTypeIIDC:
+        return "IIDC 1394";
+    case VmbTransportLayerTypeMixed:
+        return "Mixed";
+    case VmbTransportLayerTypePCI:
+        return "PCI / PCIe";
+    case VmbTransportLayerTypeU3V:
+        return "USB 3 Vision";
+    case VmbTransportLayerTypeUVC:
+        return "USB video class";
+    default:
+        return "[Unknown]";
+    }
+}

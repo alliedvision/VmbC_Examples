@@ -33,9 +33,13 @@
 
 #include <VimbaC/Include/VimbaC.h>
 
+#include "../Common/ArrayAlloc.h"
 #include "../Common/DiscoverGigECameras.h"
+#include "../Common/ListCameras.h"
+#include "../Common/ListInterfaces.h"
+#include "../Common/ListTransportLayers.h"
+#include "../Common/TransportLayerTypeToString.h"
 
-#define VMB_MALLOC_ARRAY(type, size) ((type*) malloc(size * sizeof(type)))
 
 /**
  * \return \p string or an empty string, if \p string is null  
@@ -43,40 +47,6 @@
 char const* PrintableString(char const* string)
 {
     return string == NULL ? "" : string;
-}
-
-/**
- * \brief convert the tl type enum constant to a human readable string 
- */
-char const* TlTypeToString(VmbTransportLayerType_t tlType)
-{
-    switch (tlType)
-    {
-    case VmbTransportLayerTypeCL:
-        return "Camera Link";
-    case VmbTransportLayerTypeCLHS:
-        return "Camera Link HS";
-    case VmbTransportLayerTypeCustom:
-        return "Custom";
-    case VmbTransportLayerTypeCXP:
-        return "CoaXPress";
-    case VmbTransportLayerTypeEthernet:
-        return "Generic Ethernet";
-    case VmbTransportLayerTypeGEV:
-        return "GigE Vision";
-    case VmbTransportLayerTypeIIDC:
-        return "IIDC 1394";
-    case VmbTransportLayerTypeMixed:
-        return "Mixed";
-    case VmbTransportLayerTypePCI:
-        return "PCI / PCIe";
-    case VmbTransportLayerTypeU3V:
-        return "USB 3 Vision";
-    case VmbTransportLayerTypeUVC:
-        return "USB video class";
-    default:
-        return "[Unknown]";
-    }
 }
 
 /**
@@ -243,58 +213,35 @@ int ListTransportLayerFeatures(size_t tlIndex)
     if (err == VmbErrorSuccess)
     {
         VmbUint32_t count = 0;
-        err = VmbTransportLayersList(NULL, 0, &count, sizeof(VmbTransportLayerInfo_t));
-        if (err == VmbErrorSuccess && count > 0)
-        {
-            VmbTransportLayerInfo_t* tls = VMB_MALLOC_ARRAY(VmbTransportLayerInfo_t, count);
-            if (tls != NULL)
-            {
-                err = VmbTransportLayersList(tls, count, &count, sizeof(VmbTransportLayerInfo_t));
-                if (err == VmbErrorSuccess && count > 0)
-                {
-                    size_t index = tlIndex;
-                    if (index >= count)
-                    {
-                        printf("transport layer index out of bounds; using index %zu instead\n", (index = count - 1));
-                    }
-                    VmbTransportLayerInfo_t* tl = tls + index;
+        VmbTransportLayerInfo_t* tls = NULL;
 
-                    printf("transport layer id     : %s\n"
-                           "transport layer model  : %s\n"
-                           "transport layer name   : %s\n"
-                           "transport layer path   : %s\n"
-                           "transport layer type   : %s\n"
-                           "transport layer vendor : %s\n"
-                           "transport layer version: %s\n\n",
-                           PrintableString(tl->transportLayerIdString),
-                           PrintableString(tl->transportLayerModelName),
-                           PrintableString(tl->transportLayerName),
-                           PrintableString(tl->transportLayerPath),
-                           TlTypeToString(tl->transportLayerType),
-                           PrintableString(tl->transportLayerVendor),
-                           PrintableString(tl->transportLayerVersion));
-
-                    err = ListFeatures(tl->transportLayerHandle);
-                }
-                else if (err != VmbErrorSuccess)
-                {
-                    printf("error listing transport layers: %d\n", err);
-                }
-                else
-                {
-                    printf("no transport layers found\n");
-                }
-                free(tls);
-            }
-            else
-            {
-                printf("could not allocate sufficient memory\n");
-                err = VmbErrorResources;
-            }
-        }
-        else if (count == 0)
+        err = ListTransportLayers(&tls, &count);
+        if (err == VmbErrorSuccess)
         {
-            printf("no transport layers found\n");
+            size_t index = tlIndex;
+            if (index >= count)
+            {
+                printf("transport layer index out of bounds; using index %zu instead\n", (index = count - 1));
+            }
+            VmbTransportLayerInfo_t* tl = tls + index;
+
+            printf("transport layer id     : %s\n"
+                    "transport layer model  : %s\n"
+                    "transport layer name   : %s\n"
+                    "transport layer path   : %s\n"
+                    "transport layer type   : %s\n"
+                    "transport layer vendor : %s\n"
+                    "transport layer version: %s\n\n",
+                    PrintableString(tl->transportLayerIdString),
+                    PrintableString(tl->transportLayerModelName),
+                    PrintableString(tl->transportLayerName),
+                    PrintableString(tl->transportLayerPath),
+                    TransportLayerTypeToString(tl->transportLayerType),
+                    PrintableString(tl->transportLayerVendor),
+                    PrintableString(tl->transportLayerVersion));
+
+            err = ListFeatures(tl->transportLayerHandle);
+            free(tls);
         }
         else
         {
@@ -312,44 +259,24 @@ int ListInterfaceFeatures(size_t interfaceIndex)
     if (err == VmbErrorSuccess)
     {
         VmbUint32_t count = 0;
-        err = VmbInterfacesList(NULL, 0, &count, sizeof(VmbInterfaceInfo_t));
-        if (err == VmbErrorSuccess && count > 0)
+        VmbInterfaceInfo_t* interfaces = NULL;
+        err = ListInterfaces(&interfaces, &count);
+        if (err == VmbErrorSuccess)
         {
-            VmbInterfaceInfo_t* interfaces = VMB_MALLOC_ARRAY(VmbInterfaceInfo_t, count);
-            if (interfaces != NULL)
+            size_t index = interfaceIndex;
+            if (index >= count)
             {
-                err = VmbInterfacesList(interfaces, count, &count, sizeof(VmbInterfaceInfo_t));
-                if (err == VmbErrorSuccess && count > 0)
-                {
-                    size_t index = interfaceIndex;
-                    if (index >= count)
-                    {
-                        printf("interface index out of bounds; using index %zu instead\n", (index = count - 1));
-                    }
-                    VmbInterfaceInfo_t* iFace = interfaces + index;
-                    printf("interface id  : %s\n"
-                           "interface name: %s\n"
-                           "interface type: %s\n\n",
-                           PrintableString(iFace->interfaceIdString),
-                           PrintableString(iFace->interfaceName),
-                           TlTypeToString(iFace->interfaceType));
-                    err = ListFeatures(iFace->interfaceHandle);
-                }
-                else if (err != VmbErrorSuccess)
-                {
-                    printf("error listing interfaces: %d\n", err);
-                }
-                else
-                {
-                    printf("no interfaces found\n");
-                }
-                free(interfaces);
+                printf("interface index out of bounds; using index %zu instead\n", (index = count - 1));
             }
-            else
-            {
-                printf("could not allocate sufficient memory\n");
-                err = VmbErrorResources;
-            }
+            VmbInterfaceInfo_t* iFace = interfaces + index;
+            printf("interface id  : %s\n"
+                    "interface name: %s\n"
+                    "interface type: %s\n\n",
+                    PrintableString(iFace->interfaceIdString),
+                    PrintableString(iFace->interfaceName),
+                    TransportLayerTypeToString(iFace->interfaceType));
+            err = ListFeatures(iFace->interfaceHandle);
+            free(interfaces);
         }
         else if (count == 0)
         {
@@ -363,57 +290,6 @@ int ListInterfaceFeatures(size_t interfaceIndex)
         VmbShutdown();
     }
     return (err == VmbErrorSuccess ? 0 : 1);
-}
-
-/**
- * \brief list the avialable cameras
- *
- * \param[out] cameraInfos if successful, an array allocated via malloc is stored here
- * \param[out] the number of cameras available is written to the memory pointed at by this pointer
- */
-VmbError_t ListCameras(VmbCameraInfo_t** cameraInfos, VmbUint32_t* cameraCount)
-{
-    DiscoverGigECameras();
-
-    VmbUint32_t count;
-    VmbError_t err = VmbCamerasList(NULL, 0, &count, sizeof(VmbCameraInfo_t));
-    if (err == VmbErrorSuccess)
-    {
-        if (count > 0)
-        {
-            VmbCameraInfo_t* camInfoLocal = VMB_MALLOC_ARRAY(VmbCameraInfo_t, count);
-            if (camInfoLocal != NULL)
-            {
-                err = VmbCamerasList(camInfoLocal, count, &count, sizeof(VmbCameraInfo_t));
-                if (err == VmbErrorSuccess)
-                {
-                    // write results to out parameters
-                    *cameraInfos = camInfoLocal;
-                    *cameraCount = count;
-                }
-                else
-                {
-                    free(camInfoLocal);
-                }
-            }
-            else
-            {
-                printf("could not allocate sufficient memory for cameras\n");
-                return VmbErrorResources;
-            }
-        }
-        else
-        {
-            printf("no cameras found\n");
-            return VmbErrorNotFound;
-        }
-    }
-
-    if (err != VmbErrorSuccess)
-    {
-        printf("error listing cameras: %d\n", err);
-    }
-    return err;
 }
 
 VmbCameraInfo_t* GetCameraByIndex(VmbCameraInfo_t* cameraInfos, size_t cameraCount, size_t index)

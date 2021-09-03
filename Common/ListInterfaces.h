@@ -1,14 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        PrintVimbaVersion.h
+  File:        ListInterfaces.h
 
-  Description: Print Vimba version.
+  Description: get the list of the interfaces.
 
 -------------------------------------------------------------------------------
 
@@ -25,10 +25,17 @@
 
 =============================================================================*/
 
-#ifndef PRINT_VIMBA_VERSION_H_
-#define PRINT_VIMBA_VERSION_H_
+#ifndef LIST_INTERFACES_H_
+#define LIST_INTERFACES_H_
+    
+#include "VimbaC/Include/VmbCTypeDefinitions.h"
 
-// Purpose: Prints the Vimba version information.
-void PrintVimbaVersion();
+/**
+ * \brief get the list of interfaces
+ * 
+ * \param[out] interfaces an array of transport layers allocated using malloc
+ * \param[out] count the number of interfaces; instead of assigning 0 ::VmbErrorNotFound is returned
+ */
+VmbError_t ListInterfaces(VmbInterfaceInfo_t** interfaces, VmbUint32_t* count);
 
 #endif

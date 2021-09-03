@@ -1,14 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2012 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        program.cpp
+  File:        ListCameras.h
 
-  Description: Main entry point of ListCameras example of VimbaC.
+  Description: get the list of the cameras.
 
 -------------------------------------------------------------------------------
 
@@ -25,22 +25,17 @@
 
 =============================================================================*/
 
-#include <stdio.h>
-
-#include <ListCameras.h>
-
-int main( int argc, char* argv[] )
-{
-    printf( "//////////////////////////////////////\n" );
-    printf( "/// Vimba API List Cameras Example ///\n" );
-    printf( "//////////////////////////////////////\n\n" );
-
-    if ( 1 < argc )
-    {
-        printf( "No parameters expected. Execution will not be affected by the provided parameter(s).\n\n" );
-    }
+#ifndef LIST_CAMERAS_H_
+#define LIST_CAMERAS_H_
     
-    ListCameras();
-    
-    return 0;
-}
+#include "VimbaC/Include/VmbCTypeDefinitions.h"
+
+/**
+ * \brief get a list of cameras
+ * 
+ * \param[out] cameras an array of transport layers allocated using malloc
+ * \param[out] count the number of cameras; instead of assigning 0 ::VmbErrorNotFound is returned
+ */
+VmbError_t ListCameras(VmbCameraInfo_t** cameras, VmbUint32_t* count);
+
+#endif

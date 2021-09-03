@@ -1,14 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2014 - 2021 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        ErrorCodeToMessage.h
+  File:        TransportLayerTypeToString.h
 
-  Description: Convert the error codes to a self-explanatory message.
+  Description: Convert VmbTransportLayerType_t to string.
 
 -------------------------------------------------------------------------------
 
@@ -25,18 +25,14 @@
 
 =============================================================================*/
 
-#ifndef ERROR_CODE_TO_MESSAGE_H_
-#define ERROR_CODE_TO_MESSAGE_H_
+#ifndef TRANSPORT_LAYER_TYPE_TO_STRING_H_
+#define TRANSPORT_LAYER_TYPE_TO_STRING_H_
     
-#include "VimbaC/Include/VimbaC.h"
+#include "VimbaC/Include/VmbCTypeDefinitions.h"
 
 /**
- * \brief Translates Vmb error codes to readable error messages
- * 
- * \param[in] eError    The error code to be converted to string
- * 
- * \return A descriptive string representation of the error code
+ * \brief convert the transport layer type enum constant to a human readable string
  */
-const char* ErrorCodeToMessage( VmbError_t eError );
+char const* TransportLayerTypeToString(VmbTransportLayerType_t tlType);
 
 #endif

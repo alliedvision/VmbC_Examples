@@ -1,14 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012-2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        DiscoverGigECameras.h
+  File:        main.c
 
-  Description: Discover GigE cameras if GigE TL is present.
+  Description: Main entry point of ListCameras example of VmbC.
 
 -------------------------------------------------------------------------------
 
@@ -25,13 +25,20 @@
 
 =============================================================================*/
 
-#ifndef DISCOVER_GIGE_CAMERAS_H_
-#define DISCOVER_GIGE_CAMERAS_H_
+#include <stdio.h>
 
-#include <VimbaC/Include/VimbaC.h>
+#include "ListCameras.h"
 
-// Purpose: Discovers GigE cameras if GigE TL is present.
-//          Discovery is switched on only once so that the API can detect all currently connected cameras.
-VmbError_t DiscoverGigECameras();
+int main( int argc, char* argv[] )
+{
+    printf( "////////////////////////////////////\n" );
+    printf( "/// Vmb API List Cameras Example ///\n" );
+    printf( "////////////////////////////////////\n\n" );
 
-#endif
+    if ( 1 < argc )
+    {
+        printf( "No parameters expected. Execution will not be affected by the provided parameter(s).\n\n" );
+    }
+    
+    return ListCamerasProg();
+}

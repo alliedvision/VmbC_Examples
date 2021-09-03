@@ -1,14 +1,14 @@
 /*=============================================================================
-  Copyright (C) 2014 - 2021 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        ErrorCodeToMessage.h
+  File:        ListTransportLayers.h
 
-  Description: Convert the error codes to a self-explanatory message.
+  Description: get a list of the transport layers.
 
 -------------------------------------------------------------------------------
 
@@ -25,18 +25,17 @@
 
 =============================================================================*/
 
-#ifndef ERROR_CODE_TO_MESSAGE_H_
-#define ERROR_CODE_TO_MESSAGE_H_
+#ifndef LIST_TRANSPORT_LAYERS_H_
+#define LIST_TRANSPORT_LAYERS_H_
     
-#include "VimbaC/Include/VimbaC.h"
+#include "VimbaC/Include/VmbCTypeDefinitions.h"
 
 /**
- * \brief Translates Vmb error codes to readable error messages
+ * \brief get a list of transport layers
  * 
- * \param[in] eError    The error code to be converted to string
- * 
- * \return A descriptive string representation of the error code
+ * \param[out] transportLayers an array of transport layers allocated using malloc
+ * \param[out] count the number of transport layers; instead of assigning 0 ::VmbErrorNotFound is returned
  */
-const char* ErrorCodeToMessage( VmbError_t eError );
+VmbError_t ListTransportLayers(VmbTransportLayerInfo_t** transportLayers, VmbUint32_t* count);
 
 #endif

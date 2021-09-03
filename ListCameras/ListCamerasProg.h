@@ -1,14 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        PrintVimbaVersion.h
+  File:        ListCamerasProg.h
 
-  Description: Print Vimba version.
+  Description: The ListCameras example will list all available cameras that
+               are found by VmbC.
 
 -------------------------------------------------------------------------------
 
@@ -25,23 +26,13 @@
 
 =============================================================================*/
 
-#include "PrintVimbaVersion.h"
-#include <stdio.h>
-#include <VimbaC/Include/VimbaC.h>
+#ifndef LIST_CAMERAS_PROG_H_
+#define LIST_CAMERAS_PROG_H_
 
-// Purpose: Prints the Vimba version information.
-void PrintVimbaVersion()
-{
-    VmbVersionInfo_t    version_info;
-    VmbError_t          result = VmbVersionQuery( &version_info, sizeof( version_info ));
-    if( VmbErrorSuccess == result)
-    {
-        printf( "Vimba Version Major: %u Minor: %u Patch: %u\n", version_info.major, version_info.minor,version_info.patch );
-    }
-    else
-    {
-        printf( "VmbVersionQuery failed with Reason: %x", result );
-    }
-}
+/**
+ * Starts Vmb, gets all connected cameras, and prints out information about the camera name,
+ * model name, serial number, ID and the corresponding interface and transport layer IDs
+ */
+int ListCamerasProg();
 
-
+#endif

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(ListFeatures LANGUAGES C)
+project(ListCameras LANGUAGES C)
 
 find_package(Vmb MODULE REQUIRED COMPONENTS C)
 
@@ -15,20 +15,18 @@ set(COMMON_SOURCES
     ../Common/ListTransportLayers.h
     ../Common/PrintVmbVersion.c
     ../Common/PrintVmbVersion.h
-    ../Common/TransportLayerTypeToString.c
-    ../Common/TransportLayerTypeToString.h
 )
 
-add_executable(ListFeatures
+add_executable(ListCameras
     main.c
-    ListFeatures.c
-    ListFeatures.h
+    ListCamerasProg.c
+    ListCamerasProg.h
     ${COMMON_SOURCES}
 )
 
 source_group(Common FILES ${COMMON_SOURCES})
 
-target_link_libraries(ListFeatures PRIVATE Vmb::C)
-set_target_properties(ListFeatures PROPERTIES
+target_link_libraries(ListCameras PRIVATE Vmb::C)
+set_target_properties(ListCameras PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}")
