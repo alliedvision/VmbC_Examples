@@ -31,7 +31,7 @@
 
 #include "ListCamerasProg.h"
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 #include "../Common/ArrayAlloc.h"
 #include "../Common/ListCameras.h"

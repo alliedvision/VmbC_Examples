@@ -28,7 +28,7 @@
 #ifndef LIST_TRANSPORT_LAYERS_H_
 #define LIST_TRANSPORT_LAYERS_H_
     
-#include "VimbaC/Include/VmbCTypeDefinitions.h"
+#include <VmbC/VmbCTypeDefinitions.h>
 
 /**
  * \brief get a list of transport layers

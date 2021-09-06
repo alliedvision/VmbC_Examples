@@ -27,7 +27,7 @@
 
 #include <stdio.h>
 
-#include "ListCameras.h"
+#include "ListCamerasProg.h"
 
 int main( int argc, char* argv[] )
 {

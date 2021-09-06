@@ -28,7 +28,7 @@
 #include <QMainWindow>
 #include <QPixmap>
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 #include "ApiController.h"
 #include "AcquisitionManager.h"

@@ -28,7 +28,7 @@
 #ifndef LIST_INTERFACES_H_
 #define LIST_INTERFACES_H_
     
-#include "VimbaC/Include/VmbCTypeDefinitions.h"
+#include <VmbC/VmbCTypeDefinitions.h>
 
 /**
  * \brief get the list of interfaces

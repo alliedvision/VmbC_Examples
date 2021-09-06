@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 void PrintVmbVersion()
 {

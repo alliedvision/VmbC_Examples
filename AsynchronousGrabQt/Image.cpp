@@ -1,6 +1,6 @@
 #include <cstdlib>
 
-#include <VimbaImageTransform/Include/VmbTransform.h>
+#include <VmbImageTransform/VmbTransform.h>
 
 #include "Image.h"
 #include "VmbException.h"

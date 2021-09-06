@@ -28,7 +28,7 @@
 #ifndef DISCOVER_GIGE_CAMERAS_H_
 #define DISCOVER_GIGE_CAMERAS_H_
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 // Purpose: Discovers GigE cameras if GigE TL is present.
 //          Discovery is switched on only once so that the API can detect all currently connected cameras.

@@ -29,7 +29,7 @@
 
 #include "ListCameras.h"
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 #include "ArrayAlloc.h"
 #include "DiscoverGigECameras.h"

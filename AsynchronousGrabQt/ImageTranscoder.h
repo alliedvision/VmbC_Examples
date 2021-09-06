@@ -30,7 +30,7 @@
 
 #include <QSize>
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 namespace VmbC
 {

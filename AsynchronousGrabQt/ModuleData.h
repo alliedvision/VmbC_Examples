@@ -24,7 +24,7 @@
 
 #include <string>
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 class MainWindow;
 

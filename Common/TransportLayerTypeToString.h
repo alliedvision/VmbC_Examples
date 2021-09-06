@@ -28,7 +28,7 @@
 #ifndef TRANSPORT_LAYER_TYPE_TO_STRING_H_
 #define TRANSPORT_LAYER_TYPE_TO_STRING_H_
     
-#include "VimbaC/Include/VmbCTypeDefinitions.h"
+#include <VmbC/VmbCTypeDefinitions.h>
 
 /**
  * \brief convert the transport layer type enum constant to a human readable string

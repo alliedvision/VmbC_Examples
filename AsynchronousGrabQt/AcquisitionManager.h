@@ -30,7 +30,7 @@
 #include <QPixmap>
 #include <QSize>
 
-#include <VimbaC/Include/VimbaC.h>
+#include <VmbC/VmbC.h>
 
 #include "ImageTranscoder.h"
 

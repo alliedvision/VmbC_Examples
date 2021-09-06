@@ -23,8 +23,8 @@
 #ifndef ASYNCHRONOUSGRAB_C_IMAGE_H
 #define ASYNCHRONOUSGRAB_C_IMAGE_H
 
-#include <VimbaC/Include/VimbaC.h>
-#include <VimbaImageTransform/Include/VmbTransformTypes.h>
+#include <VmbC/VmbC.h>
+#include <VmbImageTransform/VmbTransformTypes.h>
 
 namespace VmbC
 {
