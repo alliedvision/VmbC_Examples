@@ -1,14 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2014 - 2021 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        ErrorCodeToMessage.h
+  File:        VmbThreads.h
 
-  Description: Convert the error codes to a self-explanatory message.
+  Description: Provide functionality that should be provided by <threads.h>
+               for systems that don't provide this functionality.
 
 -------------------------------------------------------------------------------
 
@@ -25,18 +26,24 @@
 
 =============================================================================*/
 
-#ifndef ERROR_CODE_TO_MESSAGE_H_
-#define ERROR_CODE_TO_MESSAGE_H_
-    
-#include <VmbC/VmbCommonTypes.h>
+#ifndef VMB_THREADS_H_
+#define VMB_THREADS_H_
 
-/**
- * \brief Translates Vmb error codes to readable error messages
- * 
- * \param[in] eError    The error code to be converted to string
- * 
- * \return A descriptive string representation of the error code
- */
-const char* ErrorCodeToMessage( VmbError_t eError );
+#ifdef __STDC_NO_THREADS__
+#ifdef WIN32
+#   include "VmbThreads_Windows.h"
+#else
+#   error Functionality not implemented on the current system
+#endif
+    int mtx_init(mtx_t* mutex, int type);
+
+    int mtx_lock(mtx_t* mutex);
+
+    int mtx_unlock(mtx_t* mutex);
+
+    void mtx_destroy(mtx_t* mutex);
+#else
+#   include <threads.h>
+#endif
 
 #endif

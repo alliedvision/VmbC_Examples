@@ -34,12 +34,10 @@
 #include <VmbC/VmbC.h>
 
 #include "../Common/ArrayAlloc.h"
-#include "../Common/DiscoverGigECameras.h"
 #include "../Common/ListCameras.h"
 #include "../Common/ListInterfaces.h"
 #include "../Common/ListTransportLayers.h"
 #include "../Common/TransportLayerTypeToString.h"
-
 
 /**
  * \return \p string or an empty string, if \p string is null  

@@ -1,14 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2014 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        DiscoverGigECameras.h
+  File:        VmbStdatomic_Windows.h
 
-  Description: Discover GigE cameras if GigE TL is present.
+  Description: Provide functionality that should be provided by <stdatomic.h>
+               for systems that don't provide this functionality.
 
 -------------------------------------------------------------------------------
 
@@ -25,13 +26,18 @@
 
 =============================================================================*/
 
-#ifndef DISCOVER_GIGE_CAMERAS_H_
-#define DISCOVER_GIGE_CAMERAS_H_
+#ifndef VMB_STDATOMIC_WINDOWS_H_
+#define VMB_STDATOMIC_WINDOWS_H_
 
-#include <VmbC/VmbC.h>
+#include <stdbool.h>
 
-// Purpose: Discovers GigE cameras if GigE TL is present.
-//          Discovery is switched on only once so that the API can detect all currently connected cameras.
-VmbError_t DiscoverGigECameras();
+#include <Windows.h>
+
+struct atomic_flag
+{
+    LONG value;
+};
+
+#define ATOMIC_FLAG_INIT {.value=false}
 
 #endif

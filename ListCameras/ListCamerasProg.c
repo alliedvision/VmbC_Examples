@@ -54,7 +54,7 @@ int ListCamerasProg()
         VmbUint32_t cameraCount;
         VmbInterfaceInfo_t* interfaces = NULL;
         VmbUint32_t interfaceCount;
-        VmbInterfaceInfo_t* transportLayers = NULL;
+        VmbTransportLayerInfo_t* transportLayers = NULL;
         VmbUint32_t transportLayerCount;
 
         if ((err = ListCameras(&cameras, &cameraCount)) == VmbErrorSuccess

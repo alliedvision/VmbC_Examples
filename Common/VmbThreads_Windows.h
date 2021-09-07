@@ -1,15 +1,15 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2017 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
 
 -------------------------------------------------------------------------------
 
-  File:        AsynchronousGrab.h
+  File:        VmbThreads.h
 
-  Description: The AsynchronousGrab example will grab images asynchronously
-               using VimbaC.
+  Description: Provide functionality that should be provided by <threads.h>
+               for systems that don't provide this functionality.
 
 -------------------------------------------------------------------------------
 
@@ -26,25 +26,31 @@
 
 =============================================================================*/
 
-#ifndef ASYNCHRONOUS_GRAB_H_
-#define ASYNCHRONOUS_GRAB_H_
+#ifndef VMB_THREADS_WINDOWS_H_
+#define VMB_THREADS_WINDOWS_H_
 
-#include <VimbaC/Include/VmbCommonTypes.h>
+#include <Windows.h>
 
-typedef enum FrameInfos
+enum
 {
-    FrameInfos_Off,
-    FrameInfos_Show,
-    FrameInfos_Automatic
-} FrameInfos;
+    thrd_success = ERROR_SUCCESS,
+    thrd_nomem,
+    thrd_timedout,
+    thrd_busy,
+    thrd_error
+};
 
-VmbError_t StartContinuousImageAcquisition( const char* pCameraID, FrameInfos eFrameInfos, VmbBool_t bEnableColorProcessing, VmbBool_t bRGBValue );
-void StopContinuousImageAcquisition();
+enum
+{
+    mtx_plain,
+    mtx_recursive,
+    mtx_timed
+};
 
-VmbBool_t   CreateApiLock();
-void        DestroyApiLock();
-VmbBool_t   AquireApiLock();
-void        ReleaseApiLock();
+typedef struct VmbMtx
+{
+    HANDLE handle;
+} mtx_t;
 
 
 #endif

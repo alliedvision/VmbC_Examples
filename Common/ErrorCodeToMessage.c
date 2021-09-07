@@ -67,13 +67,12 @@ const char* ErrorCodeToMessage( VmbError_t eError )
     case VmbErrorInvalidAddress:            return "The given address is out of range or invalid for internal reasons.";
     case VmbErrorAlready:                   return "Something has already been done.";
     case VmbErrorNoChunkData:               return "A frame expected to contain chunk data does not contain chunk data.";
-    case VmbErrorInvalidChunkDataFormat:    return "The format of the chunk data does not match the expected format.";
     case VmbErrorUserCallbackException:     return "A callback provided by the user threw an exception.";
     case VmbErrorFeaturesUnavailable:       return "Feature unavailable for a module.";
     case VmbErrorTLNotFound:                return "A required transport layer could not be found or loaded.";
     case VmbErrorAmbiguous:                 return "Entity cannot be uniquely identified based on the information provided.";
     case VmbErrorRetriesExceeded:           return "Allowed retries exceeded without successfully completing the operation.";
-    default:                        return eError >= VmbErrorCustom ? : "User defined error" : "Unknown";
+    default:                                return eError >= VmbErrorCustom ? "User defined error" : "Unknown";
     }
 }
 

@@ -6,9 +6,10 @@
 
 -------------------------------------------------------------------------------
 
-  File:        ErrorCodeToMessage.h
+  File:        VmbStdatomic_Windows.h
 
-  Description: Convert the error codes to a self-explanatory message.
+  Description: Provide functionality that should be provided by <stdatomic.h>
+               for systems that don't provide this functionality.
 
 -------------------------------------------------------------------------------
 
@@ -25,18 +26,18 @@
 
 =============================================================================*/
 
-#ifndef ERROR_CODE_TO_MESSAGE_H_
-#define ERROR_CODE_TO_MESSAGE_H_
-    
-#include <VmbC/VmbCommonTypes.h>
+#include "VmbStdatomic.h"
 
-/**
- * \brief Translates Vmb error codes to readable error messages
- * 
- * \param[in] eError    The error code to be converted to string
- * 
- * \return A descriptive string representation of the error code
- */
-const char* ErrorCodeToMessage( VmbError_t eError );
+#ifdef __STDC_NO_ATOMICS__
+
+_Bool atomic_flag_test_and_set(volatile atomic_flag* obj)
+{
+    return InterlockedExchange(&obj->value, (LONG)true);
+}
+
+void atomic_flag_clear(volatile atomic_flag* obj)
+{
+    InterlockedExchange(&obj->value, (LONG)false);
+}
 
 #endif

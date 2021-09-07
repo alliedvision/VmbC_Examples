@@ -32,12 +32,9 @@
 #include <VmbC/VmbC.h>
 
 #include "ArrayAlloc.h"
-#include "DiscoverGigECameras.h"
 
 VmbError_t ListCameras(VmbCameraInfo_t** cameras, VmbUint32_t* count)
 {
-    DiscoverGigECameras();
-
     VmbUint32_t camCount = 0;
     VmbError_t err = VmbCamerasList(NULL, 0, &camCount, sizeof(VmbCameraInfo_t)); // get the number of cameras
     if (err != VmbErrorSuccess)

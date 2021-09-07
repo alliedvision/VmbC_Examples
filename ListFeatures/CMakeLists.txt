@@ -5,8 +5,6 @@ project(ListFeatures LANGUAGES C)
 find_package(Vmb MODULE REQUIRED COMPONENTS C)
 
 set(COMMON_SOURCES
-    ../Common/DiscoverGigECameras.c
-    ../Common/DiscoverGigECameras.h
     ../Common/ListCameras.c
     ../Common/ListCameras.h
     ../Common/ListInterfaces.c

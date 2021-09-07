@@ -20,6 +20,7 @@ function(vmb_c_example DIRECTORY)
 endfunction()
 
 # Actual examples list
+vmb_c_example(AsynchronousGrab)
 vmb_c_example(AsynchronousGrabQt Qt)
 vmb_c_example(ListFeatures FeatureList FeaturesList)
 vmb_c_example(ListCameras)

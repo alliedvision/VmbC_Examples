@@ -6,9 +6,10 @@
 
 -------------------------------------------------------------------------------
 
-  File:        ErrorCodeToMessage.h
+  File:        VmbThreads.h
 
-  Description: Convert the error codes to a self-explanatory message.
+  Description: Provide functionality that should be provided by <threads.h>
+               for systems that don't provide this functionality.
 
 -------------------------------------------------------------------------------
 
@@ -25,18 +26,64 @@
 
 =============================================================================*/
 
-#ifndef ERROR_CODE_TO_MESSAGE_H_
-#define ERROR_CODE_TO_MESSAGE_H_
-    
-#include <VmbC/VmbCommonTypes.h>
+#include "VmbThreads.h"
 
-/**
- * \brief Translates Vmb error codes to readable error messages
- * 
- * \param[in] eError    The error code to be converted to string
- * 
- * \return A descriptive string representation of the error code
- */
-const char* ErrorCodeToMessage( VmbError_t eError );
+#ifdef __STDC_NO_THREADS__
+
+int mtx_init(mtx_t* mutex, int type)
+{
+    if (mutex == NULL)
+    {
+        return thrd_error;
+    }
+    switch (type)
+    {
+    case mtx_plain:
+    case mtx_recursive:
+    {
+        HANDLE h = CreateMutex(NULL, FALSE, NULL);
+        if (h != NULL)
+        {
+            mutex->handle = h;
+            return thrd_success;
+        }
+        break;
+    }
+    // other mutex types not implemented yet
+    }
+    return thrd_error;
+}
+
+int mtx_lock(mtx_t* mutex)
+{
+    if (mutex != NULL)
+    {
+        if (WAIT_OBJECT_0 == WaitForSingleObject(mutex->handle, INFINITE))
+        {
+            return thrd_success;
+        }
+    }
+    return thrd_error;
+}
+
+int mtx_unlock(mtx_t* mutex)
+{
+    if (mutex != NULL)
+    {
+        if (ReleaseMutex(mutex->handle))
+        {
+            return thrd_success;
+        }
+    }
+    return thrd_error;
+}
+
+void mtx_destroy(mtx_t* mutex)
+{
+    if (mutex != NULL)
+    {
+        CloseHandle(mutex->handle);
+    }
+}
 
 #endif
