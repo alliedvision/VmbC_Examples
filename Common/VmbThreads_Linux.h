@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  File:        VmbThreads.h
+  File:        VmbThreads_Linux.h
 
   Description: Provide functionality that should be provided by <threads.h>
                for systems that don't provide this functionality.
@@ -26,28 +26,31 @@
 
 =============================================================================*/
 
-#ifndef VMB_THREADS_H_
-#define VMB_THREADS_H_
+#ifndef VMB_THREADS_LINUX_H_
+#define VMB_THREADS_LINUX_H_
 
-#ifdef __STDC_NO_THREADS__
-#ifdef WIN32
-#   include "VmbThreads_Windows.h"
-#else
-#   ifdef __linux__
-#   include "VmbThreads_Linux.h"
-#   else
-#       error Functionality not implemented on the current system
-#   endif
-#endif
-    int mtx_init(mtx_t* mutex, int type);
+#include <pthread.h>
 
-    int mtx_lock(mtx_t* mutex);
+enum
+{
+    thrd_success = 0,
+    thrd_nomem,
+    thrd_timedout,
+    thrd_busy,
+    thrd_error
+};
 
-    int mtx_unlock(mtx_t* mutex);
+enum
+{
+    mtx_plain = 0,
+    mtx_recursive = 1,
+    mtx_timed = 2
+};
 
-    void mtx_destroy(mtx_t* mutex);
-#else
-#   include <threads.h>
-#endif
+typedef struct VmbMtx
+{
+    pthread_mutex_t mutex;
+} mtx_t;
+
 
 #endif
