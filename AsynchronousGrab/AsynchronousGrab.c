@@ -508,7 +508,7 @@ void StopContinuousImageAcquisition()
 {
     int i = 0;
 
-    bool const shutdownDone = atomic_flag_test_and_set(&g_shutdown);
+    _Bool const shutdownDone = atomic_flag_test_and_set(&g_shutdown);
 
     if(!shutdownDone)
     {
