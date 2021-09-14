@@ -1,3 +1,24 @@
+/**
+ * \date 2021
+ * \copyright Allied Vision Technologies.  All Rights Reserved.
+ *
+ * \copyright Redistribution of this file, in original or modified form, without
+ *            prior written consent of Allied Vision Technologies is prohibited.
+ *
+ * \warning THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
+ * NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * \brief Implementation of ::VmbC::Examples::AcquisitionManager
+ */
+
 #include <cstdlib>
 #include <cstring>
 #include <limits>
@@ -15,6 +36,11 @@ namespace VmbC
 
         namespace
         {
+            /**
+             * \brief feature name of custom command for choosing the packet size provided by AVT GigE cameras
+             */
+            constexpr char const* AdjustPackageSizeCommand = "GVSPAdjustPacketSize";
+
             struct AcquisitionContext
             {
                 AcquisitionManager* m_acquisitionManager;
@@ -127,6 +153,22 @@ namespace VmbC
 
             if (!errorHappened)
             {
+                // execute packet size adjustment, if this is a AVT GigE camera
+                if (VmbErrorSuccess == VmbFeatureCommandRun(m_cameraHandle, AdjustPackageSizeCommand))
+                {
+
+                    VmbBool_t isCommandDone = VmbBoolFalse;
+                    do
+                    {
+                        if (VmbErrorSuccess != VmbFeatureCommandIsDone(m_cameraHandle,
+                            AdjustPackageSizeCommand,
+                            &isCommandDone))
+                        {
+                            break;
+                        }
+                    } while (VmbBoolFalse == isCommandDone);
+                }
+
                 try
                 {
                     m_streamLife.reset(new StreamLifetime(refreshedCameraInfo.streamHandles[0], m_cameraHandle, acquisitionManager));
@@ -159,9 +201,9 @@ namespace VmbC
                 throw VmbException::ForOperation(error, "VmbPayloadSizeGet");
             }
 
-            if (value < 0 || (static_cast<uint64_t>(value) > (std::numeric_limits<size_t>::max)()))
+            if (value == 0)
             {
-                throw VmbException("Payload size " + std::to_string(value) + " out of valid range");
+                throw VmbException("Non-zero payload size required");
             }
 
             m_payloadSize = static_cast<size_t>(value);

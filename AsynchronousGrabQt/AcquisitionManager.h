@@ -106,6 +106,9 @@ namespace VmbC
                  */
                 ~CameraAccessLifetime();
             private:
+                /**
+                 * \brief stores the remote device handle
+                 */
                 VmbHandle_t m_cameraHandle {};
                 std::unique_ptr<StreamLifetime> m_streamLife;
             };

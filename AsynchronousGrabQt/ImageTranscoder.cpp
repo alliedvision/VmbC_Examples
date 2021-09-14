@@ -1,3 +1,24 @@
+/**
+ * \date 2021
+ * \copyright Allied Vision Technologies.  All Rights Reserved.
+ *
+ * \copyright Redistribution of this file, in original or modified form, without
+ *            prior written consent of Allied Vision Technologies is prohibited.
+ *
+ * \warning THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
+ * NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * \brief Implementation of ::VmbC::Examples::ImageTranscoder
+ */
+
 #include <algorithm>
 #include <limits>
 #include <thread>
@@ -150,10 +171,43 @@ namespace VmbC
 
         }
 
+        namespace
+        {
+            bool IsLittleEndian()
+            {
+                uint32_t const one = 1;
+                auto oneBytes = reinterpret_cast<unsigned char const*>(&one);
+                return oneBytes[0] == 1;
+            }
+
+            /**
+             * \brief helper class for determining the image formats to use in the conversion 
+             */
+            class ImageFormats
+            {
+            public:
+
+                ImageFormats()
+                    : ImageFormats(IsLittleEndian())
+                {
+                }
+
+                QImage::Format const QtImageFormat;
+                VmbPixelFormat_t const VmbTransformFormat;
+
+            private:
+                ImageFormats(bool littleEndian)
+                    : QtImageFormat(littleEndian ? QImage::Format_RGB32 : QImage::Format_RGBX8888),
+                    VmbTransformFormat(littleEndian ? VmbPixelFormatBgra8 : VmbPixelFormatRgba8)
+                {
+                }
+            };
+
+            static const ImageFormats ConversionFormats{};
+        }
+
         void ImageTranscoder::TranscodeImage(TransformationTask& task)
         {
-            constexpr auto targetFormat = VmbPixelFormatType::VmbPixelFormatArgb8; // equivalent of QImage::Format_RGB32
-
             VmbFrame_t const& frame = task.m_frame;
 
             Image const source(task.m_frame);
@@ -161,7 +215,7 @@ namespace VmbC
             // allocate new image, if necessary
             if (!m_transformTarget)
             {
-                m_transformTarget.reset(new Image(targetFormat));
+                m_transformTarget.reset(new Image(ConversionFormats.VmbTransformFormat));
             }
 
             m_transformTarget->Convert(source);
@@ -170,7 +224,7 @@ namespace VmbC
                           m_transformTarget->GetWidth(),
                           m_transformTarget->GetHeight(),
                           m_transformTarget->GetBytesPerLine(),
-                          QImage::Format::Format_RGB32);
+                          ConversionFormats.QtImageFormat);
 
             QPixmap pixmap = QPixmap::fromImage(qImage, Qt::ImageConversionFlag::ColorOnly);
 

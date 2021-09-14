@@ -51,7 +51,9 @@
 #define NUM_FRAMES ((size_t)3)
 #define FRAME_CONTEXT_OPTIONS_INDEX ((size_t)0)
 
-// TODO remove AVT cam specific command?
+/**
+ * \brief feature name of custom command for choosing the packet size provided by AVT GigE cameras
+ */
 #define ADJUST_PACKAGE_SIZE_COMMAND "GVSPAdjustPacketSize"
 
 VmbBool_t               g_vmbStarted               = VmbBoolFalse;      // Remember if Vmb is started
@@ -411,8 +413,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options)
 
                 if (VmbErrorSuccess == err)
                 {
-                    // Set the GeV packet size to the highest possible value
-                    // (In this example we do not test whether this cam actually is a GigE cam)
+                    // Try to execute custom command available to Allied Vision GigE Cameras to ensure the packet size is chosen well
                     if (VmbErrorSuccess == VmbFeatureCommandRun(g_cameraHandle, ADJUST_PACKAGE_SIZE_COMMAND))
                     {
 

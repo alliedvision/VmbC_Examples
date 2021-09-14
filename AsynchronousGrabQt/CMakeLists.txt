@@ -28,7 +28,9 @@ find_package(Vmb MODULE REQUIRED COMPONENTS C ImageTransform)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 set(SOURCES)
-set(HEADERS)
+set(HEADERS
+    LogEntry.h
+)
 
 # add source+header combination in this dir
 foreach(_FILE_NAME IN ITEMS
@@ -36,7 +38,6 @@ foreach(_FILE_NAME IN ITEMS
     ApiController
     Image
     ImageTranscoder
-    LogEntry
     LogEntryListModel
     ModuleData
     ModuleTreeModel

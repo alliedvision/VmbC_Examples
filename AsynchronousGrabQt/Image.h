@@ -40,7 +40,7 @@ namespace VmbC
         public:
             /**
              * \brief creates an image with a given pixel format that has
-             *        capacity 0  
+             *        capacity 0
              */
             Image(VmbPixelFormat_t pixelFormat = VmbPixelFormatLast) noexcept;
 
@@ -63,13 +63,14 @@ namespace VmbC
             int GetHeight() const noexcept { return m_image.ImageInfo.Height; }
 
             /**
-             * \brief gets the bytes used for one image line; does not work properly
-             *        on images not work for pixels that use a number of bits not divisible by 8
+             * \brief gets the bytes used for one image line for use in the transformation target/QImage constructor.
+             * 
+             * \warning This function does not work does not work properly for images using a number of bits per channel that is not divisible by 8.
+             *          We only use it to determine the size of RGBA/BGRA images in this example.
              */
             int GetBytesPerLine() const noexcept
             {
-                // simplification for bit counts divisible by 8 here
-                return m_image.ImageInfo.Stride * (m_image.ImageInfo.PixelInfo.BitsPerPixel >> 3);
+                return m_image.ImageInfo.Stride * (m_image.ImageInfo.PixelInfo.BitsPerPixel / 8);
             }
 
             /**

@@ -6,10 +6,9 @@
 
 -------------------------------------------------------------------------------
 
-  File:        MainWindow.cpp
+  File:        ImageLabel.cpp
 
-  Description: Qt dialog class for the GUI of the MainWindow example of
-               VmbC.
+  Description: Implementation of ImageLabel.
 
 -------------------------------------------------------------------------------
 
