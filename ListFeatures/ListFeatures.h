@@ -33,7 +33,7 @@
 #include <stddef.h>
 
 /**
- * \brief list the features of a tl at a given index
+ * \brief list the features of a transport layer at a given index
  *
  * \param[in] tlIndex the zero based index of the transport layer
  * 

@@ -154,7 +154,7 @@ namespace VmbC
             if (!errorHappened)
             {
                 // execute packet size adjustment, if this is a AVT GigE camera
-                if (VmbErrorSuccess == VmbFeatureCommandRun(m_cameraHandle, AdjustPackageSizeCommand))
+                if (VmbErrorSuccess == VmbFeatureCommandRun(refreshedCameraInfo.streamHandles[0], AdjustPackageSizeCommand))
                 {
 
                     VmbBool_t isCommandDone = VmbBoolFalse;

@@ -32,7 +32,8 @@
 #include <VmbC/VmbC.h>
 
 #include "AsynchronousGrab.h"
-#include "../Common/ErrorCodeToMessage.h"
+
+#include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
 #ifdef WIN32
 #include <Windows.h>

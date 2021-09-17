@@ -65,7 +65,7 @@ namespace VmbC
             /**
              * \brief gets the bytes used for one image line for use in the transformation target/QImage constructor.
              * 
-             * \warning This function does not work does not work properly for images using a number of bits per pixel that is not divisible by 8.
+             * \warning This function does not work properly for images using a number of bits per pixel that is not divisible by 8.
              *          We only use it to determine the size of RGBA/BGRA images in this example.
              */
             int GetBytesPerLine() const noexcept

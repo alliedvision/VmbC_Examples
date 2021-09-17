@@ -8,7 +8,7 @@
 
   File:        ListTransportLayers.c
 
-  Description: get a list of the transport layers.
+  Description: Get a list of the transport layers.
 
 -------------------------------------------------------------------------------
 
@@ -27,16 +27,17 @@
 
 #include <stdio.h>
 
-#include "ListTransportLayers.h"
+#include "include/VmbCExamplesCommon/ListTransportLayers.h"
+
+#include "include/VmbCExamplesCommon/ArrayAlloc.h"
 
 #include <VmbC/VmbC.h>
 
-#include "ArrayAlloc.h"
 
 VmbError_t ListTransportLayers(VmbTransportLayerInfo_t** transportLayers, VmbUint32_t* count)
 {
     VmbUint32_t tlCount = 0;
-    VmbError_t err = VmbTransportLayersList(NULL, 0, &tlCount, sizeof(VmbTransportLayerInfo_t)); // get the number of tls
+    VmbError_t err = VmbTransportLayersList(NULL, 0, &tlCount, sizeof(VmbTransportLayerInfo_t)); // get the number of transport layers
     if (err != VmbErrorSuccess)
     {
         return err;
@@ -46,12 +47,14 @@ VmbError_t ListTransportLayers(VmbTransportLayerInfo_t** transportLayers, VmbUin
         printf("no cameras found\n");
         return VmbErrorNotFound;
     }
-    VmbTransportLayerInfo_t* res = VMB_MALLOC_ARRAY(VmbTransportLayerInfo_t, tlCount); // get the tl info
+
+    VmbTransportLayerInfo_t* res = VMB_MALLOC_ARRAY(VmbTransportLayerInfo_t, tlCount); // get the transport layer info
     if (res == NULL)
     {
         printf("insufficient memory available");
         return VmbErrorResources;
     }
+
     VmbUint32_t countNew = 0;
     err = VmbTransportLayersList(res, tlCount, &countNew, sizeof(VmbTransportLayerInfo_t));
     if (err == VmbErrorSuccess || (err == VmbErrorMoreData && tlCount < countNew))
@@ -67,6 +70,8 @@ VmbError_t ListTransportLayers(VmbTransportLayerInfo_t** transportLayers, VmbUin
             return VmbErrorSuccess;
         }
     }
+
     free(res);
+
     return err;
 }

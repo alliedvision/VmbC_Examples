@@ -8,7 +8,7 @@
 
   File:        ListInterfaces.h
 
-  Description: get the list of the interfaces.
+  Description: Get the list of the interfaces.
 
 -------------------------------------------------------------------------------
 
@@ -31,9 +31,9 @@
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**
- * \brief get the list of interfaces
+ * \brief Get the list of interfaces
  * 
- * \param[out] interfaces an array of transport layers allocated using malloc
+ * \param[out] interfaces an array of interfaces allocated using malloc
  * \param[out] count the number of interfaces; instead of assigning 0 ::VmbErrorNotFound is returned
  */
 VmbError_t ListInterfaces(VmbInterfaceInfo_t** interfaces, VmbUint32_t* count);

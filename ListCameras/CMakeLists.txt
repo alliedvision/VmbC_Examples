@@ -4,16 +4,9 @@ project(ListCameras LANGUAGES C)
 
 find_package(Vmb MODULE REQUIRED COMPONENTS C)
 
-set(COMMON_SOURCES
-    ../Common/ListCameras.c
-    ../Common/ListCameras.h
-    ../Common/ListInterfaces.c
-    ../Common/ListInterfaces.h
-    ../Common/ListTransportLayers.c
-    ../Common/ListTransportLayers.h
-    ../Common/PrintVmbVersion.c
-    ../Common/PrintVmbVersion.h
-)
+if(NOT TARGET VmbCExamplesCommon)
+    add_subdirectory(../Common VmbCExamplesCommon_build)
+endif()
 
 add_executable(ListCameras
     main.c
@@ -24,7 +17,7 @@ add_executable(ListCameras
 
 source_group(Common FILES ${COMMON_SOURCES})
 
-target_link_libraries(ListCameras PRIVATE Vmb::C)
+target_link_libraries(ListCameras PRIVATE Vmb::C VmbCExamplesCommon)
 set_target_properties(ListCameras PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}")

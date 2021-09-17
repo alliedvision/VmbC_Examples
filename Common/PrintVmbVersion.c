@@ -25,7 +25,9 @@
 
 =============================================================================*/
 
-#include "PrintVmbVersion.h"
+#include "include/VmbCExamplesCommon/PrintVmbVersion.h"
+
+#include "include/VmbCExamplesCommon/ErrorCodeToMessage.h"
 
 #include <stdio.h>
 
@@ -33,15 +35,15 @@
 
 void PrintVmbVersion()
 {
-    VmbVersionInfo_t    version_info;
-    VmbError_t          result = VmbVersionQuery( &version_info, sizeof( version_info ));
-    if( VmbErrorSuccess == result)
+    VmbVersionInfo_t    versionInfo;
+    VmbError_t          result = VmbVersionQuery(&versionInfo, sizeof(versionInfo));
+    if(VmbErrorSuccess == result)
     {
-        printf( "Vmb Version Major: %u Minor: %u Patch: %u\n", version_info.major, version_info.minor, version_info.patch );
+        printf("Vmb Version Major: %u Minor: %u Patch: %u\n", versionInfo.major, versionInfo.minor, versionInfo.patch);
     }
     else
     {
-        printf( "VmbVersionQuery failed with Reason: %x\n", result );
+        printf("VmbVersionQuery failed with reason: %s\n", ErrorCodeToMessage(result));
     }
 }
 

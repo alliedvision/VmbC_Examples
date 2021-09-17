@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2014 - 2021 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -26,7 +26,7 @@
 
 =============================================================================*/
 
-#include "VmbStdatomic.h"
+#include "include/VmbCExamplesCommon/VmbStdatomic.h"
 
 #ifdef __STDC_NO_ATOMICS__
 

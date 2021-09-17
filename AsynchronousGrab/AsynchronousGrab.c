@@ -30,9 +30,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../Common/ListCameras.h"
-#include "../Common/VmbStdatomic.h"
-#include "../Common/VmbThreads.h"
+#include "AsynchronousGrab.h"
+
+#include <VmbCExamplesCommon/ListCameras.h>
+#include <VmbCExamplesCommon/PrintVmbVersion.h>
+#include <VmbCExamplesCommon/VmbStdatomic.h>
+#include <VmbCExamplesCommon/VmbThreads.h>
 
 #ifdef WIN32
     #include <windows.h>
@@ -45,8 +48,6 @@
 
 #include <VmbImageTransform/VmbTransform.h>
 
-#include "AsynchronousGrab.h"
-#include "../Common/PrintVmbVersion.h"
 
 #define NUM_FRAMES ((size_t)3)
 #define FRAME_CONTEXT_OPTIONS_INDEX ((size_t)0)

@@ -8,7 +8,7 @@
 
   File:        ListCameras.c
 
-  Description: get the list of the cameras.
+  Description: Get the list of the cameras.
 
 -------------------------------------------------------------------------------
 
@@ -27,11 +27,12 @@
 
 #include <stdio.h>
 
-#include "ListCameras.h"
+#include "include/VmbCExamplesCommon/ListCameras.h"
+
+#include "include/VmbCExamplesCommon/ArrayAlloc.h"
 
 #include <VmbC/VmbC.h>
 
-#include "ArrayAlloc.h"
 
 VmbError_t ListCameras(VmbCameraInfo_t** cameras, VmbUint32_t* count)
 {
@@ -41,17 +42,20 @@ VmbError_t ListCameras(VmbCameraInfo_t** cameras, VmbUint32_t* count)
     {
         return err;
     }
+
     if (camCount == 0)
     {
         printf("no cameras found\n");
         return VmbErrorNotFound;
     }
+
     VmbCameraInfo_t* res = VMB_MALLOC_ARRAY(VmbCameraInfo_t, camCount); // get the camera info
     if (res == NULL)
     {
         printf("insufficient memory available");
         return VmbErrorResources;
     }
+
     VmbUint32_t countNew = 0;
     err = VmbCamerasList(res, camCount, &countNew, sizeof(VmbCameraInfo_t));
     if (err == VmbErrorSuccess || (err == VmbErrorMoreData && camCount < countNew))
@@ -63,10 +67,12 @@ VmbError_t ListCameras(VmbCameraInfo_t** cameras, VmbUint32_t* count)
         else
         {
             *cameras = res;
-            *count = countNew > camCount ? countNew : countNew;
+            *count = countNew > camCount ? camCount : countNew;
             return VmbErrorSuccess;
         }
     }
+
     free(res);
+
     return err;
 }

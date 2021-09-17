@@ -25,7 +25,7 @@
 
 =============================================================================*/
 
-#include "TransportLayerTypeToString.h"
+#include "include/VmbCExamplesCommon/TransportLayerTypeToString.h"
 
 
 char const* TransportLayerTypeToString(VmbTransportLayerType_t tlType)

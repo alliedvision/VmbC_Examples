@@ -28,9 +28,7 @@ find_package(Vmb MODULE REQUIRED COMPONENTS C ImageTransform)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 set(SOURCES)
-set(HEADERS
-    LogEntry.h
-)
+set(HEADERS)
 
 # add source+header combination in this dir
 foreach(_FILE_NAME IN ITEMS
@@ -56,6 +54,7 @@ list(APPEND SOURCES
 # add headers without corresponding source
 list(APPEND HEADERS
     support/NotNull.h
+    LogEntry.h
 )
 
 add_executable(AsynchronousGrabQtC

@@ -6,9 +6,9 @@
 
 -------------------------------------------------------------------------------
 
-  File:        ListCameras.h
+  File:        ListTransportLayers.h
 
-  Description: get the list of the cameras.
+  Description: Get a list of the transport layers.
 
 -------------------------------------------------------------------------------
 
@@ -25,17 +25,17 @@
 
 =============================================================================*/
 
-#ifndef LIST_CAMERAS_H_
-#define LIST_CAMERAS_H_
+#ifndef LIST_TRANSPORT_LAYERS_H_
+#define LIST_TRANSPORT_LAYERS_H_
     
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**
- * \brief get a list of cameras
+ * \brief get a list of transport layers
  * 
- * \param[out] cameras an array of transport layers allocated using malloc
- * \param[out] count the number of cameras; instead of assigning 0 ::VmbErrorNotFound is returned
+ * \param[out] transportLayers an array of transport layers allocated using malloc
+ * \param[out] count the number of transport layers; instead of assigning 0 ::VmbErrorNotFound is returned
  */
-VmbError_t ListCameras(VmbCameraInfo_t** cameras, VmbUint32_t* count);
+VmbError_t ListTransportLayers(VmbTransportLayerInfo_t** transportLayers, VmbUint32_t* count);
 
 #endif

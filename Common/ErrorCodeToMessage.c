@@ -25,9 +25,9 @@
 
 =============================================================================*/
 
-#include "ErrorCodeToMessage.h"
+#include "include/VmbCExamplesCommon/ErrorCodeToMessage.h"
 
-const char* ErrorCodeToMessage( VmbError_t eError )
+const char* ErrorCodeToMessage(VmbError_t eError)
 {
 
     switch(eError)
@@ -41,14 +41,14 @@ const char* ErrorCodeToMessage( VmbError_t eError )
     case VmbErrorInvalidAccess:             return "Invalid access.";
     case VmbErrorBadParameter:              return "Bad parameter.";
     case VmbErrorStructSize:                return "Wrong DLL version.";
-    case VmbErrorMoreData:                  return "More data returned than memory provided.";
+    case VmbErrorMoreData:                  return "More data is available.";
     case VmbErrorWrongType:                 return "Wrong type.";
     case VmbErrorInvalidValue:              return "Invalid value.";
     case VmbErrorTimeout:                   return "Timeout.";
     case VmbErrorOther:                     return "TL error.";
     case VmbErrorResources:                 return "Resource not available.";
     case VmbErrorInvalidCall:               return "Invalid call.";
-    case VmbErrorNoTL:                      return "TL not loaded.";
+    case VmbErrorNoTL:                      return "No TL loaded.";
     case VmbErrorNotImplemented:            return "Not implemented.";
     case VmbErrorNotSupported:              return "Not supported.";
     case VmbErrorIncomplete:                return "Operation is not complete.";

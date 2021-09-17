@@ -8,7 +8,7 @@
 
   File:        ListInterfaces.c
 
-  Description: get the list of the interfaces.
+  Description: Get the list of the interfaces.
 
 -------------------------------------------------------------------------------
 
@@ -27,16 +27,17 @@
 
 #include <stdio.h>
 
-#include "ListInterfaces.h"
+#include "include/VmbCExamplesCommon/ListInterfaces.h"
+
+#include "include/VmbCExamplesCommon/ArrayAlloc.h"
 
 #include <VmbC/VmbC.h>
 
-#include "ArrayAlloc.h"
 
 VmbError_t ListInterfaces(VmbInterfaceInfo_t** interfaces, VmbUint32_t* count)
 {
     VmbUint32_t interfaceCount = 0;
-    VmbError_t err = VmbInterfacesList(NULL, 0, &interfaceCount, sizeof(VmbInterfaceInfo_t)); // get the number of cameras
+    VmbError_t err = VmbInterfacesList(NULL, 0, &interfaceCount, sizeof(VmbInterfaceInfo_t)); // get the number of interfaces
     if (err != VmbErrorSuccess)
     {
         return err;
@@ -46,12 +47,14 @@ VmbError_t ListInterfaces(VmbInterfaceInfo_t** interfaces, VmbUint32_t* count)
         printf("no interfaces found\n");
         return VmbErrorNotFound;
     }
-    VmbInterfaceInfo_t* res = VMB_MALLOC_ARRAY(VmbInterfaceInfo_t, interfaceCount); // get the camera info
+
+    VmbInterfaceInfo_t* res = VMB_MALLOC_ARRAY(VmbInterfaceInfo_t, interfaceCount); // get the interface info
     if (res == NULL)
     {
         printf("insufficient memory available");
         return VmbErrorResources;
     }
+
     VmbUint32_t countNew = 0;
     err = VmbInterfacesList(res, interfaceCount, &countNew, sizeof(VmbInterfaceInfo_t));
     if (err == VmbErrorSuccess || (err == VmbErrorMoreData && countNew > interfaceCount))
@@ -67,6 +70,8 @@ VmbError_t ListInterfaces(VmbInterfaceInfo_t** interfaces, VmbUint32_t* count)
             return VmbErrorSuccess;
         }
     }
+
     free(res);
+
     return err;
 }

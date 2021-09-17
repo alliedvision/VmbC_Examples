@@ -33,18 +33,14 @@
 
 #include <VmbC/VmbC.h>
 
-#include "../Common/ArrayAlloc.h"
-#include "../Common/ListCameras.h"
-#include "../Common/ListInterfaces.h"
-#include "../Common/ListTransportLayers.h"
-#include "../Common/PrintVmbVersion.h"
+#include <VmbCExamplesCommon/ArrayAlloc.h>
+#include <VmbCExamplesCommon/ListCameras.h>
+#include <VmbCExamplesCommon/ListInterfaces.h>
+#include <VmbCExamplesCommon/ListTransportLayers.h>
+#include <VmbCExamplesCommon/PrintVmbVersion.h>
 
 int ListCamerasProg()
 {
-    VmbUint32_t         i               = 0;
-    VmbUint32_t         nCount          = 0;
-    VmbUint32_t         nFoundCount     = 0;
-    
     VmbError_t err = VmbStartup(NULL);                                                      // Initialize the Vmb API
     PrintVmbVersion();
 

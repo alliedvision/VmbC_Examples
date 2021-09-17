@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2016 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2012 - 2021 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -33,11 +33,12 @@
 
 #include <VmbC/VmbC.h>
 
-#include "../Common/ArrayAlloc.h"
-#include "../Common/ListCameras.h"
-#include "../Common/ListInterfaces.h"
-#include "../Common/ListTransportLayers.h"
-#include "../Common/TransportLayerTypeToString.h"
+#include <VmbCExamplesCommon/ArrayAlloc.h>
+#include <VmbCExamplesCommon/ErrorCodeToMessage.h>
+#include <VmbCExamplesCommon/ListCameras.h>
+#include <VmbCExamplesCommon/ListInterfaces.h>
+#include <VmbCExamplesCommon/ListTransportLayers.h>
+#include <VmbCExamplesCommon/TransportLayerTypeToString.h>
 
 /**
  * \return \p string or an empty string, if \p string is null  
@@ -94,8 +95,19 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle)
                     printf("/// SNFC Namespace: %s\n", PrintableString(feature->sfncNamespace));
                     printf("/// Value: ");
 
-                    switch(feature->featureDataType)
+                    VmbBool_t readable;
+                    if (VmbFeatureAccessQuery(moduleHandle, feature->name, &readable, NULL) != VmbErrorSuccess)
                     {
+                        printf("Unable to determine, if the feature is readable\n");
+                    }
+                    else if (!readable)
+                    {
+                        printf("The feature is not readable\n");
+                    }
+                    else
+                    {
+                        switch (feature->featureDataType)
+                        {
                         case VmbFeatureDataBool:
                         {
                             VmbBool_t value;
@@ -172,11 +184,12 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle)
                         default:
                             printf("[None]\n");
                             break;
+                        }
                     }
                             
                     if (VmbErrorSuccess != err)
                     {
-                        printf("Could not get feature value. Error code: %d\n", err);
+                        printf("Could not get feature value. Error code: %s\n", ErrorCodeToMessage(err));
                     }
                             
                     printf("\n");
@@ -295,7 +308,8 @@ VmbCameraInfo_t* GetCameraByIndex(VmbCameraInfo_t* cameraInfos, size_t cameraCou
     size_t usedIndex = index;
     if (index >= cameraCount)
     {
-        printf("camera index out of range: %zu; using camera at index %zu instead\n", index, (usedIndex = cameraCount - 1));
+        usedIndex = cameraCount - 1;
+        printf("camera index out of range: %zu; using camera at index %zu instead\n", index, usedIndex);
     }
     return cameraInfos + usedIndex;
 }
@@ -364,7 +378,7 @@ int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice)
         VmbUint32_t cameraCount = 0;
         VmbCameraInfo_t* cameras = NULL;
 
-        VmbError_t err = ListCameras(&cameras, &cameraCount);
+        err = ListCameras(&cameras, &cameraCount);
         if (err == VmbErrorSuccess)
         {
             VmbCameraInfo_t* camera = GetCameraByIndex(cameras, cameraCount, index);
@@ -413,7 +427,7 @@ int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex)
         VmbUint32_t cameraCount = 0;
         VmbCameraInfo_t* cameras = NULL;
 
-        VmbError_t err = ListCameras(&cameras, &cameraCount);
+        err = ListCameras(&cameras, &cameraCount);
         if (err == VmbErrorSuccess)
         {
             VmbCameraInfo_t* camera = GetCameraByIndex(cameras, cameraCount, cameraIndex);
