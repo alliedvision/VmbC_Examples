@@ -29,7 +29,7 @@
 #ifndef VMB_STDATOMIC_H_
 #define VMB_STDATOMIC_H_
 
-#if defined(_MSVC_VER) && _MSVC_VER < 1928 && !defined(__STDC_NO_ATOMICS__) // C11 added in MSVC version 16.8 (1928)
+#if defined(_MSC_VER) && _MSC_VER < 1928 && !defined(__STDC_NO_ATOMICS__) // C11 added in MSVC version 16.8 (1928)
 #   define __STDC_NO_ATOMICS__
 #endif
 
