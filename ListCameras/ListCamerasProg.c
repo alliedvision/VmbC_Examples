@@ -39,6 +39,22 @@
 #include <VmbCExamplesCommon/ListTransportLayers.h>
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 
+char const* AccessModeToString(VmbAccessMode_t accessMode)
+{
+    switch (accessMode)
+    {
+    case VmbAccessModeFull:
+        return "Read and write access";
+    case VmbAccessModeNone:
+        return "No access";
+    case VmbAccessModeRead:
+        return "Readonly access";
+    case VmbAccessModeUnknown:
+    default:
+        return "Unknown";
+    }
+}
+
 int ListCamerasProg()
 {
     VmbError_t err = VmbStartup(NULL);                                                      // Initialize the Vmb API
@@ -68,11 +84,13 @@ int ListCamerasProg()
                 printf("/// Camera Name         : %s\n"
                        "/// Model Name          : %s\n"
                        "/// Camera ID           : %s\n"
-                       "/// Serial Number       : %s\n",
+                       "/// Serial Number       : %s\n"
+                       "/// Permitted Access    : %s\n",
                        cam->cameraName,
                        cam->modelName,
                        cam->cameraIdString,
-                       cam->serialString
+                       cam->serialString,
+                       AccessModeToString(cam->permittedAccess)
                 );
 
                 // find corresponding interface
@@ -94,7 +112,7 @@ int ListCamerasProg()
                     printf("/// @ Interface ID      : %s\n", foundIFace->interfaceIdString);
                 }
 
-                // find corresponding tl
+                // find corresponding transport layer
                 VmbTransportLayerInfo_t* foundTl = NULL;
                 for (VmbTransportLayerInfo_t* tl = transportLayers; foundTl == NULL && tl != tlsEnd; ++tl)
                 {
