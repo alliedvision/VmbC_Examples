@@ -39,16 +39,18 @@
 #include <VmbCExamplesCommon/ListTransportLayers.h>
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 
-char const* AccessModeToString(VmbAccessMode_t accessMode)
+char const* AccessModesToString(VmbAccessMode_t accessMode)
 {
     switch (accessMode)
     {
     case VmbAccessModeFull:
-        return "Read and write access";
+        return "Full access";
     case VmbAccessModeNone:
         return "No access";
     case VmbAccessModeRead:
         return "Readonly access";
+    case (VmbAccessModeRead | VmbAccessModeFull):
+        return "Full access, readonly access";
     case VmbAccessModeUnknown:
     default:
         return "Unknown";
@@ -81,16 +83,16 @@ int ListCamerasProg()
 
             for (VmbCameraInfo_t* cam = cameras; cam != camerasEnd; ++cam)                  // And print them out
             {
-                printf("/// Camera Name         : %s\n"
-                       "/// Model Name          : %s\n"
-                       "/// Camera ID           : %s\n"
-                       "/// Serial Number       : %s\n"
-                       "/// Permitted Access    : %s\n",
+                printf("/// Camera Name            : %s\n"
+                       "/// Model Name             : %s\n"
+                       "/// Camera ID              : %s\n"
+                       "/// Serial Number          : %s\n"
+                       "/// Permitted Access Modes : %s\n",
                        cam->cameraName,
                        cam->modelName,
                        cam->cameraIdString,
                        cam->serialString,
-                       AccessModeToString(cam->permittedAccess)
+                       AccessModesToString(cam->permittedAccess)
                 );
 
                 // find corresponding interface
@@ -109,7 +111,7 @@ int ListCamerasProg()
                 }
                 else
                 {
-                    printf("/// @ Interface ID      : %s\n", foundIFace->interfaceIdString);
+                    printf("/// @ Interface ID         : %s\n", foundIFace->interfaceIdString);
                 }
 
                 // find corresponding transport layer
@@ -128,7 +130,7 @@ int ListCamerasProg()
                 }
                 else
                 {
-                    printf("/// @ Transport Layer ID: %s\n\n\n", foundTl->transportLayerIdString);
+                    printf("/// @ Transport Layer ID   : %s\n\n\n", foundTl->transportLayerIdString);
                 }
             }
         }

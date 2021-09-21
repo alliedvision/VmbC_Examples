@@ -312,6 +312,7 @@ namespace VmbC
             }
 
             VmbCaptureEnd(m_camHandle);
+            VmbCaptureQueueFlush(m_camHandle);
             VmbFrameRevokeAll(m_camHandle);
         }
 
