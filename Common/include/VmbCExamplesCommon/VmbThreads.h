@@ -34,7 +34,7 @@
 #endif
 
 #ifdef __STDC_NO_THREADS__
-#ifdef WIN32
+#ifdef _WIN32
 #   include "VmbThreads_Windows.h"
 #else
 #   ifdef __linux__

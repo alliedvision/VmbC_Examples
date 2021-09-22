@@ -34,7 +34,7 @@
 #endif
 
 #ifdef __STDC_NO_ATOMICS__
-#ifdef WIN32
+#ifdef _WIN32
 #   include "VmbStdatomic_Windows.h"
 #else
 #   error Functionality not implemented on the current system
