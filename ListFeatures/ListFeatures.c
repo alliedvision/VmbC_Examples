@@ -232,17 +232,17 @@ int ListTransportLayerFeatures(size_t tlIndex)
             size_t index = tlIndex;
             if (index >= count)
             {
-                printf("transport layer index out of bounds; using index %zu instead\n", (index = count - 1));
+                printf("Transport layer index out of bounds; using index %zu instead\n", (index = count - 1));
             }
             VmbTransportLayerInfo_t* tl = tls + index;
 
-            printf("transport layer id     : %s\n"
-                    "transport layer model  : %s\n"
-                    "transport layer name   : %s\n"
-                    "transport layer path   : %s\n"
-                    "transport layer type   : %s\n"
-                    "transport layer vendor : %s\n"
-                    "transport layer version: %s\n\n",
+            printf("Transport layer id     : %s\n"
+                    "Transport layer model  : %s\n"
+                    "Transport layer name   : %s\n"
+                    "Transport layer path   : %s\n"
+                    "Transport layer type   : %s\n"
+                    "Transport layer vendor : %s\n"
+                    "Transport layer version: %s\n\n",
                     PrintableString(tl->transportLayerIdString),
                     PrintableString(tl->transportLayerModelName),
                     PrintableString(tl->transportLayerName),
@@ -256,7 +256,7 @@ int ListTransportLayerFeatures(size_t tlIndex)
         }
         else
         {
-            printf("error listing the transport layers: %d\n", err);
+            printf("Error listing the transport layers: %d\n", err);
         }
 
         VmbShutdown();
@@ -277,12 +277,12 @@ int ListInterfaceFeatures(size_t interfaceIndex)
             size_t index = interfaceIndex;
             if (index >= count)
             {
-                printf("interface index out of bounds; using index %zu instead\n", (index = count - 1));
+                printf("Interface index out of bounds; using index %zu instead\n", (index = count - 1));
             }
             VmbInterfaceInfo_t* iFace = interfaces + index;
-            printf("interface id  : %s\n"
-                    "interface name: %s\n"
-                    "interface type: %s\n\n",
+            printf("Interface id  : %s\n"
+                    "Interface name: %s\n"
+                    "Interface type: %s\n\n",
                     PrintableString(iFace->interfaceIdString),
                     PrintableString(iFace->interfaceName),
                     TransportLayerTypeToString(iFace->interfaceType));
@@ -291,11 +291,11 @@ int ListInterfaceFeatures(size_t interfaceIndex)
         }
         else if (count == 0)
         {
-            printf("no interfaces found\n");
+            printf("No interfaces found\n");
         }
         else
         {
-            printf("error listing the interfaces: %d\n", err);
+            printf("Error listing the interfaces: %d\n", err);
         }
 
         VmbShutdown();
@@ -309,7 +309,7 @@ VmbCameraInfo_t* GetCameraByIndex(VmbCameraInfo_t* cameraInfos, size_t cameraCou
     if (index >= cameraCount)
     {
         usedIndex = cameraCount - 1;
-        printf("camera index out of range: %zu; using camera at index %zu instead\n", index, usedIndex);
+        printf("Camera index out of range: %zu; using camera at index %zu instead\n", index, usedIndex);
     }
     return cameraInfos + usedIndex;
 }
@@ -336,10 +336,10 @@ VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtracto
         err = VmbCameraInfoQuery(cameraId, &cameraInfo, sizeof(VmbCameraInfo_t));
         if (err == VmbErrorSuccess)
         {
-            printf("camera id    : %s\n"
-                   "camera name  : %s\n"
-                   "model name   : %s\n"
-                   "serial string: %s\n\n",
+            printf("Camera id    : %s\n"
+                   "Camera name  : %s\n"
+                   "Model name   : %s\n"
+                   "Serial string: %s\n\n",
                    PrintableString(cameraInfo.cameraIdString),
                    PrintableString(cameraInfo.cameraName),
                    PrintableString(cameraInfo.modelName),
@@ -357,21 +357,21 @@ VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtracto
         }
         else
         {
-            printf("error retrieving info for the camera\n");
+            printf("Error retrieving info for the camera\n");
         }
 
         VmbCameraClose(remoteDeviceHandle);
     }
     else
     {
-        printf("error opening camera: %d\n", err);
+        printf("Error opening camera: %d\n", err);
     }
     return err;
 }
 
 int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice)
 {
-    printf("printing %s features of the camera at index %zu\n\n", remoteDevice ? "remote device" : "local device", index);
+    printf("Printing %s features of the camera at index %zu\n\n", remoteDevice ? "remote device" : "local device", index);
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
     {
@@ -392,7 +392,7 @@ int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice)
 
 int ListCameraFeaturesAtId(char const* id, bool remoteDevice)
 {
-    printf("printing %s features of the camera with id %s\n\n", remoteDevice ? "remote device" : "local device", id);
+    printf("Printing %s features of the camera with id %s\n\n", remoteDevice ? "remote device" : "local device", id);
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
     {
@@ -406,21 +406,21 @@ VmbHandle_t StreamModuleExtractor(VmbHandle_t remoteDevice, VmbCameraInfo_t* cam
 {
     if (cameraInfo->streamCount == 0)
     {
-        printf("camera does not provide streams\n");
+        printf("Camera does not provide streams\n");
         return NULL;
     }
     size_t usedStreamIndex = streamIndex;
     if (streamIndex >= cameraInfo->streamCount)
     {
-        printf("stream index out of range; using index %zu instead\n", (usedStreamIndex = cameraInfo->streamCount - 1));
+        printf("Stream index out of range; using index %zu instead\n", (usedStreamIndex = cameraInfo->streamCount - 1));
     }
-    printf("printing features of stream %zu\n\n", usedStreamIndex);
+    printf("Printing features of stream %zu\n\n", usedStreamIndex);
     return cameraInfo->streamHandles[usedStreamIndex];
 }
 
 int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex)
 {
-    printf("printing features of stream %zu of the camera at index %zu\n\n", streamIndex, cameraIndex);
+    printf("Printing features of stream %zu of the camera at index %zu\n\n", streamIndex, cameraIndex);
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
     {
@@ -441,7 +441,7 @@ int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex)
 
 int ListStreamFeaturesAtId(char const* cameraId, size_t streamIndex)
 {
-    printf("printing features of stream %zu of the camera with id %s\n\n", streamIndex, cameraId);
+    printf("Printing features of stream %zu of the camera with id %s\n\n", streamIndex, cameraId);
 
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
