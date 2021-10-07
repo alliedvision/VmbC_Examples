@@ -35,7 +35,7 @@
 
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <Windows.h>
 BOOL WINAPI ConsoleHandler(DWORD signal)
 {
@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
 
     if (err == VmbErrorSuccess && !printHelp)
     {
-#ifdef WIN32
+#ifdef _WIN32
         SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 #endif
         err = StartContinuousImageAcquisition(&cmdOptions);

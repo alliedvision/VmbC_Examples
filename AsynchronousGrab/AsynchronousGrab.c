@@ -37,7 +37,7 @@
 #include <VmbCExamplesCommon/VmbStdatomic.h>
 #include <VmbCExamplesCommon/VmbThreads.h>
 
-#ifdef WIN32
+#ifdef _WIN32
     #include <windows.h>
 #else
     #include <unistd.h>
@@ -71,8 +71,8 @@ mtx_t                   g_frameInfoMutex;                               // mutex
 
 volatile atomic_flag    g_shutdown                 = ATOMIC_FLAG_INIT;  // flag set to true, if a thread initiates the shutdown 
 
-#ifdef WIN32
-double          g_frequency                = 0.0;              //Frequency of tick counter in Win32
+#ifdef _WIN32
+double          g_frequency                = 0.0;              //Frequency of tick counter in _WIN32
 #else
 #endif
 
@@ -169,7 +169,7 @@ VmbError_t ProcessFrame(VmbFrame_t * pFrame, VmbBool_t doColorProcessing)
  */
 double GetTime()
 {
-#ifdef WIN32
+#ifdef _WIN32
     LARGE_INTEGER nCounter;
     QueryPerformanceCounter(&nCounter);
     return ((double)nCounter.QuadPart) / g_frequency;
@@ -177,7 +177,7 @@ double GetTime()
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
     return ((double)now.tv_sec) + ((double)now.tv_nsec) / 1000000000.0;
-#endif //WIN32
+#endif //_WIN32
 }
 
 /**
@@ -365,11 +365,11 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options)
         g_frameID                  = 0;
         g_frameIdValid             = VmbBoolFalse;
 
-#ifdef WIN32
+#ifdef _WIN32
         LARGE_INTEGER nFrequency;
         QueryPerformanceFrequency(&nFrequency);
         g_frequency = (double)nFrequency.QuadPart;
-#endif  //WIN32
+#endif  //_WIN32
 
         err = VmbStartup(NULL);
 
