@@ -47,22 +47,30 @@ namespace VmbC
         {
             bool notify = false;
 
-            if (frame != nullptr && frame->receiveStatus == VmbFrameStatusComplete && (frame->receiveFlags & VmbFrameFlagsDimension) == VmbFrameFlagsDimension)
+            if (frame != nullptr)
             {
-
-                auto message = std::unique_ptr<TransformationTask>(new TransformationTask(streamHandle, callback, *frame));
-
+                if (frame->receiveStatus == VmbFrameStatusComplete
+                    && (frame->receiveFlags & VmbFrameFlagsDimension) == VmbFrameFlagsDimension)
                 {
-                    std::lock_guard<std::mutex> lock(m_inputMutex);
-                    if (m_terminated)
+                    auto message = std::unique_ptr<TransformationTask>(new TransformationTask(streamHandle, callback, *frame));
+
                     {
-                        message->m_canceled = true;
+                        std::lock_guard<std::mutex> lock(m_inputMutex);
+                        if (m_terminated)
+                        {
+                            message->m_canceled = true;
+                        }
+                        else
+                        {
+                            m_task = std::move(message);
+                            notify = true;
+                        }
                     }
-                    else
-                    {
-                        m_task = std::move(message);
-                        notify = true;
-                    }
+                }
+                else
+                {
+                    // try to renequeue the frame we won't pass to the image transformation
+                    VmbCaptureFrameQueue(streamHandle, frame, callback);
                 }
             }
 
