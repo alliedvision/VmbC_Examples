@@ -362,6 +362,10 @@ void MainWindow::SetupCameraTree()
     QObject::connect(selectionModel, &QItemSelectionModel::selectionChanged, this, &MainWindow::CameraSelected);
 
     m_ui->m_cameraSelectionTree->setDisabled(false);
+
+    m_ui->m_cameraSelectionTree->header()->setStretchLastSection(false);
+    m_ui->m_cameraSelectionTree->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
 }
 
 void MainWindow::Log(VmbC::Examples::VmbException const& exception)
