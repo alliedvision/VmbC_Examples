@@ -1,6 +1,5 @@
 /**
- * \date 2021
- * \copyright Allied Vision Technologies.  All Rights Reserved.
+ * \copyright Allied Vision Technologies 2021 - 2022.  All Rights Reserved.
  *
  * \copyright Redistribution of this file, in original or modified form, without
  *            prior written consent of Allied Vision Technologies is prohibited.
@@ -127,7 +126,7 @@ namespace VmbC
             VmbCameraInfo_t refreshedCameraInfo;
             bool errorHappened = false;
             VmbException ex;
-            error = VmbCameraInfoQuery(camInfo.cameraIdString, &refreshedCameraInfo, sizeof(refreshedCameraInfo)); // TODO use extended id?
+            error = VmbCameraInfoQueryByHandle(m_cameraHandle, &refreshedCameraInfo, sizeof(refreshedCameraInfo)); // TODO use extended id?
             if (error != VmbErrorSuccess)
             {
                 errorHappened = true;
