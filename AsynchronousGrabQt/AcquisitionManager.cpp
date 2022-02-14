@@ -126,7 +126,7 @@ namespace VmbC
             VmbCameraInfo_t refreshedCameraInfo;
             bool errorHappened = false;
             VmbException ex;
-            error = VmbCameraInfoQueryByHandle(m_cameraHandle, &refreshedCameraInfo, sizeof(refreshedCameraInfo)); // TODO use extended id?
+            error = VmbCameraInfoQueryByHandle(m_cameraHandle, &refreshedCameraInfo, sizeof(refreshedCameraInfo));
             if (error != VmbErrorSuccess)
             {
                 errorHappened = true;
