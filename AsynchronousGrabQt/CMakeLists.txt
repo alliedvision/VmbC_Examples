@@ -57,24 +57,24 @@ list(APPEND HEADERS
     LogEntry.h
 )
 
-add_executable(AsynchronousGrabQtC
+add_executable(AsynchronousGrabQt_VmbC
     ${SOURCES}
     ${HEADERS}
 )
 
-target_link_libraries(AsynchronousGrabQtC PRIVATE Qt5::Widgets Vmb::C Vmb::ImageTransform)
+target_link_libraries(AsynchronousGrabQt_VmbC PRIVATE Qt5::Widgets Vmb::C Vmb::ImageTransform)
 if (UNIX)
-    target_link_libraries(AsynchronousGrabQtC PRIVATE pthread)
+    target_link_libraries(AsynchronousGrabQt_VmbC PRIVATE pthread)
 endif()
 
-target_include_directories(AsynchronousGrabQtC PRIVATE . ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(AsynchronousGrabQt_VmbC PRIVATE . ${CMAKE_CURRENT_BINARY_DIR})
 
 # find out binary dir of qt
 get_filename_component(_VMB_QT_BIN_DIR ${Qt5_DIR} DIRECTORY)
 get_filename_component(_VMB_QT_BIN_DIR ${_VMB_QT_BIN_DIR} DIRECTORY)
 get_filename_component(_VMB_QT_BIN_DIR ${_VMB_QT_BIN_DIR} DIRECTORY)
 
-set_target_properties(AsynchronousGrabQtC
+set_target_properties(AsynchronousGrabQt_VmbC
     PROPERTIES
         CXX_STANDARD 11
         VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};${_VMB_QT_BIN_DIR}/bin;$ENV{PATH}"

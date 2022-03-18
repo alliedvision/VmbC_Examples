@@ -8,7 +8,7 @@ if(NOT TARGET VmbCExamplesCommon)
     add_subdirectory(../Common VmbCExamplesCommon_build)
 endif()
 
-add_executable(ListCameras
+add_executable(ListCameras_VmbC
     main.c
     ListCamerasProg.c
     ListCamerasProg.h
@@ -17,7 +17,7 @@ add_executable(ListCameras
 
 source_group(Common FILES ${COMMON_SOURCES})
 
-target_link_libraries(ListCameras PRIVATE Vmb::C VmbCExamplesCommon)
-set_target_properties(ListCameras PROPERTIES
+target_link_libraries(ListCameras_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
+set_target_properties(ListCameras_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}")
