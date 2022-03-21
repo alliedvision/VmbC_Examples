@@ -22,7 +22,7 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-project(AsynchronousGrabQtC)
+project(AsynchronousGrabQt_VmbC)
 
 find_package(Vmb MODULE REQUIRED COMPONENTS C ImageTransform)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
@@ -115,7 +115,7 @@ foreach(_MOC_SRC IN ITEMS
     set(_SRC UI/${_MOC_SRC}.h)
     list(APPEND MOC_HEADERS ${_SRC})
     list(APPEND UI_SOURCES UI/${_MOC_SRC}.cpp)
-    qt5_wrap_cpp(GENERATED_UI_SOURCES ${_SRC} TARGET AsynchronousGrabQtC)
+    qt5_wrap_cpp(GENERATED_UI_SOURCES ${_SRC} TARGET AsynchronousGrabQt_VmbC)
 endforeach()
 
 list(APPEND UI_SOURCES imagelabel.h)
@@ -125,7 +125,7 @@ set_source_files_properties(${GENERATED_UI_SOURCES}
         GENERATED True
 )
 
-target_sources(AsynchronousGrabQtC PRIVATE
+target_sources(AsynchronousGrabQt_VmbC PRIVATE
     ${GENERATED_UI_SOURCES}
     ${MOC_HEADERS}
     ${UI_FILES}
@@ -139,4 +139,4 @@ source_group("Header Files\\UI" FILES ${MOC_HEADERS})
 source_group("Generated" FILES ${GENERATED_UI_SOURCES})
 
 # use executable as default startup project in Visual Studio
-set_property(DIRECTORY . PROPERTY VS_STARTUP_PROJECT AsynchronousGrabQtC)
+set_property(DIRECTORY . PROPERTY VS_STARTUP_PROJECT AsynchronousGrabQt_VmbC)
