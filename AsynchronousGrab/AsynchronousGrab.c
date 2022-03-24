@@ -207,7 +207,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
             showFrameInfos = VmbBoolTrue;
         }
 
-        if (mtx_lock(&g_frameInfoMutex))
+        if (thrd_success == mtx_lock(&g_frameInfoMutex))
         {
             if (VmbFrameFlagsFrameID & frame->receiveFlags)
             {
