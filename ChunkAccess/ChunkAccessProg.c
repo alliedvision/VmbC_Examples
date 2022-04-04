@@ -1,0 +1,191 @@
+/*=============================================================================
+  Copyright (C) 2012 - 2022 Allied Vision Technologies.  All Rights Reserved.
+
+  Redistribution of this file, in original or modified form, without
+  prior written consent of Allied Vision Technologies is prohibited.
+
+-------------------------------------------------------------------------------
+
+  File:        ChunkAccessProg.c
+
+  Description: The ChunkAccess example will receive chunk data of first camera
+               that is found by VmbC.
+
+-------------------------------------------------------------------------------
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
+  NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
+  DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=============================================================================*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <Windows.h>
+
+#include "ChunkAccessProg.h"
+
+#include <VmbCExamplesCommon/ListCameras.h>
+#include <VmbCExamplesCommon/PrintVmbVersion.h>
+
+#include <VmbC/VmbC.h>
+
+#define NUM_FRAMES ((size_t)3)
+
+
+VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userContext)
+{
+    VmbError_t err = VmbErrorSuccess;
+    VmbInt64_t id = 0, ts = 0, w = 0, h = 0;
+
+    err = VmbFeatureIntGet(featureAccessHandle, "ChunkWidth", &w);
+
+    err = VmbFeatureIntGet(featureAccessHandle, "ChunkHeight", &h);
+
+    err = VmbFeatureIntGet(featureAccessHandle, "ChunkFrameID", &id);
+
+    err = VmbFeatureIntGet(featureAccessHandle, "ChunkTimestamp", &ts);
+
+    printf("  Chunk Data: id=%2.2lld ts=%lld width=%lld height=%lld\n", id, ts, w, h);
+
+
+    return err;
+}
+
+
+void VMB_CALL FrameDoneCallback(const VmbHandle_t hCamera, const VmbHandle_t stream, VmbFrame_t* pFrame)
+{
+    VmbError_t err;
+
+    if (VmbFrameStatusComplete == pFrame->receiveStatus)
+    {
+        printf("  Frame Done: id=%2.2lld ts=%lld  complete\n", pFrame->frameID, pFrame->timestamp);
+    }
+    else
+    {
+        printf("  Frame Done: id=%2.2lld not successfully received. Error code: %d %s\n", pFrame->frameID, pFrame->receiveStatus, pFrame->receiveStatus == VmbFrameStatusIncomplete ? "(incomplete)" : "");
+    }
+
+    if (pFrame->chunkDataPresent)
+    {
+        err = VmbChunkDataAccess(pFrame, ChunkCallback, 0);
+    }
+
+    err = VmbCaptureFrameQueue(hCamera, pFrame, FrameDoneCallback);
+
+}
+
+
+int ChunkAccessProg()
+{
+    VmbError_t err = VmbStartup(NULL);
+    PrintVmbVersion();
+
+    if (err == VmbErrorSuccess)
+    {
+        VmbUint32_t cameraCount = 0;
+        VmbCameraInfo_t* cameras = NULL;
+        VmbCameraInfo_t* camera = NULL;
+        VmbHandle_t hCamera = NULL;
+
+        err = ListCameras(&cameras, &cameraCount);
+        if (err == VmbErrorSuccess)
+        {
+            camera = cameras + 0;
+
+            err = VmbCameraOpen(camera->cameraIdString, VmbAccessModeFull, &hCamera);
+            if (err == VmbErrorSuccess)
+            {
+                VmbCameraInfo_t cameraInfo;
+                err = VmbCameraInfoQuery(camera->cameraIdString, &cameraInfo, sizeof(VmbCameraInfo_t));
+                if (err == VmbErrorSuccess)
+                {
+                    printf(
+                        "Camera id    : %s\n"
+                        "Camera name  : %s\n"
+                        "Model name   : %s\n"
+                        "Serial Number: %s\n\n",
+                        cameraInfo.cameraIdString,
+                        cameraInfo.cameraName,
+                        cameraInfo.modelName,
+                        cameraInfo.serialString);
+
+                    err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolTrue);
+                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "FrameID");
+                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
+                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Timestamp");
+                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
+                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Width");
+                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
+                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Height");
+                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
+
+                    VmbInt64_t w = -1, h = -1, PLS = 0;
+                    VmbBool_t cma = VmbBoolFalse;
+                    double e = 1000.;
+                    const char* pf;
+                    err = VmbFeatureFloatGet(hCamera, "ExposureTime", &e);
+                    err = VmbFeatureIntGet  (hCamera, "Width", &w);
+                    err = VmbFeatureIntGet  (hCamera, "Height", &h);
+                    err = VmbFeatureEnumGet (hCamera, "PixelFormat", &pf);
+                    err = VmbFeatureBoolGet (hCamera, "ChunkModeActive", &cma);
+                    err = VmbFeatureIntGet  (hCamera, "PayloadSize", &PLS);
+
+                    printf("ExposureTime   : %.0f us\n", e);
+                    printf("PixelFormat    : %s\n", pf);
+                    printf("Width * Height : %lld * %lld\n", w, h);
+                    printf("Payload Size   : %lld byte\n", PLS);
+                    printf("ChunkModeActive: %d\n\n", cma);
+
+                    VmbFrame_t frames[NUM_FRAMES];
+                    VmbUint32_t payloadSize = 0;
+                    err = VmbPayloadSizeGet(hCamera, &payloadSize);
+
+                    for (int i = 0; i < NUM_FRAMES; ++i)
+                    {
+                        frames[i].buffer = malloc((VmbUint32_t)payloadSize);
+                        frames[i].bufferSize = payloadSize;
+                        err = VmbFrameAnnounce(hCamera, &frames[i], sizeof(VmbFrame_t));
+                    }
+
+                    err = VmbCaptureStart(hCamera);
+
+                    // Queue frames and register FrameDoneCallback
+                    for (int i = 0; i < NUM_FRAMES; ++i)
+                    {
+                        err = VmbCaptureFrameQueue(hCamera, &frames[i], FrameDoneCallback);
+                    }
+
+                    // Start acquisition on the camera
+                    printf("AcquisitionStart...\n");
+                    err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
+
+                    printf("Wait 1000ms...\n");
+                    Sleep(1000);
+
+                    printf("AcquisitionStop...\n");
+                    err = VmbFeatureCommandRun(hCamera, "AcquisitionStop");
+
+                    printf("VmbCaptureEnd...\n");
+                    err = VmbCaptureEnd(hCamera);
+                }
+                else
+                {
+                    printf("Error retrieving info for the camera\n");
+                }
+            }
+        }
+
+        free(cameras);
+        VmbShutdown();
+    }
+
+    return err == VmbErrorSuccess ? 0 : 1;
+}
