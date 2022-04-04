@@ -98,6 +98,7 @@ int ChunkAccessProg()
         err = ListCameras(&cameras, &cameraCount);
         if (err == VmbErrorSuccess)
         {
+            // use first camera in list
             camera = cameras + 0;
 
             err = VmbCameraOpen(camera->cameraIdString, VmbAccessModeFull, &hCamera);
@@ -117,6 +118,7 @@ int ChunkAccessProg()
                         cameraInfo.modelName,
                         cameraInfo.serialString);
 
+                    // activate chunk features
                     err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "FrameID");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
@@ -127,6 +129,7 @@ int ChunkAccessProg()
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Height");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
 
+                    // show camera setup
                     VmbInt64_t w = -1, h = -1, PLS = 0;
                     VmbBool_t cma = VmbBoolFalse;
                     double e = 1000.;
@@ -144,6 +147,7 @@ int ChunkAccessProg()
                     printf("Payload Size   : %lld byte\n", PLS);
                     printf("ChunkModeActive: %d\n\n", cma);
 
+                    // allocate and announce frame buffer
                     VmbFrame_t frames[NUM_FRAMES];
                     VmbUint32_t payloadSize = 0;
                     err = VmbPayloadSizeGet(hCamera, &payloadSize);
@@ -163,7 +167,7 @@ int ChunkAccessProg()
                         err = VmbCaptureFrameQueue(hCamera, &frames[i], FrameDoneCallback);
                     }
 
-                    // Start acquisition on the camera
+                    // Start acquisition on the camera for 1sec
                     printf("AcquisitionStart...\n");
                     err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
 
