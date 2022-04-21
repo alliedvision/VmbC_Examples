@@ -174,11 +174,23 @@ int ChunkAccessProg()
                     printf("Wait 1000ms...\n");
                     Sleep(1000);
 
+                    // Stop acquisition on the camera
                     printf("AcquisitionStop...\n");
                     err = VmbFeatureCommandRun(hCamera, "AcquisitionStop");
 
+                    // Cleanup
                     printf("VmbCaptureEnd...\n");
                     err = VmbCaptureEnd(hCamera);
+
+                    printf("VmbCaptureQueueFlush...\n");
+                    err = VmbCaptureQueueFlush(hCamera);
+
+                    printf("VmbFrameRevoke...\n");
+                    for (int i = 0; i < NUM_FRAMES; ++i)
+                    {
+                        err = VmbFrameRevoke(hCamera, frames+i);
+                        free(frames[i].buffer);
+                    }
                 }
                 else
                 {
@@ -188,6 +200,7 @@ int ChunkAccessProg()
         }
 
         free(cameras);
+        printf("VmbShutdown...\n");
         VmbShutdown();
     }
 
