@@ -133,7 +133,7 @@ VmbError_t ProcessFrame(VmbFrame_t * pFrame, VmbBool_t doColorProcessing)
     };
 
     // set destination image info from frame size and string for RGB8 (rgb24)
-    result = VmbSetImageInfoFromString("RGB8", 4, width, height, &destinationImage);
+    result = VmbSetImageInfoFromString("RGB8", width, height, &destinationImage);
     if(VmbErrorSuccess != result)
     {
         printf("%s error could not set destination image info; Error: %d\n", __FUNCTION__, result);
