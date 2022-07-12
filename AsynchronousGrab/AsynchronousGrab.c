@@ -194,6 +194,11 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
     // if you want to have smooth streaming keep the time you hold the frame short
     //
 
+    //
+    // Note:    If VmbCaptureEnd is called asynchronously, while this callback is running, VmbCaptureEnd blocks,
+    //          until the callback returns.
+    //
+
     AsynchronousGrabOptions const* options = (AsynchronousGrabOptions const*) frame->context[FRAME_CONTEXT_OPTIONS_INDEX];
 
     VmbBool_t showFrameInfos = VmbBoolFalse;         // showing frame infos 
