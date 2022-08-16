@@ -20,11 +20,11 @@ function(vmb_c_example DIRECTORY)
 endfunction()
 
 # Actual examples list
-#vmb_c_example(AsynchronousGrab)
-#vmb_c_example(AsynchronousGrabQt Qt)
-#vmb_c_example(ListFeatures FeatureList FeaturesList)
-#vmb_c_example(ListCameras)
-#vmb_c_example(ChunkAccess)
+vmb_c_example(AsynchronousGrab)
+vmb_c_example(AsynchronousGrabQt Qt)
+vmb_c_example(ListFeatures FeatureList FeaturesList)
+vmb_c_example(ListCameras)
+vmb_c_example(ChunkAccess)
 vmb_c_example(PersistentIp)
 
 # overwrite list of examples set based on individual ignores
