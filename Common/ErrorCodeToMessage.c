@@ -36,7 +36,7 @@ const char* ErrorCodeToMessage(VmbError_t eError)
     case VmbErrorInternalFault:             return "Unexpected fault in VmbApi or driver.";
     case VmbErrorApiNotStarted:             return "API not started.";
     case VmbErrorNotFound:                  return "Not found.";
-    case VmbErrorBadHandle:                 return "Invalid handle ";
+    case VmbErrorBadHandle:                 return "Invalid handle.";
     case VmbErrorDeviceNotOpen:             return "Device not open.";
     case VmbErrorInvalidAccess:             return "Invalid access.";
     case VmbErrorBadParameter:              return "Bad parameter.";

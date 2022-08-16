@@ -21,6 +21,7 @@ foreach(SRC IN ITEMS
 endforeach()
 
 set(SOURCES_WITH_HEADERS
+    AccessModeToString
     ErrorCodeToMessage
     ListCameras
     ListInterfaces

@@ -30,6 +30,11 @@
 
 #include <stdlib.h>
 
+#ifndef NULL
+    #define NULL 0
+#endif
+
+
 /**
  * \brief uses malloc to allocate memory for an array of \p size elements of type \p type
  */
