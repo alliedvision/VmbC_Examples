@@ -394,6 +394,11 @@ InterfaceSearchResult GetRelatedInterface(const VmbInt64_t mac)
 
     free(interfaces);
 
+    if (!cameraFound)
+    {
+        VMB_PRINT("No camera with matching mac address found.\n");
+    }
+
     return result;
 }
 
