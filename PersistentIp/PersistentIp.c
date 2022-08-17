@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -90,7 +91,7 @@ unsigned int IpAddr(const char* strIp)
 #ifdef _VMB_PERSISTENT_IP_NO_PRINT
     #define VMB_PRINT(text, ...)
 #else
-    #define VMB_PRINT(text, ...) printf(text, __VA_ARGS__)
+    #define VMB_PRINT(...) printf(__VA_ARGS__)
 #endif
 
 
