@@ -30,5 +30,10 @@
     <ClCompile Include="..\Common\ListCameras.c">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="AsynchronousGrab.c" />
+    <ClCompile Include="main.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AsynchronousGrab.h" />
   </ItemGroup>
 </Project>
