@@ -28,7 +28,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+#else
+    #include <unistd.h>
+#endif
 
 #include "ChunkAccessProg.h"
 
@@ -172,7 +176,11 @@ int ChunkAccessProg()
                     err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
 
                     printf("Wait 1000ms...\n");
+#ifdef _WIN32
                     Sleep(1000);
+#else
+                    usleep(100000);
+#endif
 
                     // Stop acquisition on the camera
                     printf("AcquisitionStop...\n");
