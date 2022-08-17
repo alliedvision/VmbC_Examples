@@ -76,6 +76,11 @@ unsigned int IpAddr(const char* strIp)
 {
     unsigned long ip = inet_addr(strIp);
 
+    if (ip == INADDR_NONE)
+    {
+        return INADDR_NONE;
+    }
+
 #ifdef _LITTLE_ENDIAN
     ip = ntohl(ip);
 #endif
@@ -257,6 +262,13 @@ VmbError_t SetPersistentIp(const char* const mac, const char* const ip, const ch
     VmbInt64_t ipValue          = (VmbInt64_t)IpAddr(ip);
     VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddr(subnet);
     VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddr(gateway) : 0;
+
+    VmbBool_t invalidConfiguration = ((macValue == 0) || (ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
+    if (invalidConfiguration)
+    {
+        VMB_PRINT("One or more invalid parameters: %s %s %s %s\n.", mac, ip, subnet, gateway);
+        return 1;
+    }
 
     /*
      * Get an interface the camera is connected to.
