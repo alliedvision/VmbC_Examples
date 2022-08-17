@@ -20,7 +20,13 @@ add_executable(PersistentIp_VmbC
 source_group(Common FILES ${COMMON_SOURCES})
 
 target_compile_definitions(PersistentIp_VmbC PRIVATE _LITTLE_ENDIAN)
-target_link_libraries(PersistentIp_VmbC PRIVATE Vmb::C VmbCExamplesCommon Ws2_32)
+
+target_link_libraries(PersistentIp_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
+
+if (WIN32)
+    target_link_libraries(PersistentIp_VmbC PRIVATE Ws2_32)
+endif()
+
 set_target_properties(PersistentIp_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}")
