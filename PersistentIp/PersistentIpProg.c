@@ -29,7 +29,6 @@
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-#define EXIT_ON_ERROR(op) {VmbError_t error = op; if(error != VmbErrorSuccess){printf("%s failed. %s Error code: %d.", #op, ErrorCodeToMessage(error), error); return 1;}}
 int PersistentIpProg(char* strMAC, char* strIP, char* strSubnet, char* strGateway)
 {
     /*
