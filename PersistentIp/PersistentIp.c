@@ -524,7 +524,7 @@ CameraOpenResult OpenCamera(const char* const cameraId)
     VmbInt16_t retriesLeft = 100;
     do
     {
-        BREAK_AND_PRINT_ON_ERROR(VmbCameraInfoQuery(cameraId, &result.cameraInfo, sizeof(result.cameraInfo))); //TODO ERROR CODE OHNE PRINT GEHT VERLOREN
+        BREAK_AND_PRINT_ON_ERROR(VmbCameraInfoQuery(cameraId, &result.cameraInfo, sizeof(result.cameraInfo)));
         cameraPermitsFullAccess = (result.cameraInfo.permittedAccess & VmbAccessModeFull);
         if (!cameraPermitsFullAccess)
         {
@@ -549,7 +549,7 @@ CameraOpenResult OpenCamera(const char* const cameraId)
     /*
      * Open the camera for later access
      */
-    RETURN_SPECIFIC_AND_PRINT_ON_ERROR( (result.error = VmbCameraOpen(cameraId, VmbAccessModeFull, &result.cameraHandle)), result); //ERROR CODE OHNE PRINT GEHT VERLOREN
+    RETURN_SPECIFIC_AND_PRINT_ON_ERROR( (result.error = VmbCameraOpen(cameraId, VmbAccessModeFull, &result.cameraHandle)), result);
 
     VMB_PRINT("Opened camera \"%s\" with VmbAccessModeFull\n", result.cameraInfo.cameraIdString);
 
