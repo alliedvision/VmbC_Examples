@@ -19,6 +19,8 @@
  * \brief Definition of the function which implements the persistent ip configuration
  */
 
+#define _CRT_SECURE_NO_WARNINGS // disable sscanf warning for Windows
+
 #include "PersistentIpProg.h"
 
 #include <stdio.h>
@@ -53,8 +55,8 @@ unsigned long long MacAddr(const char* strMAC)
 {
     unsigned long long nMAC;
 
-    if (sscanf_s(strMAC, "0x%llx", &nMAC)
-        || sscanf_s(strMAC, "%lld", &nMAC))
+    if (sscanf(strMAC, "0x%llx", &nMAC)
+        || sscanf(strMAC, "%lld", &nMAC))
     {
         return nMAC;
     }
