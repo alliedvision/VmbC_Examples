@@ -532,7 +532,7 @@ CameraOpenResult OpenCamera(const char* const cameraId)
             Sleep100Ms();
             if ((retriesLeft % 5) == 0)
             {
-                VMB_PRINT("Camera \"%s\" only suports the access modes: %s\n", result.cameraInfo.cameraIdString, AccessModesToString(result.cameraInfo.permittedAccess));
+                VMB_PRINT("Waiting for permitted write access. Now the camera \"%s\" only suports the access modes: %s\n", result.cameraInfo.cameraIdString, AccessModesToString(result.cameraInfo.permittedAccess));
             }
         }
     } while ((!cameraPermitsFullAccess) && (retriesLeft > 0));
@@ -578,7 +578,7 @@ VmbError_t WritePersistentIp(VmbHandle_t cameraHandle, VmbInt64_t ip, VmbInt64_t
     }
     else
     {
-        VMB_PRINT("Setting persistent ip using deivce registers\n");
+        VMB_PRINT("Setting persistent ip using device registers\n");
         error = WritePersistentIpRegisters(cameraHandle, (VmbUint32_t)ip, (VmbUint32_t)subnetMask, (VmbUint32_t)gateway);
     }
     return error;
