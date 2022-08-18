@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -53,8 +53,8 @@ unsigned long long MacAddr(const char* strMAC)
 {
     unsigned long long nMAC;
 
-    if (sscanf(strMAC, "0x%llx", &nMAC)
-        || sscanf(strMAC, "%lld", &nMAC))
+    if (sscanf_s(strMAC, "0x%llx", &nMAC)
+        || sscanf_s(strMAC, "%lld", &nMAC))
     {
         return nMAC;
     }
