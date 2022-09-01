@@ -49,8 +49,9 @@
 #include <VmbImageTransform/VmbTransform.h>
 
 
-#define NUM_FRAMES ((size_t)3)
+#define NUM_FRAMES ((size_t)5)
 #define FRAME_CONTEXT_OPTIONS_INDEX ((size_t)0)
+#define FRAME_CONTEXT_STREAM_STATISTICS_INDEX ((size_t)1)
 
 /**
  * \brief feature name of custom command for choosing the packet size provided by AVT GigE cameras
@@ -200,6 +201,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
     //
 
     AsynchronousGrabOptions const* options = (AsynchronousGrabOptions const*) frame->context[FRAME_CONTEXT_OPTIONS_INDEX];
+    StreamStatistics* streamStatistics = (StreamStatistics*) frame->context[FRAME_CONTEXT_STREAM_STATISTICS_INDEX];
 
     VmbBool_t showFrameInfos = VmbBoolFalse;         // showing frame infos 
     double fps = 0.0;
@@ -254,6 +256,8 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
                 // store time for fps calculation in the next call
                 g_frameTime = frameTime;
                 g_frameTimeValid = VmbBoolTrue;
+                streamStatistics->framesMissing += missingFrameCount;
+                streamStatistics->framesReceived++;
             }
             else
             {
@@ -346,7 +350,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
     VmbCaptureFrameQueue(cameraHandle, frame, &FrameCallback);
 }
 
-VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options)
+VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, StreamStatistics* statistics)
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
     VmbUint32_t         nCount              = 0;                    // Number of found cameras
@@ -445,14 +449,22 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options)
                         {
                             for(size_t i = 0; i < NUM_FRAMES; i++)
                             {
-                                g_frames[i].buffer = malloc((VmbUint32_t)payloadSize);
-                                if(NULL == g_frames[i].buffer)
+                                if (options->allocAndAnnounce)
                                 {
-                                    err = VmbErrorResources;
-                                    break;
+                                    g_frames[i].buffer = NULL;
+                                }
+                                else
+                                {
+                                    g_frames[i].buffer = malloc((VmbUint32_t)payloadSize);
+                                    if (NULL == g_frames[i].buffer)
+                                    {
+                                        err = VmbErrorResources;
+                                        break;
+                                    }
                                 }
                                 g_frames[i].bufferSize = payloadSize;
                                 g_frames[i].context[FRAME_CONTEXT_OPTIONS_INDEX] = options;
+                                g_frames[i].context[FRAME_CONTEXT_STREAM_STATISTICS_INDEX] = statistics;
 
                                 // Announce Frame
                                 err = VmbFrameAnnounce(g_cameraHandle, &g_frames[i], (VmbUint32_t)sizeof(VmbFrame_t));

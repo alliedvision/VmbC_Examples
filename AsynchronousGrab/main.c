@@ -54,6 +54,7 @@ BOOL WINAPI ConsoleHandler(DWORD signal)
 #define VMB_PARAM_COLOR_PROCESSING "/c"
 #define VMB_PARAM_FRAME_INFOS "/i"
 #define VMB_PARAM_SHOW_CORRUPT_FRAMES "/a"
+#define VMB_PARAM_ALLOC_AND_ANNOUNCE "/x"
 #define VMB_PARAM_PRINT_HELP "/h"
 
 void PrintUsage()
@@ -64,12 +65,14 @@ void PrintUsage()
            "              %s          Enable color processing (includes %s)\n"
            "              %s          Show frame infos\n"
            "              %s          Automatically only show frame infos of corrupt frames\n"
+           "              %s          AllocAndAnnounce mode: Buffers are allocated by the GenTL producer\n"
            "              %s          Print out help\n",
            VMB_PARAM_RGB,
            VMB_PARAM_COLOR_PROCESSING,
            VMB_PARAM_RGB,
            VMB_PARAM_FRAME_INFOS,
            VMB_PARAM_SHOW_CORRUPT_FRAMES,
+           VMB_PARAM_ALLOC_AND_ANNOUNCE,
            VMB_PARAM_PRINT_HELP);
 }
 
@@ -81,6 +84,7 @@ VmbError_t ParseCommandLineParameters(AsynchronousGrabOptions* cmdOptions, VmbBo
     cmdOptions->frameInfos              = FrameInfos_Undefined;
     cmdOptions->showRgbValue            = VmbBoolFalse;
     cmdOptions->enableColorProcessing   = VmbBoolFalse;
+    cmdOptions->allocAndAnnounce        = VmbBoolFalse;
     cmdOptions->cameraId                = NULL;
 
     char** const paramsEnd = argv + argc;
@@ -121,6 +125,10 @@ VmbError_t ParseCommandLineParameters(AsynchronousGrabOptions* cmdOptions, VmbBo
             {
                 cmdOptions->enableColorProcessing = VmbBoolTrue;
                 cmdOptions->showRgbValue = VmbBoolTrue;
+            }
+            else if (0 == strcmp(*param, VMB_PARAM_ALLOC_AND_ANNOUNCE))
+            {
+                cmdOptions->allocAndAnnounce = VmbBoolTrue;
             }
             else if (0 == strcmp(*param, VMB_PARAM_PRINT_HELP))
             {
@@ -173,13 +181,15 @@ int main(int argc, char* argv[])
     AsynchronousGrabOptions cmdOptions;
     VmbBool_t printHelp;
     VmbError_t err = ParseCommandLineParameters(&cmdOptions, &printHelp, argc, argv);
+    
+    StreamStatistics streamStatistics = { .framesReceived = 0, .framesMissing = 0 };
 
     if (err == VmbErrorSuccess && !printHelp)
     {
 #ifdef _WIN32
         SetConsoleCtrlHandler(ConsoleHandler, TRUE);
 #endif
-        err = StartContinuousImageAcquisition(&cmdOptions);
+        err = StartContinuousImageAcquisition(&cmdOptions, &streamStatistics);
         if (VmbErrorSuccess == err)
         {
             printf("Press <enter> to stop acquisition...\n");
@@ -187,6 +197,12 @@ int main(int argc, char* argv[])
 
             StopContinuousImageAcquisition();
             printf("\nAcquisition stopped.\n");
+            
+            if (cmdOptions.frameInfos != FrameInfos_Off)
+            {
+                printf("Frames received = %llu\n", streamStatistics.framesReceived);
+                printf("Frames missing  = %llu\n", streamStatistics.framesMissing);
+            }
         }
         else
         {
