@@ -1,6 +1,11 @@
 project(ListFeatures LANGUAGES C)
 
-find_package(Vmb MODULE REQUIRED COMPONENTS C ImageTransform)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake")
+    # read hardcoded package location information, if the example is still located in the original install location
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake)
+endif()
+
+find_package(Vmb REQUIRED COMPONENTS C ImageTransform)
 
 set(SOURCES)
 set(HEADERS
@@ -41,7 +46,8 @@ add_library(VmbCExamplesCommon STATIC
 )
 
 set_target_properties(VmbCExamplesCommon PROPERTIES
-    C_STANDARD 11)
+    C_STANDARD 11
+)
 
 target_include_directories(VmbCExamplesCommon PUBLIC
     include

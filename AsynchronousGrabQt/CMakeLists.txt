@@ -1,30 +1,35 @@
-#
-# Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
-# 
-#  Redistribution of this file, in original or modified form, without
-#  prior written consent of Allied Vision Technologies is prohibited.
-#
-# -----------------------------------------------------------------------------
-#  CMake project for the AsynchronousGrab Qt example using the Vmb C API
-# -----------------------------------------------------------------------------
-#
-#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
-#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
-#  NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
-#  DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-#  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-#  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-#  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-#  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-#  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-#  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+#[===[
+  Copyright (C) 2021-2022 Allied Vision Technologies.  All Rights Reserved.
+ 
+  Redistribution of this file, in original or modified form, without
+  prior written consent of Allied Vision Technologies is prohibited.
+
+ -----------------------------------------------------------------------------
+  CMake project for the AsynchronousGrab Qt example using the Vmb C API
+ -----------------------------------------------------------------------------
+
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
+  NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
+  DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+]===]
 
 cmake_minimum_required(VERSION 3.0)
 
 project(AsynchronousGrabQt_VmbC)
 
-find_package(Vmb MODULE REQUIRED COMPONENTS C ImageTransform)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake")
+    # read hardcoded package location information, if the example is still located in the original install location
+    include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake)
+endif()
+
+find_package(Vmb REQUIRED COMPONENTS C ImageTransform)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 set(SOURCES)
@@ -120,9 +125,8 @@ endforeach()
 
 list(APPEND UI_SOURCES imagelabel.h)
 
-set_source_files_properties(${GENERATED_UI_SOURCES}
-    PROPERTIES
-        GENERATED True
+set_source_files_properties(${GENERATED_UI_SOURCES} PROPERTIES
+    GENERATED True
 )
 
 target_sources(AsynchronousGrabQt_VmbC PRIVATE
