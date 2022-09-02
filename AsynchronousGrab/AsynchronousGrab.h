@@ -44,8 +44,15 @@ typedef struct AsynchronousGrabOptions
     FrameInfos  frameInfos;
     VmbBool_t   showRgbValue;
     VmbBool_t   enableColorProcessing;
+    VmbBool_t   allocAndAnnounce;
     char const* cameraId;
 } AsynchronousGrabOptions;
+
+typedef struct FrameStatistics
+{
+    VmbUint64_t framesReceived;
+    VmbUint64_t framesMissing;
+} StreamStatistics;
 
 /**
  * \brief starts image acquisition on a given camera
@@ -56,7 +63,7 @@ typedef struct AsynchronousGrabOptions
  * \param[in] eFrameInfos             enumeration value for the frame infos to show for received frames
  * \param[in] bEnableColorProcessing  toggle for enabling image processing, in this case just swapping red with blue
  */
-VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options);
+VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, StreamStatistics* statistics);
 
 /**
  * \brief stops image acquisition that was started with StartContinuousImageAcquisition
