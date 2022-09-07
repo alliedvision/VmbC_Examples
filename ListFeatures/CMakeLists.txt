@@ -26,4 +26,5 @@ target_link_libraries(ListFeatures_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
 set_target_properties(ListFeatures_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}"
+    LINK_FLAGS "-Wl,-rpath,'\$ORIGIN'"
 )

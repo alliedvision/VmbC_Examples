@@ -26,4 +26,5 @@ target_link_libraries(ListCameras_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
 set_target_properties(ListCameras_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}"
+    LINK_FLAGS "-Wl,-rpath,'\$ORIGIN'"
 )

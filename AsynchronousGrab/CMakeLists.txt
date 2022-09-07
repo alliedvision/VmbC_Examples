@@ -28,4 +28,5 @@ endif()
 set_target_properties(AsynchronousGrab_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}"
+    LINK_FLAGS "-Wl,-rpath,'\$ORIGIN'"
 )
