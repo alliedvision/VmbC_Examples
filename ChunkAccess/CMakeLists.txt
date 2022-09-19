@@ -13,6 +13,10 @@ if(NOT TARGET VmbCExamplesCommon)
     add_subdirectory(../Common VmbCExamplesCommon_build)
 endif()
 
+if(NOT WIN32)
+    list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
+endif()
+
 add_executable(ChunkAccess_VmbC
     main.c
     ChunkAccessProg.c
@@ -26,5 +30,4 @@ target_link_libraries(ChunkAccess_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
 set_target_properties(ChunkAccess_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}"
-    LINK_FLAGS "-Wl,-rpath,'\$ORIGIN'"
 )

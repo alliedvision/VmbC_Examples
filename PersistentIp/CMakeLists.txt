@@ -13,6 +13,10 @@ if(NOT TARGET VmbCExamplesCommon)
     add_subdirectory(../Common VmbCExamplesCommon_build)
 endif()
 
+if(NOT WIN32)
+    list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
+endif()
+
 add_executable(PersistentIp_VmbC
     main.c
     PersistentIp.c
@@ -35,5 +39,4 @@ endif()
 set_target_properties(PersistentIp_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}"
-    LINK_FLAGS "-Wl,-rpath,'\$ORIGIN'"
 )

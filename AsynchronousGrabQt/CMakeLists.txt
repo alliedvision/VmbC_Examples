@@ -62,6 +62,10 @@ list(APPEND HEADERS
     LogEntry.h
 )
 
+if(NOT WIN32)
+    list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
+endif()
+
 add_executable(AsynchronousGrabQt_VmbC
     ${SOURCES}
     ${HEADERS}
@@ -83,7 +87,6 @@ set_target_properties(AsynchronousGrabQt_VmbC
     PROPERTIES
         CXX_STANDARD 11
         VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};${_VMB_QT_BIN_DIR}/bin;$ENV{PATH}"
-        LINK_FLAGS "-Wl,-rpath,'\$ORIGIN'"
 )
 
 # provide target_sources that suits our needs in case it's not yet built in 
