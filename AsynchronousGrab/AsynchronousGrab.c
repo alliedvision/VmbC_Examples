@@ -424,7 +424,10 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                 if (VmbErrorSuccess == err)
                 {
                     // Try to execute custom command available to Allied Vision GigE Cameras to ensure the packet size is chosen well
-                    if (VmbErrorSuccess == VmbFeatureCommandRun(g_cameraHandle, ADJUST_PACKAGE_SIZE_COMMAND))
+                    VmbCameraInfo_t info;
+                    err = VmbCameraInfoQuery(cameraId, &info, sizeof(info));
+                    VmbHandle_t stream = info.streamHandles[0];
+                    if (VmbErrorSuccess == VmbFeatureCommandRun(stream, ADJUST_PACKAGE_SIZE_COMMAND))
                     {
 
                         VmbBool_t isCommandDone = VmbBoolFalse;
