@@ -41,8 +41,30 @@
 
 #include <VmbC/VmbC.h>
 
-#define NUM_FRAMES ((size_t)3)
+#define NUM_FRAMES ((size_t)5)
 
+VmbError_t AdjustGEVPacketSize(VmbHandle_t cameraHandle)
+{
+    VmbCameraInfo_t cameraInfo;
+    VmbError_t err;
+
+    if ((err = VmbCameraInfoQueryByHandle(cameraHandle, &cameraInfo, sizeof(cameraInfo))) == VmbErrorSuccess)
+    {
+        const char* deviceType;
+        if ((err = VmbFeatureEnumGet(cameraInfo.localDeviceHandle, "DeviceType", &deviceType)) == VmbErrorSuccess)
+        {
+            if (strcmp(deviceType, "GEV") == 0 || strcmp(deviceType, "GigEVision"))
+            {
+                if (cameraInfo.streamCount > 0)
+                {
+                    VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
+                }
+            }
+        }
+    }
+    
+    return err;
+}
 
 VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userContext)
 {
@@ -59,7 +81,6 @@ VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userCon
 
     printf("  Chunk Data: id=%2.2lld ts=%lld width=%lld height=%lld\n", id, ts, w, h);
 
-
     return err;
 }
 
@@ -71,19 +92,18 @@ void VMB_CALL FrameDoneCallback(const VmbHandle_t hCamera, const VmbHandle_t str
     if (VmbFrameStatusComplete == pFrame->receiveStatus)
     {
         printf("  Frame Done: id=%2.2lld ts=%lld  complete\n", pFrame->frameID, pFrame->timestamp);
+
+        if (pFrame->chunkDataPresent)
+        {
+            err = VmbChunkDataAccess(pFrame, ChunkCallback, 0);
+        }
     }
     else
     {
         printf("  Frame Done: id=%2.2lld not successfully received. Error code: %d %s\n", pFrame->frameID, pFrame->receiveStatus, pFrame->receiveStatus == VmbFrameStatusIncomplete ? "(incomplete)" : "");
     }
 
-    if (pFrame->chunkDataPresent)
-    {
-        err = VmbChunkDataAccess(pFrame, ChunkCallback, 0);
-    }
-
     err = VmbCaptureFrameQueue(hCamera, pFrame, FrameDoneCallback);
-
 }
 
 
@@ -109,7 +129,7 @@ int ChunkAccessProg()
             if (err == VmbErrorSuccess)
             {
                 VmbCameraInfo_t cameraInfo;
-                err = VmbCameraInfoQuery(camera->cameraIdString, &cameraInfo, sizeof(VmbCameraInfo_t));
+                err = VmbCameraInfoQueryByHandle(hCamera, &cameraInfo, sizeof(VmbCameraInfo_t));
                 if (err == VmbErrorSuccess)
                 {
                     printf(
@@ -152,6 +172,9 @@ int ChunkAccessProg()
                     printf("Payload Size   : %lld byte\n", PLS);
                     printf("ChunkModeActive: %d\n\n", cma);
 
+                    // for GigE: adjust package size
+                    err = AdjustGEVPacketSize(hCamera);
+
                     // allocate and announce frame buffer
                     VmbFrame_t frames[NUM_FRAMES];
                     VmbUint32_t payloadSize = 0;
@@ -182,7 +205,6 @@ int ChunkAccessProg()
 #else
                     usleep(100000);
 #endif
-
                     // Stop acquisition on the camera
                     printf("AcquisitionStop...\n");
                     err = VmbFeatureCommandRun(hCamera, "AcquisitionStop");
@@ -200,6 +222,8 @@ int ChunkAccessProg()
                         err = VmbFrameRevoke(hCamera, frames+i);
                         free(frames[i].buffer);
                     }
+
+                    err = VmbCameraClose(hCamera);
                 }
                 else
                 {
