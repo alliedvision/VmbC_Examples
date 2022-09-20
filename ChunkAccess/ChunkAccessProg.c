@@ -123,7 +123,7 @@ int ChunkAccessProg()
                         cameraInfo.serialString);
 
                     // activate chunk features
-                    err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolTrue);
+                    err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolFalse);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "FrameID");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Timestamp");
@@ -132,6 +132,7 @@ int ChunkAccessProg()
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Height");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
+                    err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolTrue);
 
                     // show camera setup
                     VmbInt64_t w = -1, h = -1, PLS = 0;
