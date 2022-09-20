@@ -43,28 +43,6 @@
 
 #define NUM_FRAMES ((size_t)5)
 
-VmbError_t AdjustGEVPacketSize(VmbHandle_t cameraHandle)
-{
-    VmbCameraInfo_t cameraInfo;
-    VmbError_t err;
-
-    if ((err = VmbCameraInfoQueryByHandle(cameraHandle, &cameraInfo, sizeof(cameraInfo))) == VmbErrorSuccess)
-    {
-        const char* deviceType;
-        if ((err = VmbFeatureEnumGet(cameraInfo.localDeviceHandle, "DeviceType", &deviceType)) == VmbErrorSuccess)
-        {
-            if (strcmp(deviceType, "GEV") == 0 || strcmp(deviceType, "GigEVision"))
-            {
-                if (cameraInfo.streamCount > 0)
-                {
-                    VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
-                }
-            }
-        }
-    }
-    
-    return err;
-}
 
 VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userContext)
 {
@@ -173,7 +151,10 @@ int ChunkAccessProg()
                     printf("ChunkModeActive: %d\n\n", cma);
 
                     // for GigE: adjust package size
-                    err = AdjustGEVPacketSize(hCamera);
+                    if (cameraInfo.streamCount > 0)
+                    {
+                        VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
+                    }
 
                     // allocate and announce frame buffer
                     VmbFrame_t frames[NUM_FRAMES];
