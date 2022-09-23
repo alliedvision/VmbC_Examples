@@ -29,7 +29,7 @@
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-int PersistentIpProg(char* strMAC, char* strIP, char* strSubnet, char* strGateway)
+int PersistentIpProg(const char* const strCameraId, const char* const strIP, const char* const strSubnet, const char* const strGateway)
 {
     /*
      * Initialize the VmbC API
@@ -44,7 +44,7 @@ int PersistentIpProg(char* strMAC, char* strIP, char* strSubnet, char* strGatewa
 
     PrintVmbVersion();
 
-    err = SetPersistentIp(strMAC, strIP, strSubnet, strGateway);
+    err = SetPersistentIp(strCameraId, strIP, strSubnet, strGateway);
 
     VmbShutdown();
 

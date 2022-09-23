@@ -38,43 +38,18 @@
 #include <VmbC/VmbC.h>
 
 #include <VmbCExamplesCommon/AccessModeToString.h>
-#include <VmbCExamplesCommon/ArrayAlloc.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 #include <VmbCExamplesCommon/ListCameras.h>
-#include <VmbCExamplesCommon/ListInterfaces.h>
 
 
 
 /**
- * \brief Converts a hexadecimal MAC address into its decimal representation.
- * \param[in] strMAC    The hexadecimal (with preceding 0x) or decimal MAC
- *
- * \return 0 in case of error otherwise the decimal representation of the MAC address on success as integer
-*/
-unsigned long long MacAddr(const char* strMAC)
-{
-    unsigned long long nMAC;
-
-    if (sscanf(strMAC, "0x%llx", &nMAC)
-        || sscanf(strMAC, "%lld", &nMAC))
-    {
-        return nMAC;
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-
-
-/**
- * \brief Converts a hexadecimal MAC address into its decimal representation.
+ * \brief Converts a hexadecimal IP address into its decimal representation.
  * \param[in] strIp    The string representation of the IP
  *
  * \return The decimal representation of the IP address as integer in host byte order
 */
-unsigned int IpAddr(const char* strIp)
+unsigned int IpAddr(const char* const strIp)
 {
     unsigned long ip = inet_addr(strIp);
 
@@ -92,7 +67,7 @@ unsigned int IpAddr(const char* strIp)
 
 
 /*
- * Macros used to controll the print out of the progress and upcoming errors.
+ * Macros used to control the print out of the progress and upcoming errors.
  * Define _VMB_PERSISTENT_IP_NO_PRINT to disable the print out
  */
 #ifdef _VMB_PERSISTENT_IP_NO_PRINT
@@ -130,16 +105,6 @@ unsigned int IpAddr(const char* strIp)
  */
 
 /**
- * \brief Helper struct used to store information about a found interface 
- */
-typedef struct InterfaceSearchResult
-{
-    VmbError_t          error;          //!< Error code representing the success of the operation
-    VmbInterfaceInfo_t  interfaceInfo;  //!< Information about the found interface
-    char*               tlCameraId;     //!< Camera id as reported by the interface
-} InterfaceSearchResult;
-
-/**
  * \brief Helper struct used to store information about a found camera
  */
 typedef struct CameraSearchResult
@@ -149,7 +114,7 @@ typedef struct CameraSearchResult
 } CameraSearchResult;
 
 /**
- * \brief Helper struct used to store information about a opened camera
+ * \brief Helper struct used to store information about an opened camera
  */
 typedef struct CameraOpenResult
 {
@@ -163,138 +128,91 @@ typedef struct CameraOpenResult
  */
 
 /**
- * \brief Search an interface a camera with the given mac is connected to
+ * \brief Get api specific information about the desired camera
  *
- * \param mac   The cameras mac address
- *
- * \return Information about the found interface
-*/
-InterfaceSearchResult   GetRelatedInterface(const VmbInt64_t mac);
-
-/**
- * \brief Send a force ip command to the camera with the given mac address
- *
- * \param interfaceHandle   Handle of the interface that should be used to send the command
- * \param mac               The mac address of the camera
- * \param ip                The desired ip address
- * \param subnetMask        The desired subnet mask
- * \param gateway           The desired gateway
- *
- * \return Result of the operation
-*/
-VmbError_t SendForceIp(VmbHandle_t interfaceHandle, VmbInt64_t mac, VmbInt64_t ip, VmbInt64_t subnetMask, VmbInt64_t gateway);
-
-/**
- * \brief Get api specific information about the given camera which which is known to the given transport layer
- *
- * \param transportLayerHandl Handle of the transport layer the camera belongs to
- * \param tlCameraId          The camera id as reported by the given transport layer
+ * \param cameraId  The id of the desired camera
  *
  * \return The collected information
 */
-CameraSearchResult GetRelatedCamera(VmbHandle_t transportLayerHandl, const char* const tlCameraId);
+CameraSearchResult  GetCamera(const char* const cameraId);
+
 /**
  * \brief Open a camera using the given camera id
  *
- * \param cameraId The unique camera id reported by the api
+ * \param cameraId  The desired camera id
  *
  * \return Information collected during the opening
 */
-CameraOpenResult OpenCamera(const char* const cameraId);
+CameraOpenResult    OpenCamera(const char* const cameraId);
 
 /**
- * \brief Writes the given ip configuration which will not be lost after a power-cycle
+ * \brief Writes the desired ip configuration. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param cameraHandle  The handle of the related camera
+ * \param cameraHandle  The handle of the desired camera
  * \param ip            The desired ip address in host byte order
  * \param subnetMask    The desired subnet mask in host byte order
  * \param gateway       The desired gateway in host byte order
  *
  * \return Result of the operation
 */
-VmbError_t              WritePersistentIp(VmbHandle_t cameraHandle, VmbInt64_t ip, VmbInt64_t subnetMask, VmbInt64_t gateway);
+VmbError_t              WritePersistentIp(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
 
 /**
- * \brief Writes the given ip configuration using standard features from the SFNC. The configuration will not be lost after a power-cycle
+ * \brief Writes the desired ip configuration using standard features from the SFNC. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param cameraHandle  The handle of the related camera
+ * \param cameraHandle  The handle of the desired camera
  * \param ip            The desired ip address in host byte order
  * \param subnetMask    The desired subnet mask in host byte order
  * \param gateway       The desired gateway in host byte order
  *
  * \return Result of the operation
 */
-VmbError_t              WritePersistentIpFeatures(VmbHandle_t cameraHandle, VmbInt64_t ip, VmbInt64_t subnetMask, VmbInt64_t gateway);
+VmbError_t              WritePersistentIpFeatures(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
 
 /**
- * \brief Writes the given ip configuration using standard camera registers. The configuration will not be lost after a power-cycle
+ * \brief Writes the desired ip configuration using standard camera registers. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param cameraHandle  The handle of the related camera
+ * \param cameraHandle  The handle of the desired camera
  * \param ip            The desired ip address in host byte order
  * \param subnetMask    The desired subnet mask in host byte order
  * \param gateway       The desired gateway in host byte order
  *
  * \return Result of the operation
 */
-VmbError_t              WritePersistentIpRegisters(VmbHandle_t cameraHandle, VmbUint32_t ip, VmbUint32_t subnetMask, VmbUint32_t gateway);
+VmbError_t              WritePersistentIpRegisters(const VmbHandle_t cameraHandle, const VmbUint32_t ip, const VmbUint32_t subnetMask, const VmbUint32_t gateway);
 
 
 
 /*
- * PersistenIp implementation
+ * PersistentIp implementation
  */
 
-VmbError_t SetPersistentIp(const char* const mac, const char* const ip, const char* const subnet, const char* const gateway)
+VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, const char* const subnet, const char* const gateway)
 {
     /*
-     * Get a list of currently connected cameras.
-     * Forces the used transport layers to update their internal camera lists.
+     * Convert the string parameters into the needed integer values in host byte order
      */
-    {
-        VmbCameraInfo_t* cameras = 0;
-        VmbUint32_t         cameraCount = 0;
-        RETURN_ON_ERROR(ListCameras(&cameras, &cameraCount));
-        free(cameras);
-    }
-
-    /*
-     * Convert the give string parameters into the needed integer values in host byte order
-     */
-    VmbInt64_t macValue         = MacAddr(mac);
     VmbInt64_t ipValue          = (VmbInt64_t)IpAddr(ip);
     VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddr(subnet);
     VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddr(gateway) : 0;
 
-    VmbBool_t invalidConfiguration = ((macValue == 0) || (ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
+    VmbBool_t invalidConfiguration = ((ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
     if (invalidConfiguration)
     {
-        VMB_PRINT("One or more invalid parameters: %s %s %s %s\n.", mac, ip, subnet, gateway);
+        VMB_PRINT("One or more invalid parameters: %s %s %s\n.", ip, subnet, gateway);
         return 1;
     }
 
     /*
-     * Get an interface the camera is connected to.
+     * Search the camera list to get the api wide unique extended camera id.
      */
-    InterfaceSearchResult foundInterface = GetRelatedInterface(macValue);
-    RETURN_ON_ERROR(foundInterface.error);
-
-    VMB_PRINT("Found related device \"%s\" connected to interface \"%s\"\n", foundInterface.tlCameraId, foundInterface.interfaceInfo.interfaceIdString);
-
-    /*
-     * Send a force ip command using the previously found interface.
-     */
-    RETURN_ON_ERROR(SendForceIp(foundInterface.interfaceInfo.interfaceHandle, macValue, ipValue, subnetMaskValue, gatewayValue));
-
-    /*
-     * Search the camera list to get the api wide unique camera id.
-     */
-    CameraSearchResult foundCamera = GetRelatedCamera(foundInterface.interfaceInfo.transportLayerHandle, foundInterface.tlCameraId);
+    CameraSearchResult foundCamera = GetCamera(cameraId);
     RETURN_ON_ERROR(foundCamera.error);
 
-    VMB_PRINT("Related device \"%s\" is known to the api with unique id \"%s\"\n", foundInterface.tlCameraId, foundCamera.cameraInfo.cameraIdExtended);
+    VMB_PRINT("Device is known to the api with unique extended id \"%s\"\n", foundCamera.cameraInfo.cameraIdExtended);
 
     /*
-     * Open the camera using the previous found unique camera id.
+     * Open the camera using the previous found unique extended camera id.
      */
     CameraOpenResult openedCamera = OpenCamera(foundCamera.cameraInfo.cameraIdExtended);
     RETURN_ON_ERROR(openedCamera.error);
@@ -304,7 +222,7 @@ VmbError_t SetPersistentIp(const char* const mac, const char* const ip, const ch
      */
     VmbError_t configError = WritePersistentIp(openedCamera.cameraHandle, ipValue, subnetMaskValue, gatewayValue);
 
-    (configError == VmbErrorSuccess) ? VMB_PRINT("Persistent IP configuration written to camera\n") : VMB_PRINT("Persistent IP configuration not written completly to camera\n");
+    (configError == VmbErrorSuccess) ? VMB_PRINT("Persistent IP configuration written to camera\n") : VMB_PRINT("Persistent IP configuration not written completely to camera\n");
 
     if (openedCamera.cameraHandle)
     {
@@ -312,108 +230,6 @@ VmbError_t SetPersistentIp(const char* const mac, const char* const ip, const ch
     }
 
     return VmbErrorSuccess;
-}
-
-/**
- * \brief Get the value of the string feature DeviceID
- *
- * \param[in]   interfaceHandle Handle of the interface the feature should be queried from
- * \param[out]  deviceId        Target pointer which points to the allocated memory after the call. Must be freed later
- *
- * \return Error code reported during feature access
-*/
-VmbError_t QueryDeviceIdFeature(VmbHandle_t interfaceHandle, char** deviceId)
-{
-    /*
-     * Get the camera id reported by the transport layer
-     */
-    VmbUint32_t cameraIdLength = 0;
-    RETURN_AND_PRINT_ON_ERROR(VmbFeatureStringGet(interfaceHandle, "DeviceID", 0, 0, &cameraIdLength));
-
-    *deviceId = VMB_MALLOC_ARRAY(char, cameraIdLength);
-
-    VmbError_t error = VmbFeatureStringGet(interfaceHandle, "DeviceID", *deviceId, cameraIdLength, &cameraIdLength);
-    if (error != VmbErrorSuccess)
-    {
-        free(*deviceId);
-        *deviceId = NULL;
-    }
-
-    return error;
-}
-
-InterfaceSearchResult GetRelatedInterface(const VmbInt64_t mac)
-{
-    InterfaceSearchResult result;
-    memset(&result, 0, sizeof(result));
-    result.error = VmbErrorNotFound;
-
-    /*
-     * Get a list of all available interfaces.
-     */
-    VmbInterfaceInfo_t* interfaces = 0;
-    VmbUint32_t         interfaceCount = 0;
-    RETURN_SPECIFIC_AND_PRINT_ON_ERROR(ListInterfaces(&interfaces, &interfaceCount), result);
-
-    /*
-     * Find the first GigE Vision interface the camera is connected to.
-     * Multiple transport layers can enumerate the same physical interface.
-     */
-    VmbBool_t    cameraFound = VmbBoolFalse;
-    VmbHandle_t* camerasTransportLayerHandle = 0;
-    char*        cameraId = 0;
-
-    for (VmbUint32_t interfaceIndex = 0; (interfaceIndex < interfaceCount) && (!cameraFound); interfaceIndex++)
-    {
-        VmbInterfaceInfo_t* currentInterface = (interfaces + interfaceIndex);
-
-        /*
-         * Ignore interfaces whoose interface technology is not based on the GigE Vision standard
-         */
-        VmbBool_t ignoreInterface = (currentInterface->interfaceType != VmbTransportLayerTypeGEV);
-        if (ignoreInterface)
-        {
-            continue;
-        }
-
-        VmbHandle_t currentInterfaceHandle = currentInterface->interfaceHandle;
-
-        /*
-         * Get the number of cameras connected to the interface
-         */
-        VmbInt64_t deviceCount = 0;
-        CONTINUE_AND_PRINT_ON_ERROR(VmbFeatureIntGet(currentInterface->interfaceHandle, "DeviceCount", &deviceCount));
-
-        /*
-         * Check based on the mac if the desired camera is connected to the current interface
-         */
-        for (VmbInt64_t deviceIndex = 0; (deviceIndex < deviceCount) && (!cameraFound); deviceIndex++)
-        {
-            CONTINUE_AND_PRINT_ON_ERROR(VmbFeatureIntSet(currentInterfaceHandle, "DeviceSelector", deviceIndex));
-
-            VmbInt64_t currentMAC = 0;
-            CONTINUE_AND_PRINT_ON_ERROR(VmbFeatureIntGet(currentInterfaceHandle, "GevDeviceMACAddress", &currentMAC));
-
-            if (currentMAC == mac)
-            {
-                CONTINUE_ON_ERROR(QueryDeviceIdFeature(currentInterfaceHandle, &cameraId));
-
-                result.tlCameraId = cameraId;
-                result.error = VmbErrorSuccess;
-                result.interfaceInfo = *currentInterface;
-                cameraFound = VmbBoolTrue;
-            }
-        }
-    }
-
-    free(interfaces);
-
-    if (!cameraFound)
-    {
-        VMB_PRINT("No camera with matching mac address found.\n");
-    }
-
-    return result;
 }
 
 /**
@@ -431,52 +247,7 @@ void Sleep100Ms()
 #endif
 }
 
-VmbError_t SendForceIp(VmbHandle_t interfaceHandle, VmbInt64_t mac, VmbInt64_t ip, VmbInt64_t subnetMask, VmbInt64_t gateway)
-{
-    /*
-     * The force ip features are related to the DeviceSelector.
-     * Ensure that the current selector value selects the desired camera
-     */
-    VmbInt64_t selectedMAC = 0;
-    RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntGet(interfaceHandle, "GevDeviceMACAddress", &selectedMAC));
-
-    if (selectedMAC != mac)
-    {
-        return VmbErrorNotFound;
-    }
-
-    /*
-     * Set the force ip features and send the force ip command
-     */
-    RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntSet(interfaceHandle, "GevDeviceForceIPAddress", ip));
-    RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntSet(interfaceHandle, "GevDeviceForceSubnetMask", subnetMask));
-    RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntSet(interfaceHandle, "GevDeviceForceGateway", gateway));
-    RETURN_AND_PRINT_ON_ERROR(VmbFeatureCommandRun(interfaceHandle, "GevDeviceForceIP"));
-
-    VMB_PRINT("Force ip command sent. Waiting for completion...\n");
-
-    /*
-     * Wait for the force ip command to be completed
-     */
-    VmbBool_t  completedForceIp = VmbBoolFalse;
-    VmbInt16_t retriesLeft      = 25;
-    do
-    {
-        BREAK_AND_PRINT_ON_ERROR(VmbFeatureCommandIsDone(interfaceHandle, "GevDeviceForceIP", &completedForceIp));
-        if (!completedForceIp)
-        {
-            Sleep100Ms();
-            retriesLeft -= 1;
-        }
-    } while ((!completedForceIp) && (retriesLeft > 0));
-
-    const char* commandStatus = (completedForceIp) ? " completed." : " not completed. Next steps might fail.";
-    VMB_PRINT("Force ip command %s\n", commandStatus);
-
-    return VmbErrorSuccess;
-}
-
-CameraSearchResult GetRelatedCamera(VmbHandle_t transportLayerHandl, const char* const tlCameraId)
+CameraSearchResult GetCamera(const char* const cameraId)
 {
     CameraSearchResult result;
     memset(&result, 0, sizeof(result));
@@ -490,16 +261,16 @@ CameraSearchResult GetRelatedCamera(VmbHandle_t transportLayerHandl, const char*
     RETURN_SPECIFIC_AND_PRINT_ON_ERROR(ListCameras(&cameras, &cameraCount), result);
 
     /*
-     * Search the camera list for a camera with an id matching to the id reported by the transport layers interface
+     * Search the camera list for a camera with an ID matching the ID of the desired camera.
+     * Although this camera may be present for each GigE transport layer, we will just choose the first in the list.
      */
     VmbBool_t cameraFound = VmbBoolFalse;
     for (VmbUint32_t currentCameraIndex = 0; (currentCameraIndex < cameraCount) && (!cameraFound); currentCameraIndex++)
     {
         VmbCameraInfo_t* currentCamera = cameras + currentCameraIndex;
-        VmbBool_t connectedToSameTL = (transportLayerHandl == currentCamera->transportLayerHandle);
-        VmbBool_t matchingCameraId = (strcmp(currentCamera->cameraIdString, tlCameraId) == 0);
+        VmbBool_t matchingCameraId = (strcmp(currentCamera->cameraIdString, cameraId) == 0);
 
-        if (connectedToSameTL && matchingCameraId)
+        if (matchingCameraId)
         {
             cameraFound = VmbBoolTrue;
             result.error = VmbErrorSuccess;
@@ -519,7 +290,8 @@ CameraOpenResult OpenCamera(const char* const cameraId)
     result.error = VmbErrorUnknown;
 
     /*
-     * After the force ip command the transport layer might need some time to detect the changed ip configuration
+     * In case the ip configuration was recently changed (e.g. via the force ip command),
+     * the transport layer might need some time to detect this
      * and report the correct permitted access status
      */
     VmbBool_t cameraPermitsFullAccess = VmbBoolFalse;
@@ -560,7 +332,7 @@ CameraOpenResult OpenCamera(const char* const cameraId)
     return result;
 }
 
-VmbError_t WritePersistentIp(VmbHandle_t cameraHandle, VmbInt64_t ip, VmbInt64_t subnetMask, VmbInt64_t gateway)
+VmbError_t WritePersistentIp(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway)
 {
     /*
      * Check if the optional sfnc feature GevPersistentIPAddress is available and writeable.
@@ -586,7 +358,7 @@ VmbError_t WritePersistentIp(VmbHandle_t cameraHandle, VmbInt64_t ip, VmbInt64_t
     return error;
 }
 
-VmbError_t WritePersistentIpFeatures(VmbHandle_t cameraHandle, VmbInt64_t ip, VmbInt64_t subnetMask, VmbInt64_t gateway)
+VmbError_t WritePersistentIpFeatures(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway)
 {
     RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntSet(cameraHandle, "GevPersistentIPAddress", ip));
     RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntSet(cameraHandle, "GevPersistentSubnetMask", subnetMask));
@@ -596,7 +368,7 @@ VmbError_t WritePersistentIpFeatures(VmbHandle_t cameraHandle, VmbInt64_t ip, Vm
     return VmbErrorSuccess;
 }
 
-VmbError_t WritePersistentIpRegisters(VmbHandle_t cameraHandle, VmbUint32_t ip, VmbUint32_t subnetMask, VmbUint32_t gateway)
+VmbError_t WritePersistentIpRegisters(const VmbHandle_t cameraHandle, const VmbUint32_t ip, const VmbUint32_t subnetMask, const VmbUint32_t gateway)
 {
     const VmbUint64_t GIGE_INTERFACE_CONFIG_REGISTER        = 0x0014;
     const VmbUint64_t GIGE_PERSISTENT_IP_REGISTER           = 0x064C;
@@ -606,25 +378,25 @@ VmbError_t WritePersistentIpRegisters(VmbHandle_t cameraHandle, VmbUint32_t ip, 
     /*
      * Read the Network Interface Configuration register
      */
-    VmbUint32_t infterfaceConfiguration = 0;
+    VmbUint32_t interfaceConfiguration = 0;
     VmbUint32_t bytesRead = 0;
-    RETURN_AND_PRINT_ON_ERROR(VmbMemoryRead(cameraHandle, GIGE_INTERFACE_CONFIG_REGISTER, sizeof(infterfaceConfiguration), (char*)(&infterfaceConfiguration), &bytesRead));
+    RETURN_AND_PRINT_ON_ERROR(VmbMemoryRead(cameraHandle, GIGE_INTERFACE_CONFIG_REGISTER, sizeof(interfaceConfiguration), (char*)(&interfaceConfiguration), &bytesRead));
 
     #ifdef _LITTLE_ENDIAN
-        infterfaceConfiguration = ntohl(infterfaceConfiguration);
+    interfaceConfiguration = ntohl(interfaceConfiguration);
     #endif // _LITTLE_ENDIAN
 
     /*
-     * Set the persisten ip configuration bit
+     * Set the persistent ip configuration bit
      */
-    infterfaceConfiguration = infterfaceConfiguration | 0x1;
+    interfaceConfiguration = interfaceConfiguration | 0x1;
 
 
     /*
      * Write the configuration to the camera registers
      */
     VmbUint64_t addresses[] = { GIGE_PERSISTENT_IP_REGISTER, GIGE_PERSISTENT_SUBNET_MASK_REGISTER, GIGE_PERSISTENT_GATEWAY_REGISTER, GIGE_INTERFACE_CONFIG_REGISTER };
-    VmbUint32_t datas[]     = { ip , subnetMask , gateway, infterfaceConfiguration };
+    VmbUint32_t datas[]     = { ip , subnetMask , gateway, interfaceConfiguration };
     const VmbUint32_t registersToWrite = sizeof(datas) / sizeof(VmbUint32_t);
     for (VmbUint32_t currentIndex = 0; currentIndex < registersToWrite; currentIndex++)
     {
