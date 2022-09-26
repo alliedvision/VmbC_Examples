@@ -40,30 +40,8 @@
 #include <VmbCExamplesCommon/AccessModeToString.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 #include <VmbCExamplesCommon/ListCameras.h>
+#include <VmbCExamplesCommon/IpAddressToHostByteOrderedInt.h>
 
-
-
-/**
- * \brief Converts a hexadecimal IP address into its decimal representation.
- * \param[in] strIp    The string representation of the IP
- *
- * \return The decimal representation of the IP address as integer in host byte order
-*/
-unsigned int IpAddr(const char* const strIp)
-{
-    unsigned long ip = inet_addr(strIp);
-
-    if (ip == INADDR_NONE)
-    {
-        return INADDR_NONE;
-    }
-
-#ifdef _LITTLE_ENDIAN
-    ip = ntohl(ip);
-#endif
-
-    return ip;
-}
 
 
 /*
@@ -105,15 +83,6 @@ unsigned int IpAddr(const char* const strIp)
  */
 
 /**
- * \brief Helper struct used to store information about a found camera
- */
-typedef struct CameraSearchResult
-{
-    VmbError_t      error;      //!< Error code representing the success of the operation
-    VmbCameraInfo_t cameraInfo; //!< Information about the found camera
-} CameraSearchResult;
-
-/**
  * \brief Helper struct used to store information about an opened camera
  */
 typedef struct CameraOpenResult
@@ -126,15 +95,6 @@ typedef struct CameraOpenResult
 /*
  * Helper functions
  */
-
-/**
- * \brief Get api specific information about the desired camera
- *
- * \param cameraId  The id of the desired camera
- *
- * \return The collected information
-*/
-CameraSearchResult  GetCamera(const char* const cameraId);
 
 /**
  * \brief Open a camera using the given camera id
@@ -192,9 +152,9 @@ VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, con
     /*
      * Convert the string parameters into the needed integer values in host byte order
      */
-    VmbInt64_t ipValue          = (VmbInt64_t)IpAddr(ip);
-    VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddr(subnet);
-    VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddr(gateway) : 0;
+    VmbInt64_t ipValue          = (VmbInt64_t)IpAddressToHostByteOrderedInt(ip);
+    VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddressToHostByteOrderedInt(subnet);
+    VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddressToHostByteOrderedInt(gateway) : 0;
 
     VmbBool_t invalidConfiguration = ((ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
     if (invalidConfiguration)
@@ -204,17 +164,9 @@ VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, con
     }
 
     /*
-     * Search the camera list to get the api wide unique extended camera id.
-     */
-    CameraSearchResult foundCamera = GetCamera(cameraId);
-    RETURN_ON_ERROR(foundCamera.error);
-
-    VMB_PRINT("Device is known to the api with unique extended id \"%s\"\n", foundCamera.cameraInfo.cameraIdExtended);
-
-    /*
      * Open the camera using the previous found unique extended camera id.
      */
-    CameraOpenResult openedCamera = OpenCamera(foundCamera.cameraInfo.cameraIdExtended);
+    CameraOpenResult openedCamera = OpenCamera(cameraId);
     RETURN_ON_ERROR(openedCamera.error);
 
     /*
@@ -245,42 +197,6 @@ void Sleep100Ms()
     duration.tv_nsec = 100000000;
     nanosleep(&duration, NULL);
 #endif
-}
-
-CameraSearchResult GetCamera(const char* const cameraId)
-{
-    CameraSearchResult result;
-    memset(&result, 0, sizeof(result));
-    result.error = VmbErrorUnknown;
-
-    /*
-     * Get a list of currently connected cameras.
-     */
-    VmbCameraInfo_t*    cameras = 0;
-    VmbUint32_t         cameraCount = 0;
-    RETURN_SPECIFIC_AND_PRINT_ON_ERROR(ListCameras(&cameras, &cameraCount), result);
-
-    /*
-     * Search the camera list for a camera with an ID matching the ID of the desired camera.
-     * Although this camera may be present for each GigE transport layer, we will just choose the first in the list.
-     */
-    VmbBool_t cameraFound = VmbBoolFalse;
-    for (VmbUint32_t currentCameraIndex = 0; (currentCameraIndex < cameraCount) && (!cameraFound); currentCameraIndex++)
-    {
-        VmbCameraInfo_t* currentCamera = cameras + currentCameraIndex;
-        VmbBool_t matchingCameraId = (strcmp(currentCamera->cameraIdString, cameraId) == 0);
-
-        if (matchingCameraId)
-        {
-            cameraFound = VmbBoolTrue;
-            result.error = VmbErrorSuccess;
-            result.cameraInfo = *(currentCamera);
-        }
-    }
-
-    free(cameras);
-
-    return result;
 }
 
 CameraOpenResult OpenCamera(const char* const cameraId)

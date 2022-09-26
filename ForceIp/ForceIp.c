@@ -42,6 +42,7 @@
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 #include <VmbCExamplesCommon/ListCameras.h>
 #include <VmbCExamplesCommon/ListInterfaces.h>
+#include <VmbCExamplesCommon/IpAddressToHostByteOrderedInt.h>
 
 
 
@@ -64,30 +65,6 @@ unsigned long long MacAddr(const char* const strMAC)
     {
         return 0;
     }
-}
-
-
-
-/**
- * \brief Converts a hexadecimal IP address into its decimal representation.
- * \param[in] strIp    The string representation of the IP
- *
- * \return INADDR_NONE in case of error otherwise the decimal representation of the IP address as integer in host byte order
-*/
-unsigned int IpAddr(const char* const strIp)
-{
-    unsigned long ip = inet_addr(strIp);
-
-    if (ip == INADDR_NONE)
-    {
-        return INADDR_NONE;
-    }
-
-#ifdef _LITTLE_ENDIAN
-    ip = ntohl(ip);
-#endif
-
-    return ip;
 }
 
 
@@ -188,9 +165,9 @@ VmbError_t ForceIp(const char* const mac, const char* const ip, const char* cons
      * Convert the string parameters into the needed integer values in host byte order
      */
     VmbInt64_t macValue         = MacAddr(mac);
-    VmbInt64_t ipValue          = (VmbInt64_t)IpAddr(ip);
-    VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddr(subnet);
-    VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddr(gateway) : 0;
+    VmbInt64_t ipValue          = (VmbInt64_t)IpAddressToHostByteOrderedInt(ip);
+    VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddressToHostByteOrderedInt(subnet);
+    VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddressToHostByteOrderedInt(gateway) : 0;
 
     VmbBool_t invalidConfiguration = ((macValue == 0) || (ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
     if (invalidConfiguration)
@@ -371,7 +348,7 @@ VmbError_t SendForceIp(const VmbHandle_t interfaceHandle, const VmbInt64_t mac, 
         }
     } while ((!completedForceIp) && (retriesLeft > 0));
 
-    const char* commandStatus = (completedForceIp) ? " completed." : " not completed. Next steps might fail.";
+    const char* commandStatus = (completedForceIp) ? " completed." : " not completed.";
     VMB_PRINT("Force ip command %s\n", commandStatus);
 
     return VmbErrorSuccess;
