@@ -206,37 +206,6 @@ CameraOpenResult OpenCamera(const char* const cameraId)
     result.error = VmbErrorUnknown;
 
     /*
-     * In case the ip configuration was recently changed (e.g. via the force ip command),
-     * the transport layer might need some time to detect this
-     * and report the correct permitted access status
-     */
-    VmbBool_t cameraPermitsFullAccess = VmbBoolFalse;
-    VmbInt16_t retriesLeft = 100;
-    do
-    {
-        BREAK_AND_PRINT_ON_ERROR(VmbCameraInfoQuery(cameraId, &result.cameraInfo, sizeof(result.cameraInfo)));
-        cameraPermitsFullAccess = (result.cameraInfo.permittedAccess & VmbAccessModeFull);
-        if (!cameraPermitsFullAccess)
-        {
-            retriesLeft -= 1;
-            Sleep100Ms();
-            if ((retriesLeft % 5) == 0)
-            {
-                VMB_PRINT("Waiting for permitted write access. Now the camera \"%s\" only suports the access modes: %s\n", result.cameraInfo.cameraIdString, AccessModesToString(result.cameraInfo.permittedAccess));
-            }
-        }
-    } while ((!cameraPermitsFullAccess) && (retriesLeft > 0));
-
-    if (!cameraPermitsFullAccess)
-    {
-        result.error = VmbErrorInvalidAccess;
-    }
-    else
-    {
-        VMB_PRINT("Camera \"%s\" now supports the needed access modes: %s\n", result.cameraInfo.cameraIdString, AccessModesToString(result.cameraInfo.permittedAccess));
-    }
-
-    /*
      * Open the camera for later access
      */
     RETURN_SPECIFIC_AND_PRINT_ON_ERROR( (result.error = VmbCameraOpen(cameraId, VmbAccessModeFull, &result.cameraHandle)), result);

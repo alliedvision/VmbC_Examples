@@ -25,9 +25,9 @@
 
 int main( int argc, char* argv[] )
 {
-    printf("\n//////////////////////////////////\n");
+    printf("\n/////////////////////////////////\n");
     printf("/// VmbC API Force IP Example ///\n");
-    printf("//////////////////////////////////\n\n");
+    printf("/////////////////////////////////\n\n");
 
     if (4 > argc
         || 5 < argc)
