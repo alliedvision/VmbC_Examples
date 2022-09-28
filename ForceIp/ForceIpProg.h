@@ -35,6 +35,6 @@
  *
  * \return a code to return from main()
 */
-int ForceIpProg(char* mac, char* ip, char* subnet, char* gateway);
+int ForceIpProg(const char* const mac, const char* const ip, const char* const subnet, const char* const gateway);
 
 #endif // FORCE_IP_PROG_H_

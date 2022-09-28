@@ -35,7 +35,7 @@ int PersistentIpProg(const char* const strCameraId, const char* const strIP, con
      * Initialize the VmbC API
      */
     VmbError_t err = VmbStartup(NULL);
-    VmbBool_t apiStartFailed = (VmbErrorSuccess != err);
+    const VmbBool_t apiStartFailed = (VmbErrorSuccess != err);
     if (apiStartFailed)
     {
         printf("VmbStartup failed. %s Error code: %d.", ErrorCodeToMessage(err), err);

@@ -29,13 +29,13 @@
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-int ForceIpProg(char* strMAC, char* strIP, char* strSubnet, char* strGateway)
+int ForceIpProg(const char* const strMAC, const char* const strIP, const char* const strSubnet, const char* const strGateway)
 {
     /*
      * Initialize the VmbC API
      */
     VmbError_t err = VmbStartup(NULL);
-    VmbBool_t apiStartFailed = (VmbErrorSuccess != err);
+    const VmbBool_t apiStartFailed = (VmbErrorSuccess != err);
     if (apiStartFailed)
     {
         printf("VmbStartup failed. %s Error code: %d.", ErrorCodeToMessage(err), err);

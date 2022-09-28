@@ -15,6 +15,7 @@
     <ClCompile Include="..\Common\PrintVmbVersion.c" />
     <ClCompile Include="..\Common\AccessModeToString.c" />
     <ClCompile Include="..\Common\ListCameras.c" />
+    <ClCompile Include="..\Common\IpAddressToHostByteOrderedInt.c" />
     <ClCompile Include="PersistentIp.c" />
     <ClCompile Include="PersistentIpProg.c" />
     <ClCompile Include="main.c" />

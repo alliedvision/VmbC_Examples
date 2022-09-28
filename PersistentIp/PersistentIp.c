@@ -152,11 +152,11 @@ VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, con
     /*
      * Convert the string parameters into the needed integer values in host byte order
      */
-    VmbInt64_t ipValue          = (VmbInt64_t)IpAddressToHostByteOrderedInt(ip);
-    VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddressToHostByteOrderedInt(subnet);
-    VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddressToHostByteOrderedInt(gateway) : 0;
+    const VmbInt64_t ipValue          = (VmbInt64_t)IpAddressToHostByteOrderedInt(ip);
+    const VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddressToHostByteOrderedInt(subnet);
+    const VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddressToHostByteOrderedInt(gateway) : 0;
 
-    VmbBool_t invalidConfiguration = ((ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
+    const VmbBool_t invalidConfiguration = ((ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
     if (invalidConfiguration)
     {
         VMB_PRINT("One or more invalid parameters: %s %s %s\n.", ip, subnet, gateway);
@@ -164,15 +164,15 @@ VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, con
     }
 
     /*
-     * Open the camera using the previous found unique extended camera id.
+     * Open the camera using the desired camera id.
      */
-    CameraOpenResult openedCamera = OpenCamera(cameraId);
+    const CameraOpenResult openedCamera = OpenCamera(cameraId);
     RETURN_ON_ERROR(openedCamera.error);
 
     /*
      * Write the desired persistent ip configuration using either features from the SFNC or standard camera registers
      */
-    VmbError_t configError = WritePersistentIp(openedCamera.cameraHandle, ipValue, subnetMaskValue, gatewayValue);
+    const VmbError_t configError = WritePersistentIp(openedCamera.cameraHandle, ipValue, subnetMaskValue, gatewayValue);
 
     (configError == VmbErrorSuccess) ? VMB_PRINT("Persistent IP configuration written to camera\n") : VMB_PRINT("Persistent IP configuration not written completely to camera\n");
 
@@ -243,8 +243,6 @@ CameraOpenResult OpenCamera(const char* const cameraId)
 
     VMB_PRINT("Opened camera \"%s\" with VmbAccessModeFull\n", result.cameraInfo.cameraIdString);
 
-    result.error = VmbErrorSuccess;
-
     return result;
 }
 
@@ -256,7 +254,7 @@ VmbError_t WritePersistentIp(const VmbHandle_t cameraHandle, const VmbInt64_t ip
      */
     VmbBool_t writeable = VmbBoolFalse;
     VmbError_t error = VmbFeatureAccessQuery(cameraHandle, "GevPersistentIPAddress", NULL, &writeable);
-    VmbBool_t cameraHasPersistentFeatures = (error == VmbErrorSuccess) && (writeable);
+    const VmbBool_t cameraHasPersistentFeatures = (error == VmbErrorSuccess) && (writeable);
 
     /*
      * Use the available sfnc features or camera registers to set the persistent ip configuration

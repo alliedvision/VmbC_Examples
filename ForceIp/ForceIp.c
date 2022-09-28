@@ -164,12 +164,12 @@ VmbError_t ForceIp(const char* const mac, const char* const ip, const char* cons
     /*
      * Convert the string parameters into the needed integer values in host byte order
      */
-    VmbInt64_t macValue         = MacAddr(mac);
-    VmbInt64_t ipValue          = (VmbInt64_t)IpAddressToHostByteOrderedInt(ip);
-    VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddressToHostByteOrderedInt(subnet);
-    VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddressToHostByteOrderedInt(gateway) : 0;
+    const VmbInt64_t macValue         = MacAddr(mac);
+    const VmbInt64_t ipValue          = (VmbInt64_t)IpAddressToHostByteOrderedInt(ip);
+    const VmbInt64_t subnetMaskValue  = (VmbInt64_t)IpAddressToHostByteOrderedInt(subnet);
+    const VmbInt64_t gatewayValue     = (gateway) ? (VmbInt64_t)IpAddressToHostByteOrderedInt(gateway) : 0;
 
-    VmbBool_t invalidConfiguration = ((macValue == 0) || (ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
+    const VmbBool_t invalidConfiguration = ((macValue == 0) || (ipValue == INADDR_NONE) || (subnetMaskValue == INADDR_NONE) || (gatewayValue == INADDR_NONE));
     if (invalidConfiguration)
     {
         VMB_PRINT("One or more invalid parameters: %s %s %s %s\n.", mac, ip, subnet, gateway);
@@ -179,7 +179,7 @@ VmbError_t ForceIp(const char* const mac, const char* const ip, const char* cons
     /*
      * Get an interface the camera is connected to.
      */
-    InterfaceSearchResult foundInterface = GetRelatedInterface(macValue);
+    const InterfaceSearchResult foundInterface = GetRelatedInterface(macValue);
     RETURN_ON_ERROR(foundInterface.error);
 
     VMB_PRINT("Found related device \"%s\" connected to interface \"%s\"\n", foundInterface.tlCameraId, foundInterface.interfaceInfo.interfaceIdString);
@@ -210,7 +210,7 @@ VmbError_t QueryDeviceIdFeature(const VmbHandle_t interfaceHandle, char** device
 
     *deviceId = VMB_MALLOC_ARRAY(char, cameraIdLength);
 
-    VmbError_t error = VmbFeatureStringGet(interfaceHandle, "DeviceID", *deviceId, cameraIdLength, &cameraIdLength);
+    const VmbError_t error = VmbFeatureStringGet(interfaceHandle, "DeviceID", *deviceId, cameraIdLength, &cameraIdLength);
     if (error != VmbErrorSuccess)
     {
         free(*deviceId);
@@ -243,18 +243,18 @@ InterfaceSearchResult GetRelatedInterface(const VmbInt64_t mac)
 
     for (VmbUint32_t interfaceIndex = 0; (interfaceIndex < interfaceCount) && (!cameraFound); interfaceIndex++)
     {
-        VmbInterfaceInfo_t* currentInterface = (interfaces + interfaceIndex);
+        const VmbInterfaceInfo_t* const currentInterface = (interfaces + interfaceIndex);
 
         /*
          * Ignore interfaces whoose interface technology is not based on the GigE Vision standard
          */
-        VmbBool_t ignoreInterface = (currentInterface->interfaceType != VmbTransportLayerTypeGEV);
+        const VmbBool_t ignoreInterface = (currentInterface->interfaceType != VmbTransportLayerTypeGEV);
         if (ignoreInterface)
         {
             continue;
         }
 
-        VmbHandle_t currentInterfaceHandle = currentInterface->interfaceHandle;
+        const VmbHandle_t currentInterfaceHandle = currentInterface->interfaceHandle;
 
         /*
          * Get the number of cameras connected to the interface
@@ -348,7 +348,7 @@ VmbError_t SendForceIp(const VmbHandle_t interfaceHandle, const VmbInt64_t mac, 
         }
     } while ((!completedForceIp) && (retriesLeft > 0));
 
-    const char* commandStatus = (completedForceIp) ? " completed." : " not completed.";
+    const char* const commandStatus = (completedForceIp) ? " completed." : " not completed.";
     VMB_PRINT("Force ip command %s\n", commandStatus);
 
     return VmbErrorSuccess;
