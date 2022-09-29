@@ -16,25 +16,25 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Declaration of the function which implements the persistent ip example
+ * \brief Declaration of the function which implements the force ip example
  */
 
-#ifndef PERSISTENT_IP_PROG_H_
-#define PERSISTENT_IP_PROG_H_
+#ifndef FORCE_IP_PROG_H_
+#define FORCE_IP_PROG_H_
 
 /**
- * \brief set a persistent ip configuration for a camera identified by its ID
+ * \brief modifies the IP configuration for a camera identified by the given mac address
  *
- * Starts the VmbC API. Writes the ip configuration into the cameras persistent ip configuration registers.
- * The new configuration will be retained and applied after a power-cycle of the camera.
+ * Starts the VmbC API. Sends a force IP command to apply the given ip configuration.
+ * The configuration will be lost after a power-cycle of the camera.
  *
- * \param[in] cameraId  ID of the desired camera whose ip configuration is to be updated
+ * \param[in] mac       mac address of the desired camera whose ip configuration is to be updated
  * \param[in] ip        the desired ip address
  * \param[in] subnet    the desired subnet mask
- * \param[in] gateway   the desired gateway. Optional, can be a NULL pointer.
+ * \param[in] gateway   the desired gateway. Optional, can be 0.
  *
  * \return a code to return from main()
 */
-int PersistentIpProg(const char* const strCameraId, const char* const strIP, const char* const strSubnet, const char* const strGateway);
+int ForceIpProg(const char* const mac, const char* const ip, const char* const subnet, const char* const gateway);
 
-#endif // PERSISTENT_IP_PROG_H_
+#endif // FORCE_IP_PROG_H_

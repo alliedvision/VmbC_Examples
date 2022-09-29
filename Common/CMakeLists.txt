@@ -28,6 +28,7 @@ endforeach()
 set(SOURCES_WITH_HEADERS
     AccessModeToString
     ErrorCodeToMessage
+    IpAddressToHostByteOrderedInt
     ListCameras
     ListInterfaces
     ListTransportLayers
@@ -48,6 +49,8 @@ add_library(VmbCExamplesCommon STATIC
 set_target_properties(VmbCExamplesCommon PROPERTIES
     C_STANDARD 11
 )
+
+target_compile_definitions(VmbCExamplesCommon PRIVATE _LITTLE_ENDIAN)
 
 target_include_directories(VmbCExamplesCommon PUBLIC
     include

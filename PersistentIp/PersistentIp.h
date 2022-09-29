@@ -25,22 +25,21 @@
 #include <VmbC/VmbC.h>
 
 /**
- * \brief set a persistent ip configuration for a camera identified by the given mac address
+ * \brief set a persistent ip configuration for a camera identified by the given camera ID
  *
- * Sends a FORCEIP_CMD to apply the given ip configuration and
- * writes the ip configuration into the cameras persistent ip configuration registers.
- * Otherwise the configuration would be lost after a power-cycle of the camera.
+ * Writes the ip configuration into the cameras persistent ip configuration registers.
+ * The new configuration will be retained and applied after a power-cycle of the camera.
  * Assumes that the VmbC API is already started.
- * 
+ *
  * By default the progress and error messages are printed out. Define _VMB_PERSISTENT_IP_NO_PRINT to disable the print out.
  *
- * \param[in] mac       mac address of the camera whoose ip configuration is to be updated
+ * \param[in] cameraId  ID of the camera whoose ip configuration is to be updated
  * \param[in] ip        the desired ip address
  * \param[in] subnet    the desired subnet mask
  * \param[in] gateway   the desired gateway. Optional, can be 0.
  *
  * \return error code reporting the success of the operation
 */
-VmbError_t SetPersistentIp(char* mac, char* ip, char* subnet, char* gateway);
+VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, const char* const subnet, const char* const gateway);
 
 #endif // PERSISTENT_IP_H_
