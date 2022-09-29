@@ -27,7 +27,7 @@ vmb_c_example(AsynchronousGrabQt Qt)
 vmb_c_example(ListFeatures FeatureList FeaturesList)
 vmb_c_example(ListCameras)
 vmb_c_example(ChunkAccess)
-vmb_c_example(PersistentIp)
+vmb_c_example(ConfigIp)
 vmb_c_example(ForceIp)
 
 # overwrite list of examples set based on individual ignores

@@ -16,30 +16,33 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Declaration of the function which implements the persistent ip configuration
+ * \brief Declaration of the function which implements the IP configuration
  */
 
-#ifndef PERSISTENT_IP_H_
-#define PERSISTENT_IP_H_
+#ifndef CONFIG_IP_H_
+#define CONFIG_IP_H_
 
 #include <VmbC/VmbC.h>
 
 /**
- * \brief set a persistent ip configuration for a camera identified by the given camera ID
+ * \brief set an IP configuration for a camera identified by its ID
  *
- * Writes the ip configuration into the cameras persistent ip configuration registers.
+ * Starts the VmbC API. Writes the IP configuration into the camera's IP configuration registers.
  * The new configuration will be retained and applied after a power-cycle of the camera.
  * Assumes that the VmbC API is already started.
  *
- * By default the progress and error messages are printed out. Define _VMB_PERSISTENT_IP_NO_PRINT to disable the print out.
+ * By default the progress and error messages are printed out. Define _VMB_CONFIG_IP_NO_PRINT to disable the print out.
  *
- * \param[in] cameraId  ID of the camera whoose ip configuration is to be updated
- * \param[in] ip        the desired ip address
- * \param[in] subnet    the desired subnet mask
- * \param[in] gateway   the desired gateway. Optional, can be 0.
+ * \param[in] cameraId  ID of the desired camera whose IP configuration is to be updated
+ * \param[in] ip        For setting the IP configuration to:
+                                    1. a persistent IP: the desired IP address
+                                    2.            DHCP: the string "dhcp"
+                                    3.             LLA: a NULL pointer
+ * \param[in] subnet    The desired subnet mask in the case of setting a persistent IP, otherwise a NULL pointer
+ * \param[in] gateway   The desired gateway in the case of setting a persistent IP. Optional, can be a NULL pointer.
  *
  * \return error code reporting the success of the operation
 */
-VmbError_t SetPersistentIp(const char* const cameraId, const char* const ip, const char* const subnet, const char* const gateway);
+VmbError_t ConfigIp(const char* const cameraId, const char* const ip, const char* const subnet, const char* const gateway);
 
-#endif // PERSISTENT_IP_H_
+#endif // CONFIG_IP_H_
