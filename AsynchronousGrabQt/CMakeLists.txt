@@ -140,6 +140,10 @@ target_sources(AsynchronousGrabQt_VmbC PRIVATE
     ${UI_SOURCES}
 )
 
+if(UNIX)
+  target_link_options(AsynchronousGrabQt_VmbC PUBLIC -no-pic)
+endif()
+
 # source groups for IDE
 source_group(Resources FILES ${UI_FILES})
 source_group("Source Files\\UI" FILES ${UI_SOURCES})
