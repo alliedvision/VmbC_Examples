@@ -50,7 +50,7 @@
  * \brief Converts a hexadecimal MAC address into its decimal representation.
  * \param[in] strMAC    The hexadecimal (with preceding 0x) or decimal representation of the MAC
  *
- * \return 0 in case of error otherwise the decimal representation of the MAC address as integer
+ * \return 0 in case of error, otherwise the decimal representation of the MAC address as integer
 */
 unsigned long long MacAddr(const char* const strMAC)
 {
