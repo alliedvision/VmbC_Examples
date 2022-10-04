@@ -33,13 +33,13 @@
  *
  * By default the progress and error messages are printed out. Define _VMB_CONFIG_IP_NO_PRINT to disable the print out.
  *
- * \param[in] cameraId  ID of the desired camera whose IP configuration is to be updated
- * \param[in] ip        For setting the IP configuration to:
-                                    1. a persistent IP: the desired IP address
-                                    2.            DHCP: the string "dhcp"
-                                    3.             LLA: a NULL pointer
- * \param[in] subnet    The desired subnet mask in the case of setting a persistent IP, otherwise a NULL pointer
- * \param[in] gateway   The desired gateway in the case of setting a persistent IP. Optional, can be a NULL pointer.
+ * \param[in] cameraId ID of the desired camera whose IP configuration is to be updated
+ * \param[in] ip       For setting the IP configuration to:
+                                   1. a persistent IP: the desired IP address
+                                   2.            DHCP: the string "dhcp"
+                                   3.             LLA: a NULL pointer
+ * \param[in] subnet   The desired subnet mask in the case of setting a persistent IP, otherwise a NULL pointer
+ * \param[in] gateway  The desired gateway in the case of setting a persistent IP. Optional, can be a NULL pointer.
  *
  * \return error code reporting the success of the operation
 */

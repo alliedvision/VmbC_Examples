@@ -28,13 +28,13 @@
  * Starts the VmbC API. Writes the IP configuration into the camera's IP configuration registers.
  * The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param[in] cameraId  ID of the desired camera whose IP configuration is to be updated
- * \param[in] ip        For setting the IP configuration to:
-                                     1. a persistent IP: the desired IP address
-                                     2.            DHCP: the string "dhcp"
-                                     3.             LLA: a NULL pointer
- * \param[in] subnet    The desired subnet mask in the case of setting a persistent IP, otherwise a NULL pointer
- * \param[in] gateway   The desired gateway in the case of setting a persistent IP. Optional, can be a NULL pointer.
+ * \param[in] cameraId ID of the desired camera whose IP configuration is to be updated
+ * \param[in] ip       For setting the IP configuration to:
+                                    1. a persistent IP: the desired IP address
+                                    2.            DHCP: the string "dhcp"
+                                    3.             LLA: a NULL pointer
+ * \param[in] subnet   The desired subnet mask in the case of setting a persistent IP, otherwise a NULL pointer
+ * \param[in] gateway  The desired gateway in the case of setting a persistent IP. Optional, can be a NULL pointer.
  *
  * \return a code to return from main()
 */

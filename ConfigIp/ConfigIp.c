@@ -99,14 +99,14 @@ typedef struct CameraOpenResult
   * \brief Writes the desired persistent IP configuration. The new configuration will be retained and applied after a power-cycle of the camera.
  *         Assumes that the VmbC API is already started.
   *
-  * \param[in] cameraHandle  The handle of the desired camera
-  * \param[in] ip            The desired IP address
-  * \param[in] subnetMask    The desired subnet mask
-  * \param[in] gateway       The desired gateway
+  * \param[in] cameraHandle The handle of the desired camera
+  * \param[in] ip           The desired IP address
+  * \param[in] subnetMask   The desired subnet mask
+  * \param[in] gateway      The desired gateway
   *
   * \return Result of the operation
  */
-VmbError_t               SetPersistentIp(const VmbHandle_t cameraHandle, const char* const ip, const char* const subnet, const char* const gateway);
+VmbError_t SetPersistentIp(const VmbHandle_t cameraHandle, const char* const ip, const char* const subnet, const char* const gateway);
 
 /**
  * \brief Writes the DHCP IP configuration. The new configuration will be retained and applied after a power-cycle of the camera.
@@ -115,110 +115,110 @@ VmbError_t               SetPersistentIp(const VmbHandle_t cameraHandle, const c
   *
   * \return Result of the operation
  */
-VmbError_t              SetDhcp(const VmbHandle_t cameraHandle);
+VmbError_t                  SetDhcp(const VmbHandle_t cameraHandle);
 
 /**
  * \brief Writes the LLA IP configuration. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param[in] cameraHandle  The handle of the desired camera
+ * \param[in] cameraHandle The handle of the desired camera
   *
   * \return Result of the operation
  */
-VmbError_t              SetLla(const VmbHandle_t cameraHandle);
+VmbError_t SetLla(const VmbHandle_t cameraHandle);
 
 /**
  * \brief Open a camera using the given camera id
  *
- * \param[in] cameraId  The desired camera id
+ * \param[in] cameraId The desired camera id
  *
- * \return Information collected during the opening
+ * \return Information collected during opening
 */
-CameraOpenResult    OpenCamera(const char* const cameraId);
+CameraOpenResult OpenCamera(const char* const cameraId);
 
 /**
  * \brief Writes the desired IP configuration. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param[in] cameraHandle  The handle of the desired camera
- * \param[in] ip            The desired IP address in host byte order
- * \param[in] subnetMask    The desired subnet mask in host byte order
- * \param[in] gateway       The desired gateway in host byte order
+ * \param[in] cameraHandle The handle of the desired camera
+ * \param[in] ip           The desired IP address in host byte order
+ * \param[in] subnetMask   The desired subnet mask in host byte order
+ * \param[in] gateway      The desired gateway in host byte order
  *
  * \return Result of the operation
 */
-VmbError_t              WritePersistentIp(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
+VmbError_t WritePersistentIp(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
 
 /**
  * \brief Writes the desired IP configuration using standard features from the SFNC. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param[in] cameraHandle  The handle of the desired camera
- * \param[in] ip            The desired IP address in host byte order
- * \param[in] subnetMask    The desired subnet mask in host byte order
- * \param[in] gateway       The desired gateway in host byte order
+ * \param[in] cameraHandle The handle of the desired camera
+ * \param[in] ip           The desired IP address in host byte order
+ * \param[in] subnetMask   The desired subnet mask in host byte order
+ * \param[in] gateway      The desired gateway in host byte order
  *
  * \return Result of the operation
 */
-VmbError_t              WritePersistentIpFeatures(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
+VmbError_t WritePersistentIpFeatures(const VmbHandle_t cameraHandle, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
 
 /**
  * \brief Writes the desired IP configuration using standard camera registers. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param[in] cameraHandle  The handle of the desired camera
- * \param[in] ip            The desired IP address in host byte order
- * \param[in] subnetMask    The desired subnet mask in host byte order
- * \param[in] gateway       The desired gateway in host byte order
+ * \param[in] cameraHandle The handle of the desired camera
+ * \param[in] ip           The desired IP address in host byte order
+ * \param[in] subnetMask   The desired subnet mask in host byte order
+ * \param[in] gateway      The desired gateway in host byte order
  *
  * \return Result of the operation
 */
-VmbError_t              WritePersistentIpRegisters(const VmbHandle_t cameraHandle, const VmbUint32_t ip, const VmbUint32_t subnetMask, const VmbUint32_t gateway);
+VmbError_t WritePersistentIpRegisters(const VmbHandle_t cameraHandle, const VmbUint32_t ip, const VmbUint32_t subnetMask, const VmbUint32_t gateway);
 
 /**
  * \brief Writes data to a standard camera register
  *
- * \param[in] cameraHandle  The handle of the camera whose register shall be written to
- * \param[in] address       The address of the register to write to
- * \param[in] data          The data to write to the register
+ * \param[in] cameraHandle The handle of the camera whose register shall be written to
+ * \param[in] address      The address of the register to write to
+ * \param[in] data         The data to write to the register
  *
  * \return Result of the operation
 */
-VmbError_t              WriteRegister(const VmbHandle_t cameraHandle, const VmbUint64_t address, VmbUint32_t data);
+VmbError_t WriteRegister(const VmbHandle_t cameraHandle, const VmbUint64_t address, VmbUint32_t data);
 
 /**
  * \brief Write an interface configuration to the interface configuration register
  *
- * \param[in] cameraHandle                     The handle of the camera whose interface configuration register shall be written to
- * \param[in] SetInterfaceConfigRegisterValue  A pointer to a function which is given write access to a host-byte-ordered copy of the current configuration data as a parameter,
- *                                         i.e. this function's implementation defines the new configuration to be written
+ * \param[in] cameraHandle                    The handle of the camera whose interface configuration register shall be written to
+ * \param[in] SetInterfaceConfigRegisterValue A pointer to a function which is given write access to a host-byte-ordered copy of the current configuration data as a parameter,
+ *                                            i.e. this function's implementation defines the new configuration to be written
  *
  * \return Result of the operation
 */
-VmbError_t                                 WriteInterfaceConfigRegister(const VmbHandle_t cameraHandle, void (*SetInterfaceConfigRegisterValue) (VmbUint32_t* const));
+VmbError_t WriteInterfaceConfigRegister(const VmbHandle_t cameraHandle, void (*SetInterfaceConfigRegisterValue) (VmbUint32_t* const));
 
 /**
  * \brief Modifies an interface configuration to enable persistent IP, for passing to WriteInterfaceConfigRegister()
  *
- * \param[in,out] interfaceConfiguration  A pointer to the configuration data in host-byte-order
+ * \param[in,out] interfaceConfiguration A pointer to the configuration data in host-byte-order
  *
  * \return Nothing
 */
-void                              SetInterfaceConfigRegisterValue_PersistentIpConfig(VmbUint32_t* const interfaceConfiguration);
+void SetInterfaceConfigRegisterValue_PersistentIpConfig(VmbUint32_t* const interfaceConfiguration);
 
 /**
  * \brief Modifies an interface configuration to enable DHCP, for passing to WriteInterfaceConfigRegister()
  *
- * \param[in,out] interfaceConfiguration  A pointer to the configuration data in host-byte-order
+ * \param[in,out] interfaceConfiguration A pointer to the configuration data in host-byte-order
  *
  * \return Nothing
 */
-void                              SetInterfaceConfigRegisterValue_DhcpIpConfig(VmbUint32_t* const interfaceConfiguration);
+void SetInterfaceConfigRegisterValue_DhcpIpConfig(VmbUint32_t* const interfaceConfiguration);
 
 /**
  * \brief Modifies an interface configuration to enable LLA, for passing to WriteInterfaceConfigRegister()
  *
- * \param[in,out] interfaceConfiguration  A pointer to the configuration data in host-byte-order
+ * \param[in,out] interfaceConfiguration A pointer to the configuration data in host-byte-order
  *
  * \return Nothing
 */
-void                              SetInterfaceConfigRegisterValue_LlaIpConfig(VmbUint32_t* const interfaceConfiguration);
+void SetInterfaceConfigRegisterValue_LlaIpConfig(VmbUint32_t* const interfaceConfiguration);
 
 
 /*
