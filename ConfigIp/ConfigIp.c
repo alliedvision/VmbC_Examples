@@ -111,11 +111,11 @@ VmbError_t SetPersistentIp(const VmbHandle_t cameraHandle, const char* const ip,
 /**
  * \brief Writes the DHCP IP configuration. The new configuration will be retained and applied after a power-cycle of the camera.
  *
- * \param[in] cameraHandle  The handle of the desired camera
+ * \param[in] cameraHandle The handle of the desired camera
   *
   * \return Result of the operation
  */
-VmbError_t                  SetDhcp(const VmbHandle_t cameraHandle);
+VmbError_t SetDhcp(const VmbHandle_t cameraHandle);
 
 /**
  * \brief Writes the LLA IP configuration. The new configuration will be retained and applied after a power-cycle of the camera.
