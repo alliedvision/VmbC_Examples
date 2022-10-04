@@ -16,26 +16,26 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * \brief Definition of the function which implements the persistent ip example
+ * \brief Definition of the function which implements the Config IPs example
  */
 
 #include <stdio.h>
 
-#include "PersistentIpProg.h"
-#include "PersistentIp.h"
+#include "ConfigIpProg.h"
+#include "ConfigIp.h"
 
 #include <VmbC/VmbC.h>
 
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-int PersistentIpProg(const char* const strCameraId, const char* const strIP, const char* const strSubnet, const char* const strGateway)
+int ConfigIpProg(const char* const cameraId, const char* const ip, const char* const subnet, const char* const gateway)
 {
     /*
      * Initialize the VmbC API
      */
     VmbError_t err = VmbStartup(NULL);
-    const VmbBool_t apiStartFailed = (VmbErrorSuccess != err);
+    VmbBool_t apiStartFailed = (VmbErrorSuccess != err);
     if (apiStartFailed)
     {
         printf("VmbStartup failed. %s Error code: %d.", ErrorCodeToMessage(err), err);
@@ -44,7 +44,7 @@ int PersistentIpProg(const char* const strCameraId, const char* const strIP, con
 
     PrintVmbVersion();
 
-    err = SetPersistentIp(strCameraId, strIP, strSubnet, strGateway);
+    err = ConfigIp(cameraId, ip, subnet, gateway);
 
     VmbShutdown();
 

@@ -16,18 +16,18 @@
     <ClCompile Include="..\Common\AccessModeToString.c" />
     <ClCompile Include="..\Common\ListCameras.c" />
     <ClCompile Include="..\Common\IpAddressToHostByteOrderedInt.c" />
-    <ClCompile Include="PersistentIp.c" />
-    <ClCompile Include="PersistentIpProg.c" />
+    <ClCompile Include="ConfigIp.c" />
+    <ClCompile Include="ConfigIpProg.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PersistentIp.h" />
-    <ClInclude Include="PersistentIpProg.h" />
+    <ClInclude Include="ConfigIp.h" />
+    <ClInclude Include="ConfigIpProg.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{BFD957A5-DBF4-4DB5-810A-C8DF29432BC1}</ProjectGuid>
-    <RootNamespace>PersistentIp</RootNamespace>
+    <ProjectGuid>{2471A46B-1327-4894-A4CC-F5E88FB4B486}</ProjectGuid>
+    <RootNamespace>ConfigIp</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(PersistentIp LANGUAGES C)
+project(ConfigIp LANGUAGES C)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake")
     # read hardcoded package location information, if the example is still located in the original install location
@@ -17,26 +17,26 @@ if(NOT WIN32)
     list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
 endif()
 
-add_executable(PersistentIp_VmbC
+add_executable(ConfigIp_VmbC
     main.c
-    PersistentIp.c
-    PersistentIp.h
-    PersistentIpProg.c
-    PersistentIpProg.h
+    ConfigIp.c
+    ConfigIp.h
+    ConfigIpProg.c
+    ConfigIpProg.h
     ${COMMON_SOURCES}
 )
 
 source_group(Common FILES ${COMMON_SOURCES})
 
-target_compile_definitions(PersistentIp_VmbC PRIVATE _LITTLE_ENDIAN)
+target_compile_definitions(ConfigIp_VmbC PRIVATE _LITTLE_ENDIAN)
 
-target_link_libraries(PersistentIp_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
+target_link_libraries(ConfigIp_VmbC PRIVATE Vmb::C VmbCExamplesCommon)
 
 if (WIN32)
-    target_link_libraries(PersistentIp_VmbC PRIVATE Ws2_32)
+    target_link_libraries(ConfigIp_VmbC PRIVATE Ws2_32)
 endif()
 
-set_target_properties(PersistentIp_VmbC PROPERTIES
+set_target_properties(ConfigIp_VmbC PROPERTIES
     C_STANDARD 11
     VS_DEBUGGER_ENVIRONMENT "PATH=${VMB_BINARY_DIRS};$ENV{PATH}"
 )
