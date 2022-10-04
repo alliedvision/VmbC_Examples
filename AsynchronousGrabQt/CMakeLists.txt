@@ -141,7 +141,7 @@ target_sources(AsynchronousGrabQt_VmbC PRIVATE
 )
 
 if(UNIX)
-  target_link_options(AsynchronousGrabQt_VmbC PUBLIC -no-pic)
+  target_link_options(AsynchronousGrabQt_VmbC PUBLIC -no-pie)
 endif()
 
 # source groups for IDE
