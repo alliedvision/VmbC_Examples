@@ -32,7 +32,7 @@
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": {
           "type": "PATH",
-          "value": "$env{QT_PATH}:$env{VMB_API_PATH}"
+          "value": "$env{QT_PATH};$env{VMB_API_PATH}"
         }
       }
     },
