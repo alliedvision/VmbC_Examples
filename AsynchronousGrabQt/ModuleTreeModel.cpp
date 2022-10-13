@@ -192,7 +192,7 @@ namespace VmbC
             switch (m_role)
             {
             case Qt::ItemDataRole::DisplayRole:
-                m_result = QString(data.cameraName);
+                m_result = QString(data.modelName) + QString(" (") + QString(data.cameraName) + QString(")");
                 break;
             }
         }
