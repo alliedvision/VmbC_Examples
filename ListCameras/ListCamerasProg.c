@@ -59,8 +59,8 @@ char const* AccessModesToString(VmbAccessMode_t accessMode)
 
 int ListCamerasProg()
 {
-    VmbError_t err = VmbStartup(NULL);                                                      // Initialize the Vmb API
     PrintVmbVersion();
+    VmbError_t err = VmbStartup(NULL);
 
     if (VmbErrorSuccess == err)
     {
@@ -71,9 +71,13 @@ int ListCamerasProg()
         VmbTransportLayerInfo_t* transportLayers = NULL;
         VmbUint32_t transportLayerCount;
 
-        if ((err = ListCameras(&cameras, &cameraCount)) == VmbErrorSuccess
-            && (err = ListInterfaces(&interfaces, &interfaceCount)) == VmbErrorSuccess
-            && (err = ListTransportLayers(&transportLayers, &transportLayerCount)) == VmbErrorSuccess)
+        err  = ListTransportLayers(&transportLayers, &transportLayerCount);
+        if (err == VmbErrorSuccess) printf("TransportLayers found: %u\n", transportLayerCount);
+        err |= ListInterfaces(&interfaces, &interfaceCount);
+        if (err == VmbErrorSuccess) printf("Interfaces found: %u\n", interfaceCount);
+        err |= ListCameras(&cameras, &cameraCount);
+
+        if (err == VmbErrorSuccess)
         {
             printf("Cameras found: %u\n\n", cameraCount);
 
@@ -81,7 +85,7 @@ int ListCamerasProg()
             VmbInterfaceInfo_t* const interfacesEnd = interfaces + interfaceCount;
             VmbTransportLayerInfo_t* const tlsEnd = transportLayers + transportLayerCount;
 
-            for (VmbCameraInfo_t* cam = cameras; cam != camerasEnd; ++cam)                  // And print them out
+            for (VmbCameraInfo_t* cam = cameras; cam != camerasEnd; ++cam)
             {
                 printf("/// Camera Name            : %s\n"
                        "/// Model Name             : %s\n"
@@ -130,7 +134,8 @@ int ListCamerasProg()
                 }
                 else
                 {
-                    printf("/// @ Transport Layer ID   : %s\n\n\n", foundTl->transportLayerIdString);
+                    printf("/// @ Transport Layer ID   : %s\n", foundTl->transportLayerIdString);
+                    printf("/// @ Transport Layer Path : %s\n\n\n", foundTl->transportLayerPath);
                 }
             }
         }
@@ -143,7 +148,7 @@ int ListCamerasProg()
         free(interfaces);
         free(transportLayers);
         
-        VmbShutdown();                                                                      // Close Vmb
+        VmbShutdown();
     }
     else
     {

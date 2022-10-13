@@ -39,11 +39,11 @@ void PrintVmbVersion()
     VmbError_t          result = VmbVersionQuery(&versionInfo, sizeof(versionInfo));
     if(VmbErrorSuccess == result)
     {
-        printf("Vmb Version Major: %u Minor: %u Patch: %u\n", versionInfo.major, versionInfo.minor, versionInfo.patch);
+        printf("Vmb Version Major: %u Minor: %u Patch: %u\n\n", versionInfo.major, versionInfo.minor, versionInfo.patch);
     }
     else
     {
-        printf("VmbVersionQuery failed with reason: %s\n", ErrorCodeToMessage(result));
+        printf("VmbVersionQuery failed with reason: %s\n\n", ErrorCodeToMessage(result));
     }
 }
 
