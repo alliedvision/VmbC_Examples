@@ -150,12 +150,6 @@ int ChunkAccessProg()
                     printf("Payload Size   : %lld byte\n", PLS);
                     printf("ChunkModeActive: %d\n\n", cma);
 
-                    // for GigE: adjust package size
-                    if (cameraInfo.streamCount > 0)
-                    {
-                        VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
-                    }
-
                     // allocate and announce frame buffer
                     VmbFrame_t frames[NUM_FRAMES];
                     VmbUint32_t payloadSize = 0;
@@ -170,46 +164,66 @@ int ChunkAccessProg()
 
                     err = VmbCaptureStart(hCamera);
 
-                    // Queue frames and register FrameDoneCallback
-                    for (int i = 0; i < NUM_FRAMES; ++i)
+                    if (err == VmbErrorSuccess)
                     {
-                        err = VmbCaptureFrameQueue(hCamera, &frames[i], FrameDoneCallback);
-                    }
+                        // for GigE: adjust package size
+                        if (cameraInfo.streamCount > 0)
+                        {
+                            VmbInt64_t packetSize = 0;
+                            VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
+                            VmbFeatureIntGet(cameraInfo.streamHandles[0], "GVSPPacketSize", &packetSize);
+                            printf("GVSPAdjustPacketSize: %lld\n", packetSize);
+                        }
 
-                    // Start acquisition on the camera for 1sec
-                    printf("AcquisitionStart...\n");
-                    err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
+                        // Queue frames and register FrameDoneCallback
+                        for (int i = 0; i < NUM_FRAMES; ++i)
+                        {
+                            err = VmbCaptureFrameQueue(hCamera, &frames[i], FrameDoneCallback);
+                        }
 
-                    printf("Wait 1000ms...\n");
+                        // Start acquisition on the camera for 1sec
+                        printf("AcquisitionStart...\n");
+                        err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
+
+                        printf("Wait 1000ms...\n");
 #ifdef _WIN32
-                    Sleep(1000);
+                        Sleep(1000);
 #else
-                    usleep(100000);
+                        usleep(100000);
 #endif
-                    // Stop acquisition on the camera
-                    printf("AcquisitionStop...\n");
-                    err = VmbFeatureCommandRun(hCamera, "AcquisitionStop");
+                        // Stop acquisition on the camera
+                        printf("AcquisitionStop...\n");
+                        err = VmbFeatureCommandRun(hCamera, "AcquisitionStop");
 
-                    // Cleanup
-                    printf("VmbCaptureEnd...\n");
-                    err = VmbCaptureEnd(hCamera);
+                        // Cleanup
+                        printf("VmbCaptureEnd...\n");
+                        err = VmbCaptureEnd(hCamera);
 
-                    printf("VmbCaptureQueueFlush...\n");
-                    err = VmbCaptureQueueFlush(hCamera);
+                        printf("VmbCaptureQueueFlush...\n");
+                        err = VmbCaptureQueueFlush(hCamera);
 
-                    printf("VmbFrameRevoke...\n");
-                    for (int i = 0; i < NUM_FRAMES; ++i)
+                        printf("VmbFrameRevoke...\n");
+                        for (int i = 0; i < NUM_FRAMES; ++i)
+                        {
+                            err = VmbFrameRevoke(hCamera, frames + i);
+                            free(frames[i].buffer);
+                        }
+                    }
+                    else
                     {
-                        err = VmbFrameRevoke(hCamera, frames+i);
-                        free(frames[i].buffer);
+                        printf("Error %d in VmbCaptureStart\n", err);
                     }
 
                     err = VmbCameraClose(hCamera);
                 }
                 else
                 {
-                    printf("Error retrieving info for the camera\n");
+                    printf("Error %d in VmbCameraInfoQueryByHandle\n", err);
                 }
+            }
+            else
+            {
+                printf("Error %d in VmbCameraOpen\n", err);
             }
         }
 
