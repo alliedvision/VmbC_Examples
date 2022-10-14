@@ -150,6 +150,24 @@ int ChunkAccessProg()
                     printf("Payload Size   : %lld byte\n", PLS);
                     printf("ChunkModeActive: %d\n\n", cma);
 
+                    // Try to execute custom command available to Allied Vision GigE Cameras to ensure the packet size is chosen well
+                    if (VmbErrorSuccess == VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize"))
+                    {
+                        VmbBool_t isCommandDone = VmbBoolFalse;
+                        do
+                        {
+                            if (VmbErrorSuccess != VmbFeatureCommandIsDone(cameraInfo.streamHandles[0],
+                                "GVSPAdjustPacketSize",
+                                &isCommandDone))
+                            {
+                                break;
+                            }
+                        } while (VmbBoolFalse == isCommandDone);
+                        VmbInt64_t packetSize = 0;
+                        VmbFeatureIntGet(cameraInfo.streamHandles[0], "GVSPPacketSize", &packetSize);
+                        printf("GVSPAdjustPacketSize: %lld\n", packetSize);
+                    }
+
                     // allocate and announce frame buffer
                     VmbFrame_t frames[NUM_FRAMES];
                     VmbUint32_t payloadSize = 0;
@@ -166,14 +184,6 @@ int ChunkAccessProg()
 
                     if (err == VmbErrorSuccess)
                     {
-                        // for GigE: adjust package size
-                        if (cameraInfo.streamCount > 0)
-                        {
-                            VmbInt64_t packetSize = 0;
-                            VmbFeatureCommandRun(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
-                            VmbFeatureIntGet(cameraInfo.streamHandles[0], "GVSPPacketSize", &packetSize);
-                            printf("GVSPAdjustPacketSize: %lld\n", packetSize);
-                        }
 
                         // Queue frames and register FrameDoneCallback
                         for (int i = 0; i < NUM_FRAMES; ++i)

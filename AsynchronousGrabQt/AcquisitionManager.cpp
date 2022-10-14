@@ -152,6 +152,24 @@ namespace VmbC
 
             if (!errorHappened)
             {
+                // execute packet size adjustment, if this is a AVT GigE camera
+                if (VmbErrorSuccess == VmbFeatureCommandRun(refreshedCameraInfo.streamHandles[0], AdjustPackageSizeCommand))
+                {
+                    VmbBool_t isCommandDone = VmbBoolFalse;
+                    do
+                    {
+                        if (VmbErrorSuccess != VmbFeatureCommandIsDone(refreshedCameraInfo.streamHandles[0],
+                            AdjustPackageSizeCommand,
+                            &isCommandDone))
+                        {
+                            break;
+                        }
+                    } while (VmbBoolFalse == isCommandDone);
+                    VmbInt64_t packetSize = 0;
+                    VmbFeatureIntGet(refreshedCameraInfo.streamHandles[0], "GVSPPacketSize", &packetSize);
+                    printf("GVSPAdjustPacketSize: %lld\n", packetSize);
+                }
+
                 try
                 {
                     m_streamLife.reset(new StreamLifetime(refreshedCameraInfo.streamHandles[0], m_cameraHandle, acquisitionManager));
@@ -254,17 +272,6 @@ namespace VmbC
             if (error != VmbErrorSuccess)
             {
                 throw VmbException::ForOperation(error, "VmbCaptureStart");
-            }
-
-            // execute packet size adjustment, if this is a AVT GigE camera
-            VmbCameraInfo_t cameraInfo;
-            VmbCameraInfoQueryByHandle(camHandle, &cameraInfo, sizeof(cameraInfo));
-            try
-            {
-                RunCommand(cameraInfo.streamHandles[0], "GVSPAdjustPacketSize");
-            }
-            catch (VmbException const&)
-            {
             }
 
             size_t numberEnqueued = 0;

@@ -369,7 +369,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
         g_acquiring                = VmbBoolFalse;
         g_cameraHandle             = NULL;
         memset(g_frames, 0, sizeof(g_frames));
-        g_frameTime                = 0.0;              
+        g_frameTime                = 0.0;
         g_frameTimeValid           = VmbBoolFalse;
         g_frameID                  = 0;
         g_frameIdValid             = VmbBoolFalse;
@@ -423,78 +423,95 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
 
                 if (VmbErrorSuccess == err)
                 {
-                    VmbUint32_t payloadSize = 0;
-
-                    // determine the required buffer size
-                    err = VmbPayloadSizeGet(g_cameraHandle, &payloadSize);
-                    if (VmbErrorSuccess == err)
+                    // Try to execute custom command available to Allied Vision GigE Cameras to ensure the packet size is chosen well
+                    VmbCameraInfo_t info;
+                    err = VmbCameraInfoQuery(cameraId, &info, sizeof(info));
+                    VmbHandle_t stream = info.streamHandles[0];
+                    if (VmbErrorSuccess == VmbFeatureCommandRun(stream, ADJUST_PACKAGE_SIZE_COMMAND))
                     {
-                        for (size_t i = 0; i < NUM_FRAMES; i++)
+                        VmbBool_t isCommandDone = VmbBoolFalse;
+                        do
                         {
-                            if (options->allocAndAnnounce)
+                            if (VmbErrorSuccess != VmbFeatureCommandIsDone(stream,
+                                ADJUST_PACKAGE_SIZE_COMMAND,
+                                &isCommandDone))
                             {
-                                g_frames[i].buffer = NULL;
-                            }
-                            else
-                            {
-                                g_frames[i].buffer = malloc((VmbUint32_t)payloadSize);
-                                if (NULL == g_frames[i].buffer)
-                                {
-                                    err = VmbErrorResources;
-                                    break;
-                                }
-                            }
-                            g_frames[i].bufferSize = payloadSize;
-                            g_frames[i].context[FRAME_CONTEXT_OPTIONS_INDEX] = options;
-                            g_frames[i].context[FRAME_CONTEXT_STREAM_STATISTICS_INDEX] = statistics;
-
-                            // Announce Frame
-                            err = VmbFrameAnnounce(g_cameraHandle, &g_frames[i], (VmbUint32_t)sizeof(VmbFrame_t));
-                            if (VmbErrorSuccess != err)
-                            {
-                                free(g_frames[i].buffer);
-                                memset(&g_frames[i], 0, sizeof(VmbFrame_t));
                                 break;
                             }
-                        }
+                        } while (VmbBoolFalse == isCommandDone);
+                        VmbInt64_t packetSize = 0;
+                        VmbFeatureIntGet(stream, "GVSPPacketSize", &packetSize);
+                        printf("GVSPAdjustPacketSize: %lld\n", packetSize);
+                    }
 
+                    if (VmbErrorSuccess == err)
+                    {
+                        VmbUint32_t payloadSize = 0;
+
+                        // determine the required buffer size
+                        err = VmbPayloadSizeGet(g_cameraHandle, &payloadSize);
                         if (VmbErrorSuccess == err)
                         {
-                            // Start Capture Engine
-                            err = VmbCaptureStart(g_cameraHandle);
-                            if (VmbErrorSuccess == err)
+                            for (size_t i = 0; i < NUM_FRAMES; i++)
                             {
-                                VmbCameraInfo_t info;
-                                VmbInt64_t packetSize = 0;
-                                VmbCameraInfoQuery(cameraId, &info, sizeof(info));
-                                VmbFeatureCommandRun(info.streamHandles[0], "GVSPAdjustPacketSize");
-                                VmbFeatureIntGet(info.streamHandles[0], "GVSPPacketSize", &packetSize);
-                                printf("GVSPAdjustPacketSize: %lld\n", packetSize);
-
-                                g_streaming = VmbBoolTrue;
-                                for (size_t i = 0; i < NUM_FRAMES; i++)
+                                if (options->allocAndAnnounce)
                                 {
-                                    // Queue Frame
-                                    err = VmbCaptureFrameQueue(g_cameraHandle, &g_frames[i], &FrameCallback);
-                                    if (VmbErrorSuccess != err)
+                                    g_frames[i].buffer = NULL;
+                                }
+                                else
+                                {
+                                    g_frames[i].buffer = malloc((VmbUint32_t)payloadSize);
+                                    if (NULL == g_frames[i].buffer)
                                     {
+                                        err = VmbErrorResources;
                                         break;
                                     }
                                 }
+                                g_frames[i].bufferSize = payloadSize;
+                                g_frames[i].context[FRAME_CONTEXT_OPTIONS_INDEX] = options;
+                                g_frames[i].context[FRAME_CONTEXT_STREAM_STATISTICS_INDEX] = statistics;
 
-                                if (VmbErrorSuccess == err)
+                                // Announce Frame
+                                err = VmbFrameAnnounce(g_cameraHandle, &g_frames[i], (VmbUint32_t)sizeof(VmbFrame_t));
+                                if (VmbErrorSuccess != err)
                                 {
-                                    // Start Acquisition
-                                    err = VmbFeatureCommandRun(g_cameraHandle, "AcquisitionStart");
-                                    if (VmbErrorSuccess == err)
-                                    {
-                                        g_acquiring = VmbBoolTrue;
-                                    }
+                                    free(g_frames[i].buffer);
+                                    memset(&g_frames[i], 0, sizeof(VmbFrame_t));
+                                    break;
                                 }
                             }
-                            else
+
+                            if (VmbErrorSuccess == err)
                             {
-                                printf("Error %d in VmbCaptureStart\n", err);
+                                // Start Capture Engine
+                                err = VmbCaptureStart(g_cameraHandle);
+                                if (VmbErrorSuccess == err)
+                                {
+                                    g_streaming = VmbBoolTrue;
+                                    for (size_t i = 0; i < NUM_FRAMES; i++)
+                                    {
+                                        // Queue Frame
+                                        err = VmbCaptureFrameQueue(g_cameraHandle, &g_frames[i], &FrameCallback);
+                                        if (VmbErrorSuccess != err)
+                                        {
+                                            break;
+                                        }
+                                    }
+
+                                    if (VmbErrorSuccess == err)
+                                    {
+                                        // Start Acquisition
+                                        err = VmbFeatureCommandRun(g_cameraHandle, "AcquisitionStart");
+                                        if (VmbErrorSuccess == err)
+                                        {
+                                            g_acquiring = VmbBoolTrue;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    printf("Error %d in VmbCaptureStart\n", err);
+                                }
                             }
                         }
                     }
