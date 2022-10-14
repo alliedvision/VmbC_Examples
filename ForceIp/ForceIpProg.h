@@ -28,13 +28,14 @@
  * Starts the VmbC API. Sends a force IP command to apply the given ip configuration.
  * The configuration will be lost after a power-cycle of the camera.
  *
- * \param[in] mac       mac address of the desired camera whose ip configuration is to be updated
- * \param[in] ip        the desired ip address
- * \param[in] subnet    the desired subnet mask
- * \param[in] gateway   the desired gateway. Optional, can be 0.
+ * \param[in] tl      If not NULL, perform the operation using a transport layer, otherwise use an interface
+ * \param[in] mac     Mac address of the desired camera whose ip configuration is to be updated
+ * \param[in] ip      The desired ip address
+ * \param[in] subnet  The desired subnet mask
+ * \param[in] gateway The desired gateway. Optional, can be 0.
  *
  * \return a code to return from main()
 */
-int ForceIpProg(const char* const mac, const char* const ip, const char* const subnet, const char* const gateway);
+int ForceIpProg(const char* const tl, const char* const strMAC, const char* const strIP, const char* const strSubnet, const char* const strGateway);
 
 #endif // FORCE_IP_PROG_H_

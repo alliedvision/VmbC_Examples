@@ -29,7 +29,7 @@
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-int ForceIpProg(const char* const strMAC, const char* const strIP, const char* const strSubnet, const char* const strGateway)
+int ForceIpProg(const char* const tl, const char* const strMAC, const char* const strIP, const char* const strSubnet, const char* const strGateway)
 {
     /*
      * Initialize the VmbC API
@@ -44,7 +44,7 @@ int ForceIpProg(const char* const strMAC, const char* const strIP, const char* c
 
     PrintVmbVersion();
 
-    err = ForceIp(strMAC, strIP, strSubnet, strGateway);
+    err = ForceIp(tl == NULL ? VmbBoolFalse: VmbBoolTrue, strMAC, strIP, strSubnet, strGateway);
 
     VmbShutdown();
 
