@@ -31,12 +31,10 @@ int main( int argc, char* argv[] )
     printf("/////////////////////////////////\n\n");
 
     if (4 > argc
-        || 6 < argc)
+        || 5 < argc)
     {
-        printf("Usage: ForceIp_VmbC [tl] <MAC> <IP> <Subnet> [<Gateway>]\n\n");
+        printf("Usage: ForceIp_VmbC <MAC> <IP> <Subnet> [<Gateway>]\n\n");
         printf("Parameters:\n");
-        printf("tl         If absent, the operation is performed using the camera's interface.\n");
-        printf("           If present, the camera's transport layer is used.\n");
         printf("<MAC>      The MAC address of the camera whose IP address shall be changed.\n");
         printf("           Either hexadecimal with preceding 0x or decimal.\n");
         printf("<IP>       The new IPv4 address of the camera in numbers and dots notation.\n");
@@ -49,12 +47,5 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
-    if (strcmp(argv[1], "tl") == 0)
-    {
-        return ForceIpProg(argv[1], argv[2], argv[3], argv[4], (argc == 6) ? argv[5] : NULL);
-    }
-    else
-    {
-        return ForceIpProg(NULL, argv[1], argv[2], argv[3], (argc == 5) ? argv[4] : NULL);
-    }
+    return ForceIpProg(argv[1], argv[2], argv[3], (argc == 5) ? argv[4] : NULL);
 }
