@@ -331,7 +331,7 @@ VmbError_t SetLla(const VmbHandle_t cameraHandle)
         RETURN_ON_ERROR(WriteInterfaceConfigRegister(cameraHandle, SetInterfaceConfigRegisterValue_LlaIpConfig));
     }
 
-    return error;
+    return VmbErrorSuccess;
 }
 
 CameraOpenResult OpenCamera(const char* const cameraId)
@@ -339,6 +339,20 @@ CameraOpenResult OpenCamera(const char* const cameraId)
     CameraOpenResult result;
     memset(&result, 0, sizeof(result));
     result.error = VmbErrorUnknown;
+
+    /*
+     * Check that the camera is not opened by another application or located in a different subnet
+     */
+    VmbCameraInfo_t info;
+    RETURN_SPECIFIC_AND_PRINT_ON_ERROR(result.error = VmbCameraInfoQuery(cameraId, &info, sizeof(info)), result);
+
+    VmbBool_t noFullAccess = ((info.permittedAccess & VmbAccessModeFull) != VmbAccessModeFull);
+    if (noFullAccess)
+    {
+        result.error = VmbErrorInvalidAccess;
+        VMB_PRINT("Not able to open the camera. The camera is used by a different application or located in a different subnet.");
+        return result;
+    }
 
     /*
      * Open the camera for later access

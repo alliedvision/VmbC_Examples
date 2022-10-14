@@ -46,8 +46,7 @@ int main(int argc, char* argv[])
     {
         printf("Usage: ConfigIp_VmbC <cameraId> [dhcp | <IP> <Subnet> [<Gateway>]]\n\n");
         printf("Parameters:\n");
-        printf("<cameraId> The MAC address of the camera whose IP configuration protocol shall be changed.\n");
-        printf("           Either hexadecimal with preceding 0x or decimal.\n");
+        printf("<cameraId> The ID of the camera whose IP configuration shall be changed. The camera must be on the hosts subnet.\n");
         printf("dhcp       Enable DHCP in the camera.\n");
         printf("<IP>       For enabling persistent IP: The new IPv4 address of the camera in numbers and dots notation.\n");
         printf("<Subnet>   For enabling persistent IP: The new network mask of the camera in numbers and dots notation.\n");
