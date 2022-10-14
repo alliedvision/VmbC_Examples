@@ -41,7 +41,7 @@ int main( int argc, char* argv[] )
         printf("<Subnet>   The new network mask of the camera in numbers and dots notation.\n");
         printf("<Gateway>  The address of a possible gateway if the camera is not connected\n");
         printf("           to the host PC directly.\n\n");
-        printf("For example to change the IP address of a camera with the MAC address 0x0F3101D540\nto 169.254.1.1 in a class B network using an interface call:\n\n");
+        printf("For example to change the IP address of a camera with the MAC address 0x0F3101D540\nto 169.254.1.1 in a class B network call:\n\n");
         printf("ForceIp_VmbC 0x0F3101D540 169.254.1.1 255.255.0.0\n\n");
 
         return 1;
