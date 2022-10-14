@@ -29,7 +29,7 @@
  *
  * Sends a force IP command to apply the given ip configuration.
  * The operation is performed on each interface that the camera is connected to until success,
- * but if the operation fails on all these interfaces then the operation tries each Vimba X transport layer until success.
+ * but if the operation fails on all these interfaces then the operation tries each Vimba X and Vimba GigE transport layer until success.
  * The configuration will be lost after a power-cycle of the camera.
  * Assumes that the VmbC API is already started.
  *

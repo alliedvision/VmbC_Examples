@@ -187,7 +187,7 @@ VmbError_t GetRelatedTls(const VmbInt64_t mac, TlSearchResult** tlVimbaXSearchRe
 
 /**
  * \brief Send a force ip command to a camera with the given mac address using an interface.
- * A check that the camera is connected to the interface using the camera's mac address is performed first.
+ * A check that the camera's mac is found by the interface is performed first.
  * The new configuration will be lost after a power-cycle of the camera.
  *
  * \param[in] interfaceHandle Handle of the interface that should be used to send the command
@@ -202,7 +202,7 @@ VmbError_t SendForceIpViaInterface(const VmbHandle_t interfaceHandle, const VmbI
 
 /**
  * \brief Send a force ip command to a camera with the given mac address using a transport layer.
- * The camera is first connected to the transport layer using the camera's mac address.
+ * The camera's mac is first communicated to the transport layer.
  * The new configuration will be lost after a power-cycle of the camera.
  *
  * \param[in] tlHande    Handle of the interface that should be used to send the command
@@ -216,7 +216,7 @@ VmbError_t SendForceIpViaInterface(const VmbHandle_t interfaceHandle, const VmbI
 VmbError_t SendForceIpViaTl(const VmbHandle_t tlHandle, const VmbInt64_t mac, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
 
 /**
- * \brief Send a force ip command to a camera once the camera is known to be connected to the entity.
+ * \brief Send a force ip command to a camera once the camera's mac is known to the entity.
  *  The new configuration will be lost after a power-cycle of the camera.
  *
  * \param[in] hande      Handle of the entity that should be used to send the command
