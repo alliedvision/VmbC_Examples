@@ -1,5 +1,5 @@
 /*=============================================================================
-  Copyright (C) 2021 Allied Vision Technologies.  All Rights Reserved.
+  Copyright (C) 2021-2022 Allied Vision Technologies.  All Rights Reserved.
 
   Redistribution of this file, in original or modified form, without
   prior written consent of Allied Vision Technologies is prohibited.
@@ -25,6 +25,7 @@
 
 =============================================================================*/
 
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,6 +55,23 @@ void PrintUsage()
            VMB_PARAM_USAGE, VMB_PARAM_TL, VMB_PARAM_INTERFACE, VMB_PARAM_REMOTE_DEVICE, VMB_PARAM_LOCAL_DEVICE, VMB_PARAM_STREAM);
 }
 
+/**
+ * Try to apply a locale that allows for UTF-8 string output 
+ */
+void TrySetUtf8CompatibleLocale()
+{
+    if (
+        (setlocale(LC_CTYPE, ".UTF8") == NULL)      // should work for Windows
+        && (setlocale(LC_CTYPE, "C.UTF8") == NULL)  // may work for Linux
+        )
+    {
+        // Maybe the user preferred locale supports UTF-8
+        setlocale(LC_CTYPE, "");
+
+        fprintf(stderr, "WARNING: could not set UTF-8 compatible locale; Strings containing non-ASCII characters may be displayed incorrectly\n");
+    }
+}
+
 int main(int argc, char* argv[])
 {
     printf( "\n" );
@@ -64,6 +82,8 @@ int main(int argc, char* argv[])
 
     PrintVmbVersion();
     printf("\n");
+
+    TrySetUtf8CompatibleLocale();
 
     if(argc < 2)
     {
