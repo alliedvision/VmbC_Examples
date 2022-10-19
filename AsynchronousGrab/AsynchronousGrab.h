@@ -59,9 +59,8 @@ typedef struct FrameStatistics
  * 
  * Note: Vmb has to be uninitialized and the camera has to allow access mode full
  * 
- * \param[in] pCameraId               zero terminated C string with the camera id for the camera to be used
- * \param[in] eFrameInfos             enumeration value for the frame infos to show for received frames
- * \param[in] bEnableColorProcessing  toggle for enabling image processing, in this case just swapping red with blue
+ * \param[in] options                 struct with command line options (e.g. frameInfos, enableColorProcessing, allocAndAnnounce etc.)
+ * \param[in] statistics              struct with stream statistics (framesReceived, framesMissing)
  */
 VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, StreamStatistics* statistics);
 

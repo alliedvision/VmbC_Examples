@@ -72,6 +72,9 @@ mtx_t                   g_frameInfoMutex;                               // mutex
 
 volatile atomic_flag    g_shutdown                 = ATOMIC_FLAG_INIT;  // flag set to true, if a thread initiates the shutdown 
 
+VmbBool_t               g_bUseAllocAndAnnouce      = VmbBoolFalse;      // Holds the optional decision about frame alloc and announce mode to access it from StopContinuousImageAcquisition()
+
+
 #ifdef _WIN32
 double          g_frequency                = 0.0;              //Frequency of tick counter in _WIN32
 #else
@@ -373,6 +376,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
         g_frameTimeValid           = VmbBoolFalse;
         g_frameID                  = 0;
         g_frameIdValid             = VmbBoolFalse;
+        g_bUseAllocAndAnnouce      = options->allocAndAnnounce;
 
 #ifdef _WIN32
         LARGE_INTEGER nFrequency;
@@ -444,6 +448,17 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                         printf("GVSPAdjustPacketSize: %lld\n", packetSize);
                     }
 
+                    // Evaluate required alignment for frame buffer in case announce frame method is used
+                    VmbUint32_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
+                    if (VmbErrorSuccess != VmbFeatureIntGet(stream, "StreamBufferAlignment", &nStreamBufferAlignment))
+                        nStreamBufferAlignment = 1;
+
+                    if (nStreamBufferAlignment < 1)
+                        nStreamBufferAlignment = 1;
+
+                    if (!options->allocAndAnnounce)
+                        printf("StreamBufferAlignment=%lld\n", nStreamBufferAlignment);
+
                     if (VmbErrorSuccess == err)
                     {
                         VmbUint32_t payloadSize = 0;
@@ -460,7 +475,11 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                                 }
                                 else
                                 {
-                                    g_frames[i].buffer = malloc((VmbUint32_t)payloadSize);
+#ifdef _WIN32
+                                    g_frames[i].buffer = (unsigned char*)_aligned_malloc((size_t)payloadSize, (size_t)nStreamBufferAlignment);
+#else
+                                    g_frames[i].buffer = (unsigned char*)aligned_alloc(nStreamBufferAlignment, (VmbUint32_t)payloadSize);
+#endif
                                     if (NULL == g_frames[i].buffer)
                                     {
                                         err = VmbErrorResources;
@@ -570,9 +589,13 @@ void StopContinuousImageAcquisition()
 
                 for (i = 0; i < NUM_FRAMES; i++)
                 {
-                    if (NULL != g_frames[i].buffer)
+                    if (NULL != g_frames[i].buffer && !g_bUseAllocAndAnnouce)
                     {
+#ifdef _WIN32
+                        _aligned_free(g_frames[i].buffer);
+#else
                         free(g_frames[i].buffer);
+#endif
                         memset(&g_frames[i], 0, sizeof(VmbFrame_t));
                     }
                 }
