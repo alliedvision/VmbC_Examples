@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(ListFeatures LANGUAGES C)
+project(AsynchronousGrab LANGUAGES C)
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake")
     # read hardcoded package location information, if the example is still located in the original install location
