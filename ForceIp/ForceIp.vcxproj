@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\ErrorCodeToMessage.c" />
+    <ClCompile Include="..\Common\ListTransportLayers.c" />
     <ClCompile Include="..\Common\PrintVmbVersion.c" />
     <ClCompile Include="..\Common\AccessModeToString.c" />
     <ClCompile Include="..\Common\ListCameras.c" />

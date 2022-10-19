@@ -92,7 +92,7 @@ unsigned long long MacAddr(const char* const strMAC)
                                     } \
                                 }
 
-#define _ON_ERROR_WITH_PRINT(op, onError) _ON_ERROR(op, VMB_PRINT("%s failed. %s Error code: %d.\n", #op, ErrorCodeToMessage(error), error); onError)
+#define _ON_ERROR_WITH_PRINT(op, onError) _ON_ERROR(op, VMB_PRINT("%s failed. %s Error code: %d. \n", #op, ErrorCodeToMessage(error), error); onError)
 
 #define RETURN_ON_ERROR(op)                             _ON_ERROR(op, return error;)
 #define CONTINUE_ON_ERROR(op)                           _ON_ERROR(op, continue;)
@@ -112,8 +112,9 @@ unsigned long long MacAddr(const char* const strMAC)
  */
 typedef struct InterfaceSearchResult
 {
-    VmbInterfaceInfo_t  info;     //!< Information about the found interface
-    char*               cameraId; //!< Camera ID as reported by the interface
+    VmbInterfaceInfo_t  info;           //!< Information about the found interface
+    char*               cameraId;       //!< Camera ID as reported by the interface
+    VmbInt64_t          deviceSelector; //!< The configured DeviceSelector the camera was found with
 } InterfaceSearchResult;
 
 /**
@@ -170,12 +171,13 @@ VmbError_t ForceIpViaTl(const VmbInt64_t macValue, const VmbInt64_t ipValue, con
  *
  * \return Result of the operation
 */
-VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** interfaceSearchResults, VmbUint32_t* interfaceSearchResultsCount);
+VmbError_t SearchCamerasInterface(const VmbInt64_t mac, InterfaceSearchResult** interfaceSearchResults, VmbUint32_t* interfaceSearchResultsCount);
 
 /**
  * \brief Search for transport layers to which a camera with the given mac address is connected
  *
- * \param[in] mac                         The camera's mac address
+ * \param[in]  tls                        The available transport layers
+ * \param[in]  tlCount                    The number of available transport layers
  * \param[out] tlVimbaXSearchResults      The Vimba X transport layers to which the camera is connected.
  * \param[out] tlVimbaXSearchResultsCount The number of Vimba X transport layers to which the camera is connected
  * \param[out] tlVimbaSearchResults       The Vimba transport layers to which the camera is connected.
@@ -183,14 +185,14 @@ VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** in
  *
  * \return Result of the operation
 */
-VmbError_t GetRelatedTls(const VmbInt64_t mac, TlSearchResult** tlVimbaXSearchResult, VmbUint32_t* tlVimbaXSearchResultsCount, TlSearchResult** tlVimbaSearchResult, VmbUint32_t* tlVimbaSearchResultsCount);
+VmbError_t GetRelatedTls(const VmbTransportLayerInfo_t* const tls, const VmbUint32_t tlCount, TlSearchResult** tlVimbaXSearchResult, VmbUint32_t* tlVimbaXSearchResultsCount, TlSearchResult** tlVimbaSearchResult, VmbUint32_t* tlVimbaSearchResultsCount);
 
 /**
  * \brief Send a force ip command to a camera with the given mac address using an interface.
  * A check that the camera's mac is found by the interface is performed first.
  * The new configuration will be lost after a power-cycle of the camera.
  *
- * \param[in] interfaceHandle Handle of the interface that should be used to send the command
+ * \param[in] interfaceData   Information about the interface that should be used to send the command
  * \param[in] mac             The mac address of the camera
  * \param[in] ip              The desired ip address
  * \param[in] subnetMask      The desired subnet mask
@@ -198,7 +200,7 @@ VmbError_t GetRelatedTls(const VmbInt64_t mac, TlSearchResult** tlVimbaXSearchRe
  *
  * \return Result of the operation
 */
-VmbError_t SendForceIpViaInterface(const VmbHandle_t interfaceHandle, const VmbInt64_t mac, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
+VmbError_t SendForceIpViaInterface(const InterfaceSearchResult* interfaceData, const VmbInt64_t mac, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway);
 
 /**
  * \brief Send a force ip command to a camera with the given mac address using a transport layer.
@@ -255,7 +257,7 @@ VmbError_t ForceIp(const char* const mac, const char* const ip, const char* cons
 
     if(error != VmbErrorSuccess)
     {
-        VMB_PRINT("ForceIp using interfaces failed, trying transport layers.\n");
+        VMB_PRINT("ForceIp using interfaces failed, trying transport layers.\n\n");
         error = ForceIpViaTl(macValue, ipValue, subnetMaskValue, gatewayValue);
     }
 
@@ -270,17 +272,17 @@ VmbError_t ForceIpViaInterface(const VmbInt64_t macValue, const VmbInt64_t ipVal
      */
     {
         VmbCameraInfo_t* cameras = 0;
-        VmbUint32_t         cameraCount = 0;
+        VmbUint32_t cameraCount = 0;
         RETURN_ON_ERROR(ListCameras(&cameras, &cameraCount));
         free(cameras);
     }
 
     /*
-     * Get the interfaces to which the camera is connecteds.
+     * Get the interfaces to which the camera is connected.
      */
     InterfaceSearchResult* interfaceSearchResults = 0;
     VmbUint32_t interfaceSearchResultsCount = 0;
-    RETURN_AND_PRINT_ON_ERROR(GetRelatedInterfaces(macValue, &interfaceSearchResults, &interfaceSearchResultsCount));
+    RETURN_AND_PRINT_ON_ERROR(SearchCamerasInterface(macValue, &interfaceSearchResults, &interfaceSearchResultsCount));
 
     for(VmbUint32_t interfaceSearchResultsIndex = 0; interfaceSearchResultsIndex < interfaceSearchResultsCount; interfaceSearchResultsIndex++)
     {
@@ -293,7 +295,7 @@ VmbError_t ForceIpViaInterface(const VmbInt64_t macValue, const VmbInt64_t ipVal
     VmbError_t error = VmbErrorSuccess;
     for (VmbUint32_t interfaceSearchResultsIndex = 0; interfaceSearchResultsIndex < interfaceSearchResultsCount; interfaceSearchResultsIndex++)
     {
-        error = SendForceIpViaInterface(interfaceSearchResults[interfaceSearchResultsIndex].info.interfaceHandle, macValue, ipValue, subnetMaskValue, gatewayValue);
+        error = SendForceIpViaInterface(&(interfaceSearchResults[interfaceSearchResultsIndex]), macValue, ipValue, subnetMaskValue, gatewayValue);
         if (error == VmbErrorSuccess)
         {
             VMB_PRINT("Operation succeeded using interface \"%s\"\n", interfaceSearchResults[interfaceSearchResultsIndex].info.interfaceName);
@@ -307,13 +309,20 @@ VmbError_t ForceIpViaInterface(const VmbInt64_t macValue, const VmbInt64_t ipVal
 VmbError_t ForceIpViaTl(const VmbInt64_t macValue, const VmbInt64_t ipValue, const VmbInt64_t subnetMaskValue, const VmbInt64_t gatewayValue)
 {
     /*
+     * Get a list of all available transport layers.
+     */
+    VmbTransportLayerInfo_t* tls = 0;
+    VmbUint32_t              tlCount = 0;
+    RETURN_AND_PRINT_ON_ERROR(ListTransportLayers(&tls, &tlCount));
+
+    /*
      * Get the Vimba X and Vimba transport layers.
      */
     TlSearchResult* tlVimbaXSearchResults = 0;
     VmbUint32_t tlVimbaXSearchResultsCount = 0;
     TlSearchResult* tlVimbaSearchResults = 0;
     VmbUint32_t tlVimbaSearchResultsCount = 0;
-    RETURN_AND_PRINT_ON_ERROR(GetRelatedTls(macValue, &tlVimbaXSearchResults, &tlVimbaXSearchResultsCount, &tlVimbaSearchResults, &tlVimbaSearchResultsCount));
+    RETURN_AND_PRINT_ON_ERROR(GetRelatedTls(tls, tlCount, &tlVimbaXSearchResults, &tlVimbaXSearchResultsCount, &tlVimbaSearchResults, &tlVimbaSearchResultsCount); free(tls));
 
     for (VmbUint32_t tlSearchResultsIndex = 0; tlSearchResultsIndex < tlVimbaXSearchResultsCount; tlSearchResultsIndex++)
     {
@@ -384,7 +393,7 @@ VmbError_t QueryDeviceIdFeature(const VmbHandle_t interfaceHandle, char** device
     return error;
 }
 
-VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** interfaceSearchResults, VmbUint32_t* interfaceSearchResultsCount)
+VmbError_t SearchCamerasInterface(const VmbInt64_t mac, InterfaceSearchResult** interfaceSearchResults, VmbUint32_t* interfaceSearchResultsCount)
 {
     /*
      * Get a list of all available interfaces.
@@ -414,7 +423,9 @@ VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** in
         const VmbHandle_t currentInterfaceHandle = currentInterface->interfaceHandle;
 
         /*
-         * Get the number of cameras connected to the interface
+         * Get the number of cameras connected to the interface.
+         * The feature DeviceSelector is not available if no camera is connected to the interface.
+         * A reported range [0;0] means that only a single camera is connected to the interface.
          */
         VmbInt64_t deviceSelectorMin;
         VmbInt64_t deviceSelectorMax;
@@ -460,6 +471,8 @@ VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** in
 
         const VmbHandle_t currentInterfaceHandle = currentInterface->interfaceHandle;
 
+        VMB_PRINT("Searching for camera on interface %s\n", currentInterface->interfaceName);
+
         VmbInt64_t deviceSelectorMin;
         VmbInt64_t deviceSelectorMax;
         CONTINUE_ON_ERROR(VmbFeatureIntRangeQuery(currentInterfaceHandle, "DeviceSelector", &deviceSelectorMin, &deviceSelectorMax));
@@ -478,8 +491,10 @@ VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** in
 
                 (*interfaceSearchResults)[interfaceSearchResultIndex].cameraId = cameraId;
                 (*interfaceSearchResults)[interfaceSearchResultIndex].info = *currentInterface;
+                (*interfaceSearchResults)[interfaceSearchResultIndex].deviceSelector = deviceIndex;
                 ++interfaceSearchResultIndex;
                 error = VmbErrorSuccess;
+                VMB_PRINT("Camera found on interface %s\n", currentInterface->interfaceName);
             }
         }
     }
@@ -489,20 +504,13 @@ VmbError_t GetRelatedInterfaces(const VmbInt64_t mac, InterfaceSearchResult** in
     return error;
 }
 
-VmbError_t GetRelatedTls(const VmbInt64_t mac, TlSearchResult** tlVimbaXSearchResult, VmbUint32_t* tlVimbaXSearchResultsCount, TlSearchResult** tlVimbaSearchResult, VmbUint32_t* tlVimbaSearchResultsCount)
+VmbError_t GetRelatedTls( const VmbTransportLayerInfo_t* const tls, const VmbUint32_t tlCount, TlSearchResult** tlVimbaXSearchResult, VmbUint32_t* tlVimbaXSearchResultsCount, TlSearchResult** tlVimbaSearchResult, VmbUint32_t* tlVimbaSearchResultsCount)
 {
     /*
      * The transport layer names used for Vimba X and Vimba transport layers
      */
     const char vimbaXTlName[] = "AVT GigE Transport Layer";
     const char vimbaTlName[] = "Vimba GigE Transport Layer";
-
-    /*
-     * Get a list of all available transport layers.
-     */
-    VmbTransportLayerInfo_t* tls = 0;
-    VmbUint32_t              tlCount = 0;
-    RETURN_AND_PRINT_ON_ERROR(ListTransportLayers(&tls, &tlCount));
 
     /*
      * Count the Vimba X and Vimba transport layers to which the camera is connected.
@@ -570,17 +578,18 @@ VmbError_t GetRelatedTls(const VmbInt64_t mac, TlSearchResult** tlVimbaXSearchRe
         }
     }
 
-    free(tls);
-
     return error;
 }
 
-VmbError_t SendForceIpViaInterface(const VmbHandle_t interfaceHandle, const VmbInt64_t mac, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway)
+VmbError_t SendForceIpViaInterface(const InterfaceSearchResult* interfaceData, const VmbInt64_t mac, const VmbInt64_t ip, const VmbInt64_t subnetMask, const VmbInt64_t gateway)
 {
+    VmbHandle_t interfaceHandle = interfaceData->info.interfaceHandle;
     /*
      * The force ip features are related to the DeviceSelector.
-     * Ensure that the current selector value selects the desired camera.
+     * Ensure that the stored selector value still selects the desired camera.
      */
+    RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntSet(interfaceHandle, "DeviceSelector", interfaceData->deviceSelector));
+
     VmbInt64_t selectedMAC = 0;
     RETURN_AND_PRINT_ON_ERROR(VmbFeatureIntGet(interfaceHandle, "GevDeviceMACAddress", &selectedMAC));
 
