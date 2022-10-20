@@ -21,6 +21,9 @@ function(vmb_c_example DIRECTORY)
     endif()
 endfunction()
 
+# attempt to locate Qt to decide, if we want to add the Qt example
+find_package(Qt5 COMPONENTS Widgets)
+
 # Actual examples list
 vmb_c_example(AsynchronousGrab)
 vmb_c_example(ListFeatures FeatureList FeaturesList)
@@ -28,7 +31,10 @@ vmb_c_example(ListCameras)
 vmb_c_example(ChunkAccess)
 vmb_c_example(ConfigIp)
 vmb_c_example(ForceIp)
-# vmb_c_example(AsynchronousGrabQt Qt)
+
+if(Qt5_FOUND)
+    vmb_c_example(AsynchronousGrabQt Qt)
+endif()
 
 # overwrite list of examples set based on individual ignores
 if(VMB_C_EXAMPLES_LIST)
