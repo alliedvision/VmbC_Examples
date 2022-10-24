@@ -449,7 +449,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                     }
 
                     // Evaluate required alignment for frame buffer in case announce frame method is used
-                    VmbUint32_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
+                    VmbInt64_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
                     if (VmbErrorSuccess != VmbFeatureIntGet(stream, "StreamBufferAlignment", &nStreamBufferAlignment))
                         nStreamBufferAlignment = 1;
 
@@ -478,7 +478,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
 #ifdef _WIN32
                                     g_frames[i].buffer = (unsigned char*)_aligned_malloc((size_t)payloadSize, (size_t)nStreamBufferAlignment);
 #else
-                                    g_frames[i].buffer = (unsigned char*)aligned_alloc(nStreamBufferAlignment, (VmbUint32_t)payloadSize);
+                                    g_frames[i].buffer = (unsigned char*)aligned_alloc((size_t)nStreamBufferAlignment, (size_t)payloadSize);
 #endif
                                     if (NULL == g_frames[i].buffer)
                                     {
