@@ -46,5 +46,5 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
-    return ForceIpProg(argv[1], argv[2], argv[3], argc == 5 ? argv[4] : NULL);
+    return ForceIpProg(argv[1], argv[2], argv[3], (argc == 5) ? argv[4] : NULL);
 }
