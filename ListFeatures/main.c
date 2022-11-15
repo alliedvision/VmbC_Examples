@@ -25,34 +25,141 @@
 
 =============================================================================*/
 
+#include <assert.h>
+#include <ctype.h>
 #include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <VmbC/VmbCTypeDefinitions.h>
 
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 
 #include "ListFeatures.h"
 
-#define VMB_PARAM_TL            "/t"
-#define VMB_PARAM_INTERFACE     "/i"
-#define VMB_PARAM_REMOTE_DEVICE "/c"
-#define VMB_PARAM_LOCAL_DEVICE  "/l"
-#define VMB_PARAM_STREAM        "/s"
-#define VMB_PARAM_USAGE         "/?"
+#define VMB_PARAM_TL                    "/t"
+#define VMB_PARAM_INTERFACE             "/i"
+#define VMB_PARAM_REMOTE_DEVICE         "/c"
+#define VMB_PARAM_LOCAL_DEVICE          "/l"
+#define VMB_PARAM_FEATURE_VISIBILITY    "/v"
+#define VMB_PARAM_STREAM                "/s"
+#define VMB_PARAM_USAGE                 "/?"
+
+typedef struct VisibilityOption
+{
+    char const* m_fullName;
+    char m_shortName;
+    VmbFeatureVisibility_t m_enumValue;
+} VisibilityOption;
+
+static VisibilityOption const VisibilityOptions[4] =
+{
+    { "beginner",   'b', VmbFeatureVisibilityBeginner   },
+    { "expert",     'e', VmbFeatureVisibilityExpert     },
+    { "guru",       'g', VmbFeatureVisibilityGuru       },
+    { "invisible",  'i', VmbFeatureVisibilityInvisible  },
+};
+
+/**
+ * Try finding the visibility option as string
+ * 
+ * \return the visibility or VmbFeatureVisibilityUnknown, if it isn't found
+ */
+VmbFeatureVisibility_t FindVisibilityByFullName(char const* value)
+{
+    VisibilityOption const* pos = VisibilityOptions;
+    VisibilityOption const* const end = VisibilityOptions + sizeof(VisibilityOptions) / sizeof(*VisibilityOptions);
+    for (; pos != end; ++pos)
+    {
+        if (strcmp(value, pos->m_fullName) == 0)
+        {
+            return pos->m_enumValue;
+        }
+    }
+    return VmbFeatureVisibilityUnknown;
+}
+
+/**
+ * Try finding the visibility option as string
+ * 
+ * \return the visibility or VmbFeatureVisibilityUnknown, if it isn't found
+ */
+VmbFeatureVisibility_t FindVisibilityByShortName(char const* value)
+{
+    VisibilityOption const* pos = VisibilityOptions;
+    VisibilityOption const* const end = VisibilityOptions + sizeof(VisibilityOptions) / sizeof(*VisibilityOptions);
+
+    if ((*value == '\0') || (value[1] != '\0'))
+    {
+        return VmbFeatureVisibilityUnknown; // the input is not a single char
+    }
+
+    char c = *value;
+    for (; pos != end; ++pos)
+    {
+        if (c == pos->m_shortName)
+        {
+            return pos->m_enumValue;
+        }
+    }
+    return VmbFeatureVisibilityUnknown;
+}
+
+/**
+ * Try finding the visibility option as string
+ * 
+ * \return the visibility, if parsed successfully or VmbFeatureVisibilityUnknown
+ */
+VmbFeatureVisibility_t FindVisibilityByEnumConstant(char const* value)
+{
+    char* parseEnd;
+    unsigned long intValue = strtoul(value, &parseEnd, 10);
+
+    if ((*parseEnd != '\0') || (intValue < VmbFeatureVisibilityBeginner) || (intValue > VmbFeatureVisibilityInvisible))
+    {
+        // input is not a valid integral version of the enum
+        return VmbFeatureVisibilityUnknown;
+    }
+    return intValue;
+}
 
 void PrintUsage()
 {
     printf("Usage:\n\n"
-           "  ListFeatures %s                                          Print this usage information\n"
-           "  ListFeatures                                             Print the remote device features of the first camera\n"
-           "  ListFeatures %s TransportLayerIndex                      Show Transport Layer features\n"
-           "  ListFeatures %s InterfaceIndex                           Show interface features\n"
-           "  ListFeatures %s (CameraIndex | CameraId)                 Show the remote device features of the specified camera\n"
-           "  ListFeatures %s (CameraIndex | CameraId)                 Show the local device features of the specified camera\n"
-           "  ListFeatures %s (CameraIndex | CameraId) [StreamIndex]   Show the features of a stream for the specified camera\n",
+           "  ListFeatures %s                                                    Print this usage information\n"
+           "  ListFeatures <Options>                                             Print the remote device features of the first camera\n"
+           "  ListFeatures <Options> %s TransportLayerIndex                      Show Transport Layer features\n"
+           "  ListFeatures <Options> %s InterfaceIndex                           Show interface features\n"
+           "  ListFeatures <Options> %s (CameraIndex | CameraId)                 Show the remote device features of the specified camera\n"
+           "  ListFeatures <Options> %s (CameraIndex | CameraId)                 Show the local device features of the specified camera\n"
+           "  ListFeatures <Options> %s (CameraIndex | CameraId) [StreamIndex]   Show the features of a stream for the specified camera\n"
+           "Options:\n",
            VMB_PARAM_USAGE, VMB_PARAM_TL, VMB_PARAM_INTERFACE, VMB_PARAM_REMOTE_DEVICE, VMB_PARAM_LOCAL_DEVICE, VMB_PARAM_STREAM);
+
+    // print options for visibility
+    printf("  %s (", VMB_PARAM_FEATURE_VISIBILITY);
+
+    for (int i = 0; i != (sizeof(VisibilityOptions) / sizeof(*VisibilityOptions)); ++i)
+    {
+        VisibilityOption const* const option = VisibilityOptions + i;
+        printf("%c|%s|", option->m_shortName, option->m_fullName);
+    }
+    printf("[1-4])\n");
+
+    // print visibility option descriptions
+    for (int i = 0; i != (sizeof(VisibilityOptions) / sizeof(*VisibilityOptions)); ++i)
+    {
+        VisibilityOption const* const option = VisibilityOptions + i;
+        assert(option->m_enumValue == (i + 1)); // array value should match the array index
+        printf("     %c, %s, %u %*s: list features up to visibility %c%s\n",
+               option->m_shortName,
+               option->m_fullName,
+               (unsigned) option->m_enumValue,
+               (int)(sizeof("invisible") - 1 - strlen(option->m_fullName)), "",
+               toupper(*(option->m_fullName)), option->m_fullName + 1
+        );
+    }
 }
 
 /**
@@ -85,9 +192,46 @@ int main(int argc, char* argv[])
 
     TrySetUtf8CompatibleLocale();
 
+    VmbFeatureVisibility_t printedFeatureMaximumVisibility = VmbFeatureVisibilityGuru;
+
+    // parse visibility (optional parameter)
+    if (argc >= 2)
+    {
+        if (strcmp(argv[1], VMB_PARAM_FEATURE_VISIBILITY) == 0)
+        {
+            if (argc == 2)
+            {
+                printf("the value of the %s command line option is missing\n", VMB_PARAM_FEATURE_VISIBILITY);
+                PrintUsage();
+                return 1;
+            }
+            // parse visibility
+            char const* visibilityParam = argv[2];
+            printedFeatureMaximumVisibility = FindVisibilityByFullName(visibilityParam);
+            if (printedFeatureMaximumVisibility == VmbFeatureVisibilityUnknown)
+            {
+                printedFeatureMaximumVisibility = FindVisibilityByShortName(visibilityParam);
+                if (printedFeatureMaximumVisibility == VmbFeatureVisibilityUnknown)
+                {
+                    printedFeatureMaximumVisibility = FindVisibilityByEnumConstant(visibilityParam);
+                    if (printedFeatureMaximumVisibility == VmbFeatureVisibilityUnknown)
+                    {
+                        // none of the attempts to parse the visibility was successful -> error
+                        printf("invalid visibility specified as command line parameter: %s\n", visibilityParam);
+                        PrintUsage();
+                        return 1;
+                    }
+                }
+            }
+
+            argc -= 2;
+            argv += 2;
+        }
+    }
+
     if(argc < 2)
     {
-        return ListCameraFeaturesAtIndex(0, true);
+        return ListCameraFeaturesAtIndex(0, true, printedFeatureMaximumVisibility);
     }
     else
     {
@@ -108,7 +252,7 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    return ListTransportLayerFeatures(index);
+                    return ListTransportLayerFeatures(index, printedFeatureMaximumVisibility);
                 }
             }
         }
@@ -128,7 +272,7 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    return ListInterfaceFeatures(index);
+                    return ListInterfaceFeatures(index, printedFeatureMaximumVisibility);
                 }
             }
         }
@@ -147,11 +291,11 @@ int main(int argc, char* argv[])
                 if (*end != '\0')
                 {
                     // no an index -> try using the parameter as id
-                    return ListCameraFeaturesAtId(argv[2], remoteDevice);
+                    return ListCameraFeaturesAtId(argv[2], remoteDevice, printedFeatureMaximumVisibility);
                 }
                 else
                 {
-                    return ListCameraFeaturesAtIndex(index, remoteDevice);
+                    return ListCameraFeaturesAtIndex(index, remoteDevice, printedFeatureMaximumVisibility);
                 }
             }
         }
@@ -179,11 +323,11 @@ int main(int argc, char* argv[])
                 if (*end != '\0')
                 {
                     // no an index -> try using the parameter as camers id
-                    return ListStreamFeaturesAtId(argv[2], streamIndex);
+                    return ListStreamFeaturesAtId(argv[2], streamIndex, printedFeatureMaximumVisibility);
                 }
                 else
                 {
-                    return ListStreamFeaturesAtIndex(cameraIndex, streamIndex);
+                    return ListStreamFeaturesAtIndex(cameraIndex, streamIndex, printedFeatureMaximumVisibility);
                 }
             }
         }

@@ -53,7 +53,7 @@ char const* PrintableString(char const* string)
  *
  * \param[in] moduleHandle The handle to print the features for
  */
-VmbError_t ListFeatures(VmbHandle_t const moduleHandle)
+VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     VmbUint32_t featureCount = 0;
 
@@ -88,6 +88,11 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle)
 
                 for (VmbFeatureInfo_t* feature = features; feature != end; ++feature)
                 {
+                    if (feature->visibility > printedFeatureMaximumVisibility)
+                    {
+                        // ignore feature with visibility that shouldn't be printed
+                        continue;
+                    }
                     printf("/// Feature Name: %s\n", PrintableString(feature->name));
                     printf("/// Display Name: %s\n", PrintableString(feature->displayName));
                     printf("/// Tooltip: %s\n", PrintableString(feature->tooltip));
@@ -218,7 +223,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle)
     return VmbErrorSuccess;
 }
 
-int ListTransportLayerFeatures(size_t tlIndex)
+int ListTransportLayerFeatures(size_t tlIndex, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
@@ -251,7 +256,7 @@ int ListTransportLayerFeatures(size_t tlIndex)
                     PrintableString(tl->transportLayerVendor),
                     PrintableString(tl->transportLayerVersion));
 
-            err = ListFeatures(tl->transportLayerHandle);
+            err = ListFeatures(tl->transportLayerHandle, printedFeatureMaximumVisibility);
             free(tls);
         }
         else
@@ -264,7 +269,7 @@ int ListTransportLayerFeatures(size_t tlIndex)
     return (err == VmbErrorSuccess ? 0 : 1);
 }
 
-int ListInterfaceFeatures(size_t interfaceIndex)
+int ListInterfaceFeatures(size_t interfaceIndex, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
@@ -286,7 +291,7 @@ int ListInterfaceFeatures(size_t interfaceIndex)
                     PrintableString(iFace->interfaceIdString),
                     PrintableString(iFace->interfaceName),
                     TransportLayerTypeToString(iFace->interfaceType));
-            err = ListFeatures(iFace->interfaceHandle);
+            err = ListFeatures(iFace->interfaceHandle, printedFeatureMaximumVisibility);
             free(interfaces);
         }
         else if (count == 0)
@@ -325,7 +330,7 @@ VmbHandle_t CameraModuleExtractor(VmbHandle_t remoteDevice, VmbCameraInfo_t* cam
 /**
  * \brief list the features of a module determined based on remote device handle, VmbCameraInfo_t struct and \p featureExtractorParam. 
  */
-VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtractor featureExtractor, size_t featureExtractorParam)
+VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtractor featureExtractor, size_t featureExtractorParam, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     VmbHandle_t remoteDeviceHandle;
 
@@ -348,7 +353,7 @@ VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtracto
             VmbHandle_t handle = featureExtractor(remoteDeviceHandle, &cameraInfo, featureExtractorParam);
             if (handle != NULL)
             {
-                err = ListFeatures(handle);
+                err = ListFeatures(handle, printedFeatureMaximumVisibility);
             }
             else
             {
@@ -369,7 +374,7 @@ VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtracto
     return err;
 }
 
-int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice)
+int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     printf("Printing %s features of the camera at index %zu\n\n", remoteDevice ? "remote device" : "local device", index);
     VmbError_t err = VmbStartup(NULL);
@@ -382,7 +387,7 @@ int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice)
         if (err == VmbErrorSuccess)
         {
             VmbCameraInfo_t* camera = GetCameraByIndex(cameras, cameraCount, index);
-            err = ListCameraRelatedFeatures(camera->cameraIdString, &CameraModuleExtractor, remoteDevice ? 1 : 0);
+            err = ListCameraRelatedFeatures(camera->cameraIdString, &CameraModuleExtractor, remoteDevice ? 1 : 0, printedFeatureMaximumVisibility);
             free(cameras);
         }
         VmbShutdown();
@@ -390,13 +395,13 @@ int ListCameraFeaturesAtIndex(size_t index, bool remoteDevice)
     return (err == VmbErrorSuccess ? 0 : 1);
 }
 
-int ListCameraFeaturesAtId(char const* id, bool remoteDevice)
+int ListCameraFeaturesAtId(char const* id, bool remoteDevice, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     printf("Printing %s features of the camera with id %s\n\n", remoteDevice ? "remote device" : "local device", id);
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
     {
-        err = ListCameraRelatedFeatures(id, &CameraModuleExtractor, remoteDevice ? 1 : 0);
+        err = ListCameraRelatedFeatures(id, &CameraModuleExtractor, remoteDevice ? 1 : 0, printedFeatureMaximumVisibility);
         VmbShutdown();
     }
     return (err == VmbErrorSuccess ? 0 : 1);
@@ -418,7 +423,7 @@ VmbHandle_t StreamModuleExtractor(VmbHandle_t remoteDevice, VmbCameraInfo_t* cam
     return cameraInfo->streamHandles[usedStreamIndex];
 }
 
-int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex)
+int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     printf("Printing features of stream %zu of the camera at index %zu\n\n", streamIndex, cameraIndex);
     VmbError_t err = VmbStartup(NULL);
@@ -431,7 +436,7 @@ int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex)
         if (err == VmbErrorSuccess)
         {
             VmbCameraInfo_t* camera = GetCameraByIndex(cameras, cameraCount, cameraIndex);
-            err = ListCameraRelatedFeatures(camera->cameraIdString, &StreamModuleExtractor, streamIndex);
+            err = ListCameraRelatedFeatures(camera->cameraIdString, &StreamModuleExtractor, streamIndex, printedFeatureMaximumVisibility);
             free(cameras);
         }
         VmbShutdown();
@@ -439,14 +444,14 @@ int ListStreamFeaturesAtIndex(size_t cameraIndex, size_t streamIndex)
     return (err == VmbErrorSuccess ? 0 : 1);
 }
 
-int ListStreamFeaturesAtId(char const* cameraId, size_t streamIndex)
+int ListStreamFeaturesAtId(char const* cameraId, size_t streamIndex, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {
     printf("Printing features of stream %zu of the camera with id %s\n\n", streamIndex, cameraId);
 
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
     {
-        err = ListCameraRelatedFeatures(cameraId, &StreamModuleExtractor, streamIndex);
+        err = ListCameraRelatedFeatures(cameraId, &StreamModuleExtractor, streamIndex, printedFeatureMaximumVisibility);
         VmbShutdown();
     }
     return (err == VmbErrorSuccess ? 0 : 1);
