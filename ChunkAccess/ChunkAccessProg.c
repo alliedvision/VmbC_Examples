@@ -173,9 +173,21 @@ int ChunkAccessProg()
                     VmbUint32_t payloadSize = 0;
                     err = VmbPayloadSizeGet(hCamera, &payloadSize);
 
+                    // Evaluate required alignment for frame buffer in case announce frame method is used
+                    VmbInt64_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
+                    if (VmbErrorSuccess != VmbFeatureIntGet(cameraInfo.streamHandles[0], "StreamBufferAlignment", &nStreamBufferAlignment))
+                        nStreamBufferAlignment = 1;
+
+                    if (nStreamBufferAlignment < 1)
+                        nStreamBufferAlignment = 1;
+
                     for (int i = 0; i < NUM_FRAMES; ++i)
                     {
-                        frames[i].buffer = malloc((VmbUint32_t)payloadSize);
+#ifdef _WIN32
+                        frames[i].buffer = (unsigned char*)_aligned_malloc((size_t)payloadSize, (size_t)nStreamBufferAlignment);
+#else
+                        frames[i].buffer = (unsigned char*)aligned_alloc((size_t)nStreamBufferAlignment, (size_t)payloadSize);
+#endif      
                         frames[i].bufferSize = payloadSize;
                         err = VmbFrameAnnounce(hCamera, &frames[i], sizeof(VmbFrame_t));
                     }
@@ -216,7 +228,11 @@ int ChunkAccessProg()
                         for (int i = 0; i < NUM_FRAMES; ++i)
                         {
                             err = VmbFrameRevoke(hCamera, frames + i);
+#ifdef _WIN32
+                            _aligned_free(frames[i].buffer);
+#else
                             free(frames[i].buffer);
+#endif
                         }
                     }
                     else

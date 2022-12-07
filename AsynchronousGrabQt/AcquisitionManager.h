@@ -134,7 +134,7 @@ namespace VmbC
              */
             struct Frame
             {
-                Frame(size_t payloadSize);
+                Frame(size_t payloadSize, size_t bufferAlignment);
                 ~Frame();
 
                 Frame(Frame const&) = delete;
@@ -152,7 +152,7 @@ namespace VmbC
             class AcquisitionLifetime
             {
             public:
-                AcquisitionLifetime(VmbHandle_t const camHandle, size_t payloadSize, AcquisitionManager& acquisitionManager);
+                AcquisitionLifetime(VmbHandle_t const camHandle, size_t payloadSize, size_t bufferAlignment, AcquisitionManager& acquisitionManager);
                 ~AcquisitionLifetime();
 
             private:

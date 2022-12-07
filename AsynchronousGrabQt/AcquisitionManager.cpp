@@ -206,10 +206,17 @@ namespace VmbC
             {
                 throw VmbException("Non-zero payload size required");
             }
+            // Evaluate required alignment for frame buffer in case announce frame method is used
+            VmbInt64_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
+            if (VmbErrorSuccess != VmbFeatureIntGet(streamHandle, "StreamBufferAlignment", &nStreamBufferAlignment))
+                nStreamBufferAlignment = 1;
+
+            if (nStreamBufferAlignment < 1)
+                nStreamBufferAlignment = 1;
 
             m_payloadSize = static_cast<size_t>(value);
-
-            m_acquisitionLife.reset(new AcquisitionLifetime(cameraHandle, m_payloadSize, acquisitionManager));
+            size_t bufferAlignment = static_cast<size_t>(nStreamBufferAlignment);
+            m_acquisitionLife.reset(new AcquisitionLifetime(cameraHandle, m_payloadSize, bufferAlignment, acquisitionManager));
         }
 
         AcquisitionManager::StreamLifetime::~StreamLifetime()
@@ -239,13 +246,13 @@ namespace VmbC
             }
         }
 
-        AcquisitionManager::AcquisitionLifetime::AcquisitionLifetime(VmbHandle_t const camHandle, size_t payloadSize, AcquisitionManager& acquisitionManager)
+        AcquisitionManager::AcquisitionLifetime::AcquisitionLifetime(VmbHandle_t const camHandle, size_t payloadSize, size_t nBufferAlignment, AcquisitionManager& acquisitionManager)
             : m_camHandle(camHandle)
         {
             m_frames.reserve(BufferCount);
             for (size_t count = BufferCount; count > 0; --count)
             {
-                auto frame = std::unique_ptr<Frame>(new Frame(payloadSize));
+                auto frame = std::unique_ptr<Frame>(new Frame(payloadSize, nBufferAlignment));
                 m_frames.emplace_back(std::move(frame));
             }
 
@@ -317,13 +324,17 @@ namespace VmbC
             VmbFrameRevokeAll(m_camHandle);
         }
 
-        AcquisitionManager::Frame::Frame(size_t payloadSize)
+        AcquisitionManager::Frame::Frame(size_t payloadSize, size_t bufferAlignment)
         {
             if (payloadSize > (std::numeric_limits<VmbUint32_t>::max)())
             {
                 throw VmbException("payload size outside of allowed range");
             }
-            m_frame.buffer = std::malloc(payloadSize);
+#ifdef _WIN32
+            m_frame.buffer = (unsigned char*)_aligned_malloc(payloadSize,bufferAlignment);
+#else
+            m_frame.buffer = (unsigned char*)aligned_alloc(bufferAlignment, payloadSize);
+#endif
             if (m_frame.buffer == nullptr)
             {
                 throw VmbException("Unable to allocate memory for frame", VmbErrorResources);
@@ -333,7 +344,11 @@ namespace VmbC
 
         AcquisitionManager::Frame::~Frame()
         {
+#ifdef _WIN32
+            _aligned_free(m_frame.buffer);
+#else
             std::free(m_frame.buffer);
+#endif
         }
 
     }
