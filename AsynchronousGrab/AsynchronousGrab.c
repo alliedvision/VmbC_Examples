@@ -494,7 +494,11 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                                 err = VmbFrameAnnounce(g_cameraHandle, &g_frames[i], (VmbUint32_t)sizeof(VmbFrame_t));
                                 if (VmbErrorSuccess != err)
                                 {
+#ifdef _WIN32
+                                    _aligned_free(g_frames[i].buffer);
+#else
                                     free(g_frames[i].buffer);
+#endif
                                     memset(&g_frames[i], 0, sizeof(VmbFrame_t));
                                     break;
                                 }
