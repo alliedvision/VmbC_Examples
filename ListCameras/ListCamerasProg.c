@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ListCamerasProg.h"
 
@@ -39,22 +40,43 @@
 #include <VmbCExamplesCommon/ListTransportLayers.h>
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 
-char const* AccessModesToString(VmbAccessMode_t accessMode)
+void ConcatStrings(char **a, const char *b, const char *separator)
 {
-    switch (accessMode)
+    size_t resultSize = strlen(*a) + strlen(b) + strlen(separator) + 1;
+    char *result = calloc(resultSize, sizeof(char));
+    strncpy_s(result, resultSize, *a, strlen(*a));
+    if (strlen(*a) > 0)
     {
-    case VmbAccessModeFull:
-        return "Full access";
-    case VmbAccessModeNone:
-        return "No access";
-    case VmbAccessModeRead:
-        return "Readonly access";
-    case (VmbAccessModeRead | VmbAccessModeFull):
-        return "Full access, readonly access";
-    case VmbAccessModeUnknown:
-    default:
-        return "Unknown";
+        strncat_s(result, resultSize, separator, strlen(separator));
     }
+    strncat_s(result, resultSize, b, strlen(b));
+    *a = result;
+}
+
+char const *AccessModesToString(VmbAccessMode_t accessMode)
+{
+    char *result = "";
+    if (accessMode == VmbAccessModeNone)
+    {
+        return "No access";
+    }
+    if (accessMode & VmbAccessModeFull)
+    {
+        ConcatStrings(&result, "Full access", ", ");
+    }
+    if (accessMode & VmbAccessModeRead)
+    {
+        ConcatStrings(&result, "Readonly access", ", ");
+    }
+    if (accessMode & VmbAccessModeUnknown)
+    {
+        ConcatStrings(&result, "Unknown access", ", ");
+    }
+    if (accessMode & VmbAccessModeExclusive)
+    {
+        ConcatStrings(&result, "Exclusive access", ", ");
+    }
+    return result;
 }
 
 int ListCamerasProg()
