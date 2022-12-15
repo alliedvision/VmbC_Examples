@@ -28,7 +28,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdbool.h>
 
 #include "ListCamerasProg.h"
 
@@ -40,38 +40,47 @@
 #include <VmbCExamplesCommon/ListTransportLayers.h>
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 
-void concatStrings(char *dest, size_t destSize, const char *src, const char *separator)
+void printAccessModes(VmbAccessMode_t accessMode)
 {
-    if (strlen(dest) > 0)
-    {
-        strcat_s(dest, destSize, separator);
-    }
-    strcat_s(dest, destSize, src);
-}
-
-void AccessModesToString(VmbAccessMode_t accessMode, char *const buffer, size_t bufferSize)
-{
+    bool printSeparator = false;
     if (accessMode == VmbAccessModeNone)
     {
-        strcpy_s(buffer, bufferSize, "No access");
+        printf("No access\n");
         return;
     }
     if (accessMode & VmbAccessModeFull)
     {
-        concatStrings(buffer, bufferSize, "Full access", ", ");
+        printf("Full access");
+        printSeparator = true;
     }
     if (accessMode & VmbAccessModeRead)
     {
-        concatStrings(buffer, bufferSize, "Read access", ", ");
+        if (printSeparator == true)
+        {
+            printf(", ");
+        }
+        printf("Read access");
+        printSeparator = true;
     }
     if (accessMode & VmbAccessModeUnknown)
     {
-        concatStrings(buffer, bufferSize, "Unknown access", ", ");
+        if (printSeparator == true)
+        {
+            printf(", ");
+        }
+        printf("Unknown access");
+        printSeparator = true;
     }
     if (accessMode & VmbAccessModeExclusive)
     {
-        concatStrings(buffer, bufferSize, "Exclusive access", ", ");
+        if (printSeparator == true)
+        {
+            printf(", ");
+        }
+        printf("Exclusive access");
+        printSeparator = true;
     }
+    printf("\n");
 }
 
 int ListCamerasProg()
@@ -104,19 +113,18 @@ int ListCamerasProg()
 
             for (VmbCameraInfo_t* cam = cameras; cam != camerasEnd; ++cam)
             {
-                char accessModes[200] = "";
-                AccessModesToString(cam->permittedAccess, accessModes, sizeof(accessModes) / sizeof(accessModes[0]));
                 printf("/// Camera Name            : %s\n"
                        "/// Model Name             : %s\n"
                        "/// Camera ID              : %s\n"
-                       "/// Serial Number          : %s\n"
-                       "/// Permitted Access Modes : %s\n",
+                       "/// Serial Number          : %s\n",
                        cam->cameraName,
                        cam->modelName,
                        cam->cameraIdString,
-                       cam->serialString,
-                       accessModes
+                       cam->serialString
                 );
+
+                printf("/// Permitted Access Modes : ");
+                printAccessModes(cam->permittedAccess);
 
                 // find corresponding interface
                 VmbInterfaceInfo_t* foundIFace = NULL;
