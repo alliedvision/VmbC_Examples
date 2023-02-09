@@ -264,7 +264,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
                 switch (frame->receiveStatus)
                 {
                 case VmbFrameStatusComplete:
-                    streamStatistics->framesReceived++;
+                    streamStatistics->framesComplete++;
                     break;
                 case VmbFrameStatusIncomplete:
                     streamStatistics->framesIncomplete++;

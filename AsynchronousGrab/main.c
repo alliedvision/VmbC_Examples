@@ -200,11 +200,11 @@ int main(int argc, char* argv[])
             
             if (cmdOptions.frameInfos != FrameInfos_Off)
             {
-                printf("Frames complete   = %llu\n", streamStatistics.framesReceived);
+                printf("Frames complete   = %llu\n", streamStatistics.framesComplete);
                 printf("Frames incomplete = %llu\n", streamStatistics.framesIncomplete);
                 printf("Frames too small  = %llu\n", streamStatistics.framesTooSmall);
                 printf("Frames invalid    = %llu\n\n", streamStatistics.framesInvalid);
-                VmbUint64_t sum = streamStatistics.framesReceived + 
+                VmbUint64_t sum = streamStatistics.framesComplete + 
                                   streamStatistics.framesIncomplete + 
                                   streamStatistics.framesTooSmall + 
                                   streamStatistics.framesInvalid;

@@ -50,7 +50,7 @@ typedef struct AsynchronousGrabOptions
 
 typedef struct FrameStatistics
 {
-    VmbUint64_t framesReceived;
+    VmbUint64_t framesComplete;
     VmbUint64_t framesMissing;
     VmbUint64_t framesIncomplete;
     VmbUint64_t framesTooSmall;
