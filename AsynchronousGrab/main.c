@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
     VmbBool_t printHelp;
     VmbError_t err = ParseCommandLineParameters(&cmdOptions, &printHelp, argc, argv);
     
-    StreamStatistics streamStatistics = { .framesReceived = 0, .framesMissing = 0 };
+    StreamStatistics streamStatistics = { 0, 0, 0, 0, 0 };
 
     if (err == VmbErrorSuccess && !printHelp)
     {
@@ -196,12 +196,20 @@ int main(int argc, char* argv[])
             ((void)getchar());
 
             StopContinuousImageAcquisition();
-            printf("\nAcquisition stopped.\n");
+            printf("\nAcquisition stopped.\n\n");
             
             if (cmdOptions.frameInfos != FrameInfos_Off)
             {
-                printf("Frames received = %llu\n", streamStatistics.framesReceived);
-                printf("Frames missing  = %llu\n", streamStatistics.framesMissing);
+                printf("Frames complete   = %llu\n", streamStatistics.framesReceived);
+                printf("Frames incomplete = %llu\n", streamStatistics.framesIncomplete);
+                printf("Frames too small  = %llu\n", streamStatistics.framesTooSmall);
+                printf("Frames invalid    = %llu\n\n", streamStatistics.framesInvalid);
+                VmbUint64_t sum = streamStatistics.framesReceived + 
+                                  streamStatistics.framesIncomplete + 
+                                  streamStatistics.framesTooSmall + 
+                                  streamStatistics.framesInvalid;
+                printf("Frames total      = %llu\n", sum);
+                printf("Frames missing    = %llu\n", streamStatistics.framesMissing);
             }
         }
         else

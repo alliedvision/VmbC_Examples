@@ -52,6 +52,9 @@ typedef struct FrameStatistics
 {
     VmbUint64_t framesReceived;
     VmbUint64_t framesMissing;
+    VmbUint64_t framesIncomplete;
+    VmbUint64_t framesTooSmall;
+    VmbUint64_t framesInvalid;
 } StreamStatistics;
 
 /**

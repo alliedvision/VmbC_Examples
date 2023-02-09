@@ -260,7 +260,23 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
                 g_frameTime = frameTime;
                 g_frameTimeValid = VmbBoolTrue;
                 streamStatistics->framesMissing += missingFrameCount;
-                streamStatistics->framesReceived++;
+
+                switch (frame->receiveStatus)
+                {
+                case VmbFrameStatusComplete:
+                    streamStatistics->framesReceived++;
+                    break;
+                case VmbFrameStatusIncomplete:
+                    streamStatistics->framesIncomplete++;
+                    break;
+                case VmbFrameStatusTooSmall:
+                    streamStatistics->framesTooSmall++;
+                    break;
+                case VmbFrameStatusInvalid:
+                    streamStatistics->framesInvalid++;
+                    break;
+                }
+                
             }
             else
             {
