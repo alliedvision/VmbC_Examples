@@ -206,7 +206,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
     AsynchronousGrabOptions const* options = (AsynchronousGrabOptions const*) frame->context[FRAME_CONTEXT_OPTIONS_INDEX];
     StreamStatistics* streamStatistics = (StreamStatistics*) frame->context[FRAME_CONTEXT_STREAM_STATISTICS_INDEX];
 
-    VmbBool_t showFrameInfos = VmbBoolFalse;         // showing frame infos 
+    VmbBool_t showFrameInfos = VmbBoolFalse;
     double fps = 0.0;
     VmbBool_t fpsValid = VmbBoolFalse;
 
@@ -228,22 +228,15 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
                     {
                         // get difference between current frame and last received frame to calculate missing frames
                         missingFrameCount = frame->frameID - g_frameID - 1;
-                        if (1 == missingFrameCount)
-                        {
-                            printf("%s 1 missing frame detected\n", __FUNCTION__);
-                        }
-                        else
-                        {
-                            printf("%s error %llu missing frames detected\n", __FUNCTION__, missingFrameCount);
-                        }
+                        printf("%s error %llu missing frame(s) detected\n", __FUNCTION__, missingFrameCount);
                     }
                 }
-                g_frameID = frame->frameID;          // store current frame id to calculate missing frames in the next calls
+                g_frameID = frame->frameID;                     // store current frame id to calculate missing frames in the next calls
                 g_frameIdValid = VmbBoolTrue;
 
-                double frameTime = GetTime();              // get current time to calculate frames per second
-                if ((g_frameTimeValid)                      // only if the last time was valid
-                    && (0 == missingFrameCount))           // and the frame is not missing
+                double frameTime = GetTime();                   // get current time to calculate frames per second
+                if ((g_frameTimeValid)                          // only if the last time was valid
+                    && (0 == missingFrameCount))                // and the frame is not missing
                 {
                     double timeDiff = frameTime - g_frameTime;  // build time difference with last frames time
                     if (timeDiff > 0.0)
@@ -260,23 +253,6 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
                 g_frameTime = frameTime;
                 g_frameTimeValid = VmbBoolTrue;
                 streamStatistics->framesMissing += missingFrameCount;
-
-                switch (frame->receiveStatus)
-                {
-                case VmbFrameStatusComplete:
-                    streamStatistics->framesComplete++;
-                    break;
-                case VmbFrameStatusIncomplete:
-                    streamStatistics->framesIncomplete++;
-                    break;
-                case VmbFrameStatusTooSmall:
-                    streamStatistics->framesTooSmall++;
-                    break;
-                case VmbFrameStatusInvalid:
-                    streamStatistics->framesInvalid++;
-                    break;
-                }
-                
             }
             else
             {
@@ -284,9 +260,26 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
                 g_frameIdValid = VmbBoolFalse;
                 g_frameTimeValid = VmbBoolFalse;
             }
+
+            switch (frame->receiveStatus)
+            {
+            case VmbFrameStatusComplete:
+                streamStatistics->framesComplete++;
+                break;
+            case VmbFrameStatusIncomplete:
+                streamStatistics->framesIncomplete++;
+                break;
+            case VmbFrameStatusTooSmall:
+                streamStatistics->framesTooSmall++;
+                break;
+            case VmbFrameStatusInvalid:
+                streamStatistics->framesInvalid++;
+                break;
+            }
+
             mtx_unlock(&g_frameInfoMutex);
         }
-        // test if the frame is complete
+        // print the frame infos in case the frame is not complete
         if(VmbFrameStatusComplete != frame->receiveStatus)
         {
             showFrameInfos = VmbBoolTrue;

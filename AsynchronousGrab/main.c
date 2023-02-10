@@ -204,11 +204,11 @@ int main(int argc, char* argv[])
                 printf("Frames incomplete = %llu\n", streamStatistics.framesIncomplete);
                 printf("Frames too small  = %llu\n", streamStatistics.framesTooSmall);
                 printf("Frames invalid    = %llu\n\n", streamStatistics.framesInvalid);
-                VmbUint64_t sum = streamStatistics.framesComplete + 
+                VmbUint64_t framesTotal = streamStatistics.framesComplete + 
                                   streamStatistics.framesIncomplete + 
                                   streamStatistics.framesTooSmall + 
                                   streamStatistics.framesInvalid;
-                printf("Frames total      = %llu\n", sum);
+                printf("Frames total      = %llu\n", framesTotal);
                 printf("Frames missing    = %llu\n", streamStatistics.framesMissing);
             }
         }
