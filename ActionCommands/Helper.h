@@ -30,10 +30,8 @@
 
 #include <VmbC/VmbCTypeDefinitions.h>
 
-    VmbError_t FindMatchingCamera(VmbTransportLayerType_t interfaceType, const char* const pTlVendor, VmbCameraInfo_t* pCameraInfo);
+VmbError_t FindCamera(VmbBool_t findAvtCamera, char* const pCameraId, VmbHandle_t* cameraHandle, VmbCameraInfo_t* cameraInfo);
 
-    VmbError_t FindMatchingCameraById(const char* pCameraId, VmbTransportLayerType_t interfaceType, const char* const pTlVendor, VmbCameraInfo_t* pCameraInfo);
-
-    VmbError_t StartApi();
+VmbError_t StartApi();
 
 #endif

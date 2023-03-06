@@ -30,8 +30,8 @@
 
 #include <VmbC/VmbCTypeDefinitions.h>
 
-    //VmbError_t StartImageAcquisition(VmbCameraInfo_t camera);
+VmbError_t StartStream(VmbHandle_t cameraHandle);
 
-    //VmbError_t StopImageAcquisition();
+VmbError_t StopStream(VmbHandle_t cameraHandle);
 
 #endif

@@ -29,7 +29,7 @@
 #ifndef ACTION_COMMANDS_H_
 #define ACTION_COMMANDS_H_
 
-#include <VmbC/VmbCommonTypes.h>
+#include <VmbC/VmbCTypeDefinitions.h>
 
 typedef struct ActionCommandsOptions
 {
@@ -40,28 +40,15 @@ typedef struct ActionCommandsOptions
     VmbUint32_t groupMask;
 } ActionCommandsOptions;
 
-
 /**
- * \brief send an Action Command on a single interface to acquire and grab an image
- *
- * Note: Vmb has to be uninitialized and the camera has to allow access mode full.
- *       The choosen interface is the one the camera is connected to. The function
- *       uses the standard compliant Action Command features defined by the GenTL SFNC.
+ * \brief send an Action Command to acquire and grab an image
  *
  * \param[in] options                 struct with command line options and details for the Action Command
  */
-VmbError_t SendActionCommandOnSingleInterface(ActionCommandsOptions* options);
+VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCamera);
 
-/**
- * \brief send an Action Command on all interfaces to acquire and grab an image
- *
- * Note: Vmb has to be uninitialized and the camera has to allow access mode full.
- *       The AVT GigETL is needed since transport layer features are used
- *       which are not defined by the GenTL SFNC. The sent out Action Commands are
- *       still compliant to the GigE Vision specification.
- *
- * \param[in] options                 struct with command line options and details for the Action Command
- */
-VmbError_t SendActionCommandOnAllInterfaces(ActionCommandsOptions* options);
+VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
+
+VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions);
 
 #endif

@@ -31,6 +31,7 @@ vmb_c_example(ListCameras)
 vmb_c_example(ChunkAccess)
 vmb_c_example(ConfigIp)
 vmb_c_example(ForceIp)
+vmb_c_example(ActionCommands)
 
 if(Qt5_FOUND)
     vmb_c_example(AsynchronousGrabQt Qt)

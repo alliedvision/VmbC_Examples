@@ -33,13 +33,48 @@
 
 #include "ActionCommands.h"
 #include "Helper.h"
+#include "ImageAcquisition.h"
 
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
+VmbHandle_t g_CameraHandle;
+
+void HandleForcedClose()
+{
+    // It's not recommended to call printf during the signal handling.
+    // In this example it is called in order to reduce the complexity.
+    printf("Press 'q' + 'ENTER' to stop the example.\n");
+    StopStream(g_CameraHandle);
+    VmbCameraClose(g_CameraHandle);
+    VmbShutdown();
+}
+
+#ifdef _WIN32
+#include <Windows.h>
+BOOL WINAPI ConsoleHandler(DWORD signal)
+{
+    switch (signal)
+    {
+        case CTRL_CLOSE_EVENT:
+        case CTRL_C_EVENT:
+        {
+            HandleForcedClose();
+        }
+    }
+    return TRUE;
+}
+#else
+#include <signal.h>
+
+void ConsoleHandler(int signal)
+{
+    HandleForcedClose();
+}
+
+#endif
+
 #define VMB_PARAM_PRINT_HELP        "/h"
 #define VMB_PARAM_ON_ALL_INTERFACES "/a"
-
-#define AVT_GIGETL_VENDOR "Allied Vision Technologies"
 
 void PrintUsage()
 {
@@ -130,33 +165,87 @@ int main(int argc, char* argv[])
         return err;
     }
 
+    #ifdef _WIN32
+        SetConsoleCtrlHandler(ConsoleHandler, TRUE);
+    #else
+        signal(SIGINT, ConsoleHandler);
+    #endif
+
     err = StartApi();
     if (err != VmbErrorSuccess)
     {
         return err;
     }
 
-    const char* tlVendor = (cmdOptions.useAllInterfaces) ? AVT_GIGETL_VENDOR : NULL;
-    memset(&cameraToUse, 0, sizeof(cameraToUse));
-
-    if(cmdOptions.cameraId != NULL)
-    {
-        err = FindMatchingCameraById(cmdOptions.cameraId, VmbTransportLayerTypeGEV, tlVendor, &cameraToUse);
-    }
-    else
-    {
-        err = FindMatchingCamera(VmbTransportLayerTypeGEV, tlVendor, &cameraToUse);
-    }
-
+    err = FindCamera(cmdOptions.useAllInterfaces, cmdOptions.cameraId, &g_CameraHandle, &cameraToUse);
     if (err != VmbErrorSuccess)
     {
-        printf("No camera found which could be used for the example. Onyl: %s\n", cameraToUse.cameraIdString);
+        printf("\nNo camera found which could be used by the example.");
         VmbShutdown();
         return err;
     }
 
-    printf("Using camera %s\n", cameraToUse.cameraIdString);
+    printf("\nUsing camera %s\n", cameraToUse.cameraIdString);
 
+    //Kamera öffnen - Auslagern?
+    err = VmbCameraOpen(cameraToUse.cameraIdString, VmbAccessModeFull, &g_CameraHandle);
+    if (err != VmbErrorSuccess)
+    {
+        printf("Could not open %s - %s\n", cameraToUse.cameraIdString, ErrorCodeToMessage(err));
+        VmbShutdown();
+        return err;
+    }
+
+    //Infos für Handles aktualisieren
+    VmbError_t error = VmbCameraInfoQuery(cameraToUse.cameraIdString, &cameraToUse, sizeof(cameraToUse));
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not query camera info for %s. Reason: %s\n", cameraToUse.cameraIdString, ErrorCodeToMessage(error));
+        VmbCameraClose(g_CameraHandle);
+        VmbShutdown();
+        return error;
+    }
+
+    //Kamera vorbereiten
+    err = PrepareCameraForActionCommands(g_CameraHandle);
+    if (err != VmbErrorSuccess)
+    {
+        VmbCameraClose(g_CameraHandle);
+        VmbShutdown();
+        return err;
+    }
+
+    //Setup Action Command on camera
+    err = PrepareActionCommand(g_CameraHandle, &cmdOptions);
+    if (err != VmbErrorSuccess)
+    {
+        VmbCameraClose(g_CameraHandle);
+        VmbShutdown();
+        return err;
+    }
+
+    //Stream vorbereiten und starten
+    err = StartStream(g_CameraHandle);
+
+    if (err == VmbErrorSuccess)
+    {
+        //Ausgabe was zu tun ist
+        int key = 0;
+        do
+        {
+            key = getchar();
+            if (key == 'a')
+            {
+                err = SendActionCommand(&cmdOptions, &cameraToUse);
+            }
+        } while (key != 'q' && (err == VmbErrorSuccess) && (g_CameraHandle != NULL));
+    }
+
+    //Stream stoppen
+    StopStream(g_CameraHandle);
+
+    //Kamera schließen
+    VmbCameraClose(g_CameraHandle);
 
     VmbShutdown();
     return err;

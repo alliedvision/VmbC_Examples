@@ -32,68 +32,123 @@
 
 #include "ActionCommands.h"
 
-#include <VmbCExamplesCommon/ListCameras.h>
-#include <VmbCExamplesCommon/PrintVmbVersion.h>
+#include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
 #include <VmbC/VmbC.h>
 
-/**
- * \brief number of frames used for the acquisition
- */
-#define NUM_FRAMES ((size_t)5)
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <time.h>
+#endif
 
 /**
- * \brief feature name of custom command for choosing the packet size provided by the AVT GigETL
+ * \brief Suspend the execution of the current thread for 100 milliseconds
  */
-#define ADJUST_PACKAGE_SIZE_COMMAND "GVSPAdjustPacketSize"
-
-//VmbBool_t               g_vmbStarted               = VmbBoolFalse;      // Remember if Vmb is started
-//VmbBool_t               g_streaming                = VmbBoolFalse;      // Remember if Vmb is streaming
-//VmbBool_t               g_acquiring                = VmbBoolFalse;      // Remember if Vmb is acquiring
-//VmbHandle_t             g_cameraHandle             = NULL;              // A handle to our camera
-//VmbFrame_t              g_frames[NUM_FRAMES];                           // The frames we capture into
-
-VmbError_t SendActionCommandOnSingleInterface(ActionCommandsOptions* options)
+void Sleep100Ms()
 {
-    return VmbErrorAlready;
+    #ifdef WIN32
+        Sleep(100);
+    #else
+        struct timespec duration;
+        duration.tv_sec = 0;
+        duration.tv_nsec = 100000000;
+        nanosleep(&duration, NULL);
+    #endif
 }
 
-/**
- * \brief send an Action Command on all interfaces to acquire and grab an image
- *
- * Note: Vmb has to be uninitialized and the camera has to allow access mode full.
- *       The Allied Vision GigETL is needed since transport layer features are used
- *       which are not defined by the GenTL SFNC. The sent out Action Commands are
- *       still compliant to the GigE Vision specification.
- *
- * \param[in] options                 struct with command line options and details for the Action Command
- */
-VmbError_t SendActionCommandOnAllInterfaces(ActionCommandsOptions* options)
+VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCamera)
 {
-    return VmbErrorAlready;
+    VmbHandle_t handleToUse = (pOptions->useAllInterfaces) ? pCamera->transportLayerHandle : pCamera->interfaceHandle;
+
+    VmbError_t error = PrepareActionCommand(handleToUse, pOptions);
+    if (error != VmbErrorSuccess)
+    {
+        return error;
+    }
+
+    //Hier evtl. noch die destination ip setzen?
+
+    error = VmbFeatureCommandRun(handleToUse, "ActionCommand");
+    if (error != VmbErrorSuccess)
+    {
+        printf("Failed to run feature command \"ActionCommand\". Reason: %s", ErrorCodeToMessage(error));
+        return error;
+    }
+
+    VmbBool_t actionCmdDone = VmbBoolFalse;
+    size_t    retries = 10;
+    do
+    {
+        error = VmbFeatureCommandIsDone(handleToUse, "ActionCommand", &actionCmdDone);
+        if (error != VmbErrorSuccess)
+        {
+            printf("Failed to query completion of feature command \"ActionCommand\". Reason: %s", ErrorCodeToMessage(error));
+        }
+        else if (actionCmdDone != VmbBoolTrue)
+        {
+            retries -= 1;
+            Sleep100Ms();
+        }
+    } while ((actionCmdDone != VmbBoolTrue) && (error == VmbErrorSuccess) && (retries > 0));
+
+    if (actionCmdDone == VmbBoolTrue)
+    {
+        printf("Action Command sent.\n");
+    }
+    else
+    {
+        printf("Sending Action Command timed out.\n");
+    }
+
+    return error;
 }
 
-/**
- *\brief called from Vmb if a frame is ready for user processing
- * 
- * \param[in] cameraHandle handle to camera that supplied the frame
- * \param[in] streamHandle handle to stream that supplied the frame
- * \param[in] frame pointer to frame structure that can hold valid data
- */
-void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t streamHandle, VmbFrame_t* frame)
+VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera)
 {
-    //
-    // from here on the frame is under user control until returned to Vmb by requeuing it
-    // if you want to have smooth streaming keep the time you hold the frame short
-    //
+    VmbError_t error = VmbFeatureEnumSet(camera, "TriggerSelector", "FrameStart");
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"TriggerSelector\" to \"FrameStart\". Reason: %s\n", ErrorCodeToMessage(error));
+        return error;
+    }
 
-    //
-    // Note:    If VmbCaptureEnd is called asynchronously, while this callback is running, VmbCaptureEnd blocks,
-    //          until the callback returns.
-    //
+    error = VmbFeatureEnumSet(camera, "TriggerSource", "Action0");
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"TriggerSource\" to \"Action0\". Reason: %s\n", ErrorCodeToMessage(error));
+        return error;
+    }
 
-    //Irgendeine Ausgabe das der Frame empfangen wurde
+    error = VmbFeatureEnumSet(camera, "TriggerMode", "On");
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"TriggerMode\" to \"On\". Reason: %s\n", ErrorCodeToMessage(error));
+        return error;
+    }
 
-    // requeue the frame so it can be filled again
-    VmbCaptureFrameQueue(cameraHandle, frame, &FrameCallback);
+    return VmbErrorSuccess;
+}
+
+VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions)
+{
+    VmbError_t error = VmbFeatureIntSet(handle, "ActionDeviceKey", pOptions->deviceKey);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"ActionDeviceKey\" to %u. Reason: %s\n", pOptions->deviceKey, ErrorCodeToMessage(error));
+    }
+
+    VmbFeatureIntSet(handle, "ActionGroupKey", pOptions->groupKey);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"ActionGroupKey\" to %u. Reason: %s\n", pOptions->groupKey, ErrorCodeToMessage(error));
+    }
+
+    VmbFeatureIntSet(handle, "ActionGroupMask", pOptions->groupMask);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"ActionGroupMask\" to %u. Reason: %s\n", pOptions->groupMask, ErrorCodeToMessage(error));
+    }
+
+    return VmbErrorSuccess;
 }
