@@ -261,7 +261,9 @@ int main(int argc, char* argv[])
 
     if (err == VmbErrorSuccess)
     {
-        printf("\nExample ready to send Action Commands\n Press %c + ENTER to send an Action Command\n Press %c + ENTER to quit\n", VMB_ACTION_KEY, VMB_QUIT_KEY);
+        printf("\nExample ready to send Action Commands\n");
+        printf("Press %c + ENTER to send an Action Command\n", VMB_ACTION_KEY);
+        printf("Press %c + ENTER to quit\n", VMB_QUIT_KEY);
 
         int key = 0;
         do
