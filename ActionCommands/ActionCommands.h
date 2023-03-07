@@ -32,8 +32,8 @@
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**
- * \brief Helper sturct containing the provided command line options.
-*/
+ * \brief Helper struct containing the provided command line options.
+ */
 typedef struct ActionCommandsOptions
 {
     VmbBool_t   useAllInterfaces;
@@ -62,7 +62,7 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
  * \param[in] camera    Handle to the already opened camera
  * 
  * \return An error code indicating success or the type of error that occurred.
-*/
+ */
 VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
 
 /**
@@ -72,7 +72,7 @@ VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
  * \param[in] pOptions  Provided command line options and details for the Action Command
  *
  * \return An error code indicating success or the type of error that occurred.
-*/
+ */
 VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions);
 
 /**
@@ -83,7 +83,7 @@ VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOpti
  * \param[in] pCameraInfo   Information about the used and already opened camera
  *
  * \return An error code indicating success or the type of error that occurred.
-*/
+ */
 VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo);
 
 #endif

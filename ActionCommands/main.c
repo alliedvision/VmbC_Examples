@@ -51,7 +51,7 @@ VmbHandle_t g_CameraHandle;
  * \brief Handling of signals related to forced closing of the example application.
  * 
  * Will clean up the API.
-*/
+ */
 void HandleForcedClose()
 {
     // It's not recommended to call printf during the signal handling.

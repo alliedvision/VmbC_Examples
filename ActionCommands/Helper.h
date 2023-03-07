@@ -37,13 +37,13 @@
  * \param[in]   pCameraId         Camera ID provided by the user (NULL if not provided). It is check if the camera can be used by this example.
  * \param[out]  pCameraInfo       User provied struct which will be filled with information about the found camera.
  * \return An error code indicating success or the type of error that occurred.
-*/
+ */
 VmbError_t FindCamera(const VmbBool_t findAvtCamera, const char* pCameraId, VmbCameraInfo_t* pCameraInfo);
 
 /**
  * \brief Starts the API and prints version information about the API.
  * \return An error code indicating success or the type of error that occurred.
-*/
+ */
 VmbError_t StartApi();
 
 #endif
