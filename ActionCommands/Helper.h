@@ -38,7 +38,7 @@
  * \param[out]  pCameraInfo       User provied struct which will be filled with information about the found camera.
  * \return An error code indicating success or the type of error that occurred.
 */
-VmbError_t FindCamera(VmbBool_t findAvtCamera, const char* pCameraId, VmbCameraInfo_t* pCameraInfo);
+VmbError_t FindCamera(const VmbBool_t findAvtCamera, const char* pCameraId, VmbCameraInfo_t* pCameraInfo);
 
 /**
  * \brief Starts the API and prints version information about the API.
