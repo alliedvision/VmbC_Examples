@@ -59,10 +59,17 @@ void Sleep100Ms()
 
 VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCamera)
 {
+    /*
+    Decide which GenTL module is used to send the Action Commands - Interface or Transport Layer.
+    Using the Interface module follows the GenTL SFNC standard. The Allied Vision GigETL implements
+    the features also in the Transport Layer module. This is useful to send the Action Command to
+    multiple cameras connected to different interfaces.
+    */
     VmbHandle_t handleToUse = (pOptions->useAllInterfaces) ? pCamera->transportLayerHandle : pCamera->interfaceHandle;
 
     VmbError_t error = VmbErrorUnknown;
 
+    // Prepare the Action Command features for unicast or broadcast usage.
     if (pOptions->sendAsUnicast)
     {
         error = PrepareActionCommandAsUnicast(handleToUse, pOptions, pCamera);
@@ -77,6 +84,7 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
         return error;
     }
 
+    // Executing the feature ActionCommand sends the Action Command.
     error = VmbFeatureCommandRun(handleToUse, "ActionCommand");
     if (error != VmbErrorSuccess)
     {
@@ -84,6 +92,11 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
         return error;
     }
 
+    /*
+    Based on the used Transport Layer an acknowledge of the Action Command may be send by the camera to the host
+    in order to complete the command. It's recommended to query the completion of the Action Command to detect a
+    wrong configuration of the related trigger and Action Command features.
+    */
     VmbBool_t actionCmdDone = VmbBoolFalse;
     size_t    retries = 10;
     do
@@ -102,7 +115,7 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
 
     if (actionCmdDone == VmbBoolTrue)
     {
-        printf("Action Command sent.\n");
+        printf("Sending Action Command succeeded.\n");
     }
     else
     {
@@ -114,6 +127,11 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
 
 VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera)
 {
+    /*
+    The camera must be configured to process Action Commands.
+    The following features are configured accordingly: TriggerSelector, TriggerSource and TriggerMode
+    */
+
     VmbError_t error = VmbFeatureEnumSet(camera, "TriggerSelector", "FrameStart");
     if (error != VmbErrorSuccess)
     {
@@ -140,6 +158,11 @@ VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera)
 
 VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions)
 {
+    /*
+    The provided Action Command information is stored in the Interface or Transport Layer module.
+    Features to set: ActionDeviceKey, ActionGroupKey, ActionGroupMask and GevActionDestinationIPAddress for the unicast.
+    */
+
     VmbError_t error = VmbFeatureIntSet(handle, "ActionDeviceKey", pOptions->deviceKey);
     if (error != VmbErrorSuccess)
     {
@@ -163,14 +186,25 @@ VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOpti
 
 VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo)
 {
+    /*
+    The provided Action Command information is stored in the Interface or Transport Layer module.
+    Features to set: ActionDeviceKey, ActionGroupKey and ActionGroupMask.
+    */
+
     VmbError_t error = PrepareActionCommand(handle, pOptions);
     if (error != VmbErrorSuccess)
     {
         return error;
     }
 
+
+    /*
+    Action Commands are send out as broadcast if GevActionDestinationIPAddress is set to 0.
+    The cameras IP address is read from the Local Device module and written to the feature to enable the unicast.
+    */
+
     VmbInt64_t cameraIp = 0;
-    error = VmbFeatureIntGet(pCameraInfo->localDeviceHandle, "GevDeviceIPAddress", &cameraIp);
+    error = VmbFeatureIntGet(pCameraInfo->localDeviceHandle, "GevDeviceIPAddress", &cameraIp); //Using GenTL SFNC features to read the cameras IP address.
     if (error != VmbErrorSuccess)
     {
         printf("Could not get feature \"GevDeviceIPAddress\". Reason: %s\n", ErrorCodeToMessage(error));

@@ -8,8 +8,7 @@
 
   File:        ImageAcquisition.c
 
-  Description: The ActionCommands example will grab images asynchronously.
-               The acquisition of each image is triggered by an Action Command.
+  Description: Functions used to prepare, start and stop the image acquisition.
 
 -------------------------------------------------------------------------------
 
@@ -36,13 +35,17 @@
 
 #include <VmbC/VmbC.h>
 
+//Number of frame buffers used for streaming
 #define FRAME_COUNT ((size_t)5)
 
 VmbFrame_t g_frames[FRAME_COUNT];
 
+/**
+ * \brief   The used frame callback, printing information about the receive frame
+*/
 void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t streamHandle, VmbFrame_t* frame)
 {
-    printf("Received new frame - ");
+    printf("New frame received - ");
 
     printf("FrameID: ");
     if (VmbFrameFlagsFrameID & frame->receiveFlags)
@@ -93,6 +96,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
 
 void AdjustPacketSize(VmbHandle_t cameraHandle)
 {
+    //Query the camera information to get the cameras stream handle
     VmbCameraInfo_t info;
     VmbError_t error = VmbCameraInfoQueryByHandle(cameraHandle, &info, sizeof(info));
     if (error != VmbErrorSuccess)
@@ -103,17 +107,26 @@ void AdjustPacketSize(VmbHandle_t cameraHandle)
 
     VmbHandle_t stream = info.streamHandles[0];
 
+    /*
+    Adjust the packet size used during streaming.
+    Ignore any error because the feature is only implemented by the Allied Vision GigETL.
+    */
+
     error = VmbFeatureCommandRun(stream, "GVSPAdjustPacketSize");
     if (error != VmbErrorSuccess)
     {
         return;
     }
 
+    // Wait until the packet size adjustment is completed.
+
     VmbBool_t isCommandDone = VmbBoolFalse;
     do
     {
         error = VmbFeatureCommandIsDone(stream, "GVSPAdjustPacketSize", &isCommandDone);
     } while ((VmbBoolFalse == isCommandDone) && (error == VmbErrorSuccess));
+
+    //Read and print the adjusted packet size
 
     VmbInt64_t packetSize = 0;
     error = VmbFeatureIntGet(stream, "GVSPPacketSize", &packetSize);
@@ -129,6 +142,8 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
 {
     AdjustPacketSize(cameraHandle);
 
+    // Read the current payload size to allocate the correct buffer size
+
     VmbUint32_t payloadSize = 0;
     VmbError_t error = VmbPayloadSizeGet(cameraHandle, &payloadSize);
     if (error != VmbErrorSuccess)
@@ -137,7 +152,8 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
         return error;
     }
 
-    //Buffers bauen
+    // Allocate the needed frame buffers
+
     for (size_t i = 0; (i < FRAME_COUNT) && (error == VmbErrorSuccess); i++)
     {
         g_frames[i].buffer = malloc((size_t)payloadSize);
@@ -157,7 +173,7 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
         return error;
     }
 
-    //Buffers announcen
+    // Announce the frames to the API
     for (size_t i = 0; (i < FRAME_COUNT) && (error == VmbErrorSuccess); i++)
     {
         error = VmbFrameAnnounce(cameraHandle, &(g_frames[i]), (VmbUint32_t)sizeof(VmbFrame_t));
@@ -169,7 +185,7 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
         return error;
     }
 
-    //Capture starten
+    // Start the capturing
     error = VmbCaptureStart(cameraHandle);
     if (error != VmbErrorSuccess)
     {
@@ -177,7 +193,7 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
         return error;
     }
 
-    //Frames queuen
+    // Queue the prepared frames
     for (size_t i = 0; (i < FRAME_COUNT) && (error == VmbErrorSuccess); i++)
     {
         error = VmbCaptureFrameQueue(cameraHandle, &(g_frames[i]), FrameCallback);
@@ -189,7 +205,7 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
         return error;
     }
 
-    //Acquisition starten
+    // Run the Acquisition Start feature on the camera
     error = VmbFeatureCommandRun(cameraHandle, "AcquisitionStart");
     if (error != VmbErrorSuccess)
     {
@@ -202,18 +218,22 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
 
 VmbError_t StopStream(VmbHandle_t cameraHandle)
 {
+    // Revert the steps previously done during StartStream
+
     VmbFeatureCommandRun(cameraHandle, "AcquisitionStop");
 
     VmbCaptureEnd(cameraHandle);
 
     VmbCaptureQueueFlush(cameraHandle);
 
+    // Try to revoke the frames until the are not used anymore internally
     VmbError_t error;
     do
     {
         error = VmbFrameRevokeAll(cameraHandle);
     } while (error == VmbErrorInUse);
 
+    // Free the allocated frame buffers
     for (size_t i = 0; i < FRAME_COUNT; i++)
     {
         if (g_frames[i].buffer != NULL)

@@ -31,42 +31,42 @@
 
 #include "Helper.h"
 
-#include <VmbCExamplesCommon/ListCameras.h>
-#include <VmbCExamplesCommon/ListInterfaces.h>
-#include <VmbCExamplesCommon/ListTransportLayers.h>
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
+#include <VmbCExamplesCommon/ListCameras.h>
 #include <VmbCExamplesCommon/PrintVmbVersion.h>
 
 #include <VmbC/VmbC.h>
 
-#define AVT_GIGETL_VENDOR "Allied Vision Technologies"
+#define AVT_GIGETL_VENDOR       "Allied Vision Technologies"
+#define GENTL_SFNC_GIGE_TYPE    "GigEVision"
+#define ALTERNATIV_GIGE_TYPE    "GEV"
 
-VmbError_t GetInterfaceByHandle(VmbInterfaceInfo_t* pInterfaces, const VmbUint32_t interfaceCount, VmbInterfaceInfo_t* infoToFill, VmbHandle_t interfaceHandle);
-VmbError_t GetTransportLayerByHandle(VmbTransportLayerInfo_t* pTransportLayers, const VmbUint32_t transportLayerCount, VmbTransportLayerInfo_t* infoToFill, VmbHandle_t transportLayerHandle);
-VmbBool_t HasGivenTlVendor(VmbCameraInfo_t* pCameraToCheck, const char* pTlVendor);
-VmbError_t FindMatchingCameraByIdAndType(const char* pCameraId, VmbTransportLayerType_t interfaceType, VmbCameraInfo_t* pCameraInfo);
+// Helper functions
+
+VmbBool_t BelongsToAvtGigETL(VmbCameraInfo_t* pCameraToCheck);
 VmbBool_t HasActionCommandFeatures(VmbHandle_t handle);
-VmbError_t FindMatchingCamera(VmbTransportLayerType_t interfaceType, const char* const pTlVendor, VmbCameraInfo_t* pCameraInfo);
-VmbError_t FindMatchingCameraById(const char* pCameraId, VmbTransportLayerType_t interfaceType, const char* const pTlVendor, VmbCameraInfo_t* pCameraInfo);
+VmbBool_t IsGigeCamera(VmbCameraInfo_t* pCameraToCheck);
+VmbError_t CheckCamera(VmbCameraInfo_t* pCameraInfo, const VmbBool_t needsAvtGigETL);
+VmbError_t CheckProvidedCamera(const char* pCameraId, const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* pCameraInfo);
+VmbError_t FindMatchingCamera(const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* pCameraInfo);
 
-VmbError_t FindCamera(VmbBool_t findAvtCamera, char* const pCameraId, VmbHandle_t* cameraHandle, VmbCameraInfo_t* cameraInfo)
+// Implementation
+
+VmbError_t FindCamera(const VmbBool_t needsAvtGigETL, const char* pCameraId, VmbCameraInfo_t* pCameraInfo)
 {
     VmbError_t error = VmbErrorUnknown;
 
-    const char* tlVendor = (findAvtCamera) ? AVT_GIGETL_VENDOR : NULL;
-    memset(cameraInfo, 0, sizeof(VmbCameraInfo_t));
+    memset(pCameraInfo, 0, sizeof(VmbCameraInfo_t));
 
-    //Diesen Block noch auslagern zwecks lesbarkeit
     if (pCameraId != NULL)
     {
-        //Hier drin noch loggen wieso die Kamera nicht genommen werden kann
-        error = FindMatchingCameraById(pCameraId, VmbTransportLayerTypeGEV, tlVendor, cameraInfo);
+        // Find the first camera which can be used by this example
+        error = CheckProvidedCamera(pCameraId, needsAvtGigETL, pCameraInfo);
     }
     else
     {
-        //Hier noch loggen warum Kameras nicht genommen werden können?
-        // Und welche Kamera ID von welchem TL genommen wurde?
-        error = FindMatchingCamera(VmbTransportLayerTypeGEV, tlVendor, cameraInfo);
+        // Check if the given camera id belongs to a camera which can be used by this example
+        error = FindMatchingCamera(needsAvtGigETL, pCameraInfo);
     }
 
     return error;
@@ -85,18 +85,18 @@ VmbError_t StartApi()
     return err;
 }
 
-VmbError_t FindMatchingCamera(VmbTransportLayerType_t interfaceType, const char* const pTlVendor, VmbCameraInfo_t* pCameraInfo)
+VmbError_t FindMatchingCamera(const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* pCameraInfo)
 {
-    VmbCameraInfo_t* pCameras = 0;
-    VmbUint32_t                 cameraCount = 0;
+    VmbCameraInfo_t*    pCameras = 0;
+    VmbUint32_t         cameraCount = 0;
 
-    VmbTransportLayerInfo_t* pTransportLayers = 0;
-    VmbUint32_t                 transportLayerCount = 0;
+    VmbUint32_t         i = 0;
 
-    VmbInterfaceInfo_t* pInterfaces = 0;
-    VmbUint32_t                 interfaceCount = 0;
-
-    VmbUint32_t                 i = 0;
+    /*
+    Search the camera list for a camera which can be used for the example.
+    The used camera must be a GigE Vision camera which is not currently used by another application.
+    The Action Commands must be supported by the related Transport Layer.
+    */
 
     VmbError_t err = ListCameras(&pCameras, &cameraCount);
     if (err != VmbErrorSuccess)
@@ -104,249 +104,146 @@ VmbError_t FindMatchingCamera(VmbTransportLayerType_t interfaceType, const char*
         return err;
     }
 
-    err = ListInterfaces(&pInterfaces, &interfaceCount);
-    if (err != VmbErrorSuccess)
-    {
-        free(pCameras);
-        return err;
-    }
-
-    if (pTlVendor != 0)
-    {
-        err = ListTransportLayers(&pTransportLayers, &transportLayerCount);
-        if (err != VmbErrorSuccess)
-        {
-            free(pCameras);
-            free(pInterfaces);
-            return err;
-        }
-    }
-
     VmbBool_t cameraFound = VmbBoolFalse;
     for (i = 0; (i < cameraCount) && !cameraFound; i++)
     {
-        VmbCameraInfo_t currentCamera = pCameras[i];
+        cameraFound = (CheckCamera(pCameras + i, needsAvtGigETL) == VmbErrorSuccess);
 
-        VmbInterfaceInfo_t camerasInterface;
-        err = GetInterfaceByHandle(pInterfaces, interfaceCount, &camerasInterface, currentCamera.interfaceHandle);
-        if (err != VmbErrorSuccess)
+        if (cameraFound)
         {
-            continue;
-        }
-
-        if ((currentCamera.permittedAccess & VmbAccessModeFull) != VmbAccessModeFull)
-        {
-            printf("Ignoring camera \"%s\" (already used by other application)\n", currentCamera.cameraIdString);
-            continue;
-        }
-
-        VmbBool_t matchingInterfaceType = (camerasInterface.interfaceType == interfaceType);
-        if (!matchingInterfaceType)
-        {
-            printf("Ignoring camera \"%s\" (wrong interface type)\n", currentCamera.cameraIdString);
-            continue;
-        }
-
-        VmbBool_t interfaceHasActionCommand = HasActionCommandFeatures(currentCamera.interfaceHandle);
-        if (!interfaceHasActionCommand)
-        {
-            printf("Ignoring camera \"%s\" (transport layer without Action Command features on interface level)\n", currentCamera.cameraIdString);
-            continue;
-        }
-        else if (pTlVendor == NULL)
-        {
-            *pCameraInfo = currentCamera;
-            cameraFound = VmbBoolTrue;
-            continue;
-        }
-
-        VmbTransportLayerInfo_t camerasTransportLayer;
-        err = GetTransportLayerByHandle(pTransportLayers, transportLayerCount, &camerasTransportLayer, currentCamera.transportLayerHandle);
-        if (err != VmbErrorSuccess)
-        {
-            continue;
-        }
-
-        if (strcmp(pTlVendor, camerasTransportLayer.transportLayerVendor) == 0)
-        {
-            *pCameraInfo = currentCamera;
-            cameraFound = VmbBoolTrue;
-        }
-        else
-        {
-            printf("Ignoring camera \"%s\" (camera does not belong to the Allied Vision GigETL)\n", currentCamera.cameraIdString);
+            *pCameraInfo = *(pCameras + i);
         }
     }
 
     free(pCameras);
-    free(pInterfaces);
-    if (pTlVendor != 0)
-    {
-        free(pTransportLayers);
-    }
 
     return (cameraFound) ? VmbErrorSuccess : VmbErrorNotFound;
 }
 
-VmbError_t FindMatchingCameraById(const char* pCameraId, VmbTransportLayerType_t interfaceType, const char* const pTlVendor, VmbCameraInfo_t* pCameraInfo)
+VmbError_t CheckProvidedCamera(const char* pCameraId, const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* pCameraInfo)
 {
+    //Update the internal camera list to ensure that information for the given camera id is available
     VmbUint32_t cameraCount = 0;
-    VmbError_t err = VmbCamerasList(NULL, 0, &cameraCount, 0);
-    if (err != VmbErrorSuccess)
+    VmbError_t error= VmbCamerasList(NULL, 0, &cameraCount, 0);
+    if (error!= VmbErrorSuccess)
     {
-        return err;
-    }
-
-    err = FindMatchingCameraByIdAndType(pCameraId, interfaceType, pCameraInfo);
-    if (err != VmbErrorSuccess)
-    {
-        return err;
-    }
-
-    if (pTlVendor == NULL)
-    {
-        return err;
-    }
-
-    VmbBool_t matchingVendor = HasGivenTlVendor(pCameraInfo, pTlVendor);
-
-    return (matchingVendor) ? VmbErrorSuccess : VmbErrorNotFound;
-}
-
-VmbError_t GetInterfaceByHandle(VmbInterfaceInfo_t* pInterfaces, const VmbUint32_t interfaceCount, VmbInterfaceInfo_t* infoToFill, VmbHandle_t interfaceHandle)
-{
-    VmbUint32_t         i = 0;
-    VmbInterfaceInfo_t* info = 0;
-    for (i = 0; (i < interfaceCount) && (info == 0); i++)
-    {
-        VmbInterfaceInfo_t current = pInterfaces[i];
-        if (current.interfaceHandle == interfaceHandle)
-        {
-            info = pInterfaces + i;
-        }
-    }
-
-    if (info != 0)
-    {
-        *infoToFill = *info;
-    }
-
-    return (info != 0) ? VmbErrorSuccess : VmbErrorNotFound;
-}
-
-VmbError_t GetTransportLayerByHandle(VmbTransportLayerInfo_t* pTransportLayers, const VmbUint32_t transportLayerCount, VmbTransportLayerInfo_t* infoToFill, VmbHandle_t transportLayerHandle)
-{
-    VmbUint32_t                 i = 0;
-    VmbTransportLayerInfo_t* info = 0;
-
-    for (i = 0; (i < transportLayerCount) && (info == 0); i++)
-    {
-        VmbTransportLayerInfo_t current = pTransportLayers[i];
-        if (current.transportLayerHandle == transportLayerHandle)
-        {
-            info = pTransportLayers + i;
-        }
-    }
-
-    if (info != 0)
-    {
-        *infoToFill = *info;
-    }
-
-    return (info != 0) ? VmbErrorSuccess : VmbErrorNotFound;
-}
-
-
-VmbError_t FindMatchingCameraByIdAndType(const char* pCameraId, VmbTransportLayerType_t interfaceType, VmbCameraInfo_t* pCameraInfo)
-{
-    VmbInterfaceInfo_t* pInterfaces = 0;
-    VmbUint32_t                 interfaceCount = 0;
-
-    VmbBool_t                   cameraFound = VmbBoolFalse;
-
-    VmbError_t err = ListInterfaces(&pInterfaces, &interfaceCount);
-    if (err != VmbErrorSuccess)
-    {
-        return err;
+        return error;
     }
 
     VmbCameraInfo_t cameraInfo;
-    err = VmbCameraInfoQuery(pCameraId, &cameraInfo, sizeof(cameraInfo));
-    if (err != VmbErrorSuccess)
+    error= VmbCameraInfoQuery(pCameraId, &cameraInfo, sizeof(cameraInfo));
+    if (error!= VmbErrorSuccess)
     {
         printf("Camera \"%s\" not found\n", pCameraId);
-        free(pInterfaces);
-        return err;
+        return error;
     }
 
-    VmbInterfaceInfo_t camerasInterface;
-    err = GetInterfaceByHandle(pInterfaces, interfaceCount, &camerasInterface, cameraInfo.interfaceHandle);
-    if (err != VmbErrorSuccess)
+    /*
+    Check if the given camera can be used by this example.
+    The camera must be a GigE Vision camera which is not currently used by another application.
+    The Action Commands must be supported by the related Transport Layer.
+    */
+    error= CheckCamera(&cameraInfo, needsAvtGigETL);
+    if (error!= VmbErrorSuccess)
     {
-        free(pInterfaces);
-        return err;
-    }
-
-    VmbBool_t matchingInterfaceType = (camerasInterface.interfaceType == interfaceType);
-    if (!matchingInterfaceType)
-    {
-        printf("Camera \"%s\" has the wrong interface type.\n", pCameraId);
-        free(pInterfaces);
-        return VmbErrorNotFound;
-    }
-
-    if ((cameraInfo.permittedAccess & VmbAccessModeFull) != VmbAccessModeFull)
-    {
-        printf("Ignoring camera \"%s\" (already used by other application)\n", cameraInfo.cameraIdString);
-        free(pInterfaces);
-        return VmbErrorNotFound;
-    }
-
-    VmbBool_t interfaceHasActionCommand = HasActionCommandFeatures(cameraInfo.interfaceHandle);
-    if (!interfaceHasActionCommand)
-    {
-        printf("Camera \"%s\" belongs to a transport layer without Action Command features on interface level.\n", cameraInfo.cameraIdString);
-        free(pInterfaces);
-        return VmbErrorNotFound;
+        return error;
     }
 
     *pCameraInfo = cameraInfo;
-    cameraFound = VmbBoolTrue;
 
-    free(pInterfaces);
-
-    return (cameraFound) ? VmbErrorSuccess : VmbErrorNotFound;
+    return error;
 }
 
-VmbBool_t HasGivenTlVendor(VmbCameraInfo_t* pCameraToCheck, const char* pTlVendor)
+VmbError_t CheckCamera(VmbCameraInfo_t* pCameraInfo, const VmbBool_t needsAvtGigETL)
 {
-    VmbTransportLayerInfo_t* pTransportLayers = 0;
-    VmbUint32_t                 transportLayerCount = 0;
+    VmbBool_t       cameraFound = VmbBoolFalse;
 
-    VmbError_t err = ListTransportLayers(&pTransportLayers, &transportLayerCount);
-    if (err != VmbErrorSuccess)
+    //Check that the camera can be opened with VmbAccessModeFull
+    if ((pCameraInfo->permittedAccess & VmbAccessModeFull) != VmbAccessModeFull)
     {
+        printf("Ignoring camera \"%s\" (already used by other application)\n", pCameraInfo->cameraIdString);
+        return VmbErrorNotFound;
+    }
+
+    //Check that the camera is connected to a GigE Vision interface
+    VmbBool_t gigeCamera = IsGigeCamera(pCameraInfo);
+    if (!gigeCamera)
+    {
+        return VmbErrorNotFound;
+    }
+
+    //Check that the cameras transport layer supports GenTL SFNC Action Commands
+    VmbBool_t interfaceHasActionCommand = HasActionCommandFeatures(pCameraInfo->interfaceHandle);
+    if (!interfaceHasActionCommand)
+    {
+        printf("Ignoring camera \"%s\" (transport layer without Action Command features on interface level)\n", pCameraInfo->cameraIdString);
+        return VmbErrorNotFound;
+    }
+
+    // Check that the camera belongs to the AVT GigETL if Action Commands in the Transport Layer module are needed
+    if (needsAvtGigETL && !BelongsToAvtGigETL(pCameraInfo))
+    {
+        return VmbErrorNotFound;
+    }
+
+    return VmbErrorSuccess;
+}
+
+VmbBool_t BelongsToAvtGigETL(VmbCameraInfo_t* pCameraToCheck)
+{
+    const char* const VENDOR_NAME_FEATURE = "TLVendorName";
+
+    char buffer[128]; //For simplicity, use a fixed-size buffer.
+    memset(buffer, 0, sizeof(buffer));
+
+    /*
+    Read the vendor name of the transport layer using the cameras transport layer handle.
+    Compare the received vendor name with the expected vendor.
+    */
+
+    VmbUint32_t writtenBytes = 0;
+    VmbError_t error = VmbFeatureStringGet(pCameraToCheck->transportLayerHandle, VENDOR_NAME_FEATURE, buffer, sizeof(buffer), &writtenBytes);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not get feature \"%s\". Reason: %s\n", VENDOR_NAME_FEATURE, ErrorCodeToMessage(error));
         return VmbBoolFalse;
     }
 
-    VmbTransportLayerInfo_t camerasTransportLayer;
-    err = GetTransportLayerByHandle(pTransportLayers, transportLayerCount, &camerasTransportLayer, pCameraToCheck->transportLayerHandle);
-    if (err != VmbErrorSuccess)
-    {
-        free(pTransportLayers);
-        return VmbBoolFalse;
-    }
-
-    VmbBool_t matchingVendor = (strcmp(camerasTransportLayer.transportLayerVendor, pTlVendor) == 0);
+    VmbBool_t matchingVendor = (strcmp(buffer, AVT_GIGETL_VENDOR) == 0);
 
     if (!matchingVendor)
     {
-        printf("Ignoring camera \"%s\" (camera does not belong to the Allied Vision GigETL)\n", pCameraToCheck->cameraIdString);
+        printf("Ignoring camera \"%s\" (Transport Layer vendor is %s, expected %s)\n", pCameraToCheck->cameraIdString, buffer, AVT_GIGETL_VENDOR);
     }
 
-    free(pTransportLayers);
-
     return matchingVendor;
+}
+
+VmbBool_t IsGigeCamera(VmbCameraInfo_t* pCameraToCheck)
+{
+    const char* const INTERFACE_TYPE_FEATURE = "InterfaceType";
+
+    /*
+    Read the interface type of the interface the camera is connected to.
+    Compare the received type with the expected value specified by the GenTL SFNC.
+    */
+
+    char* typeValue = NULL;
+    VmbError_t error = VmbFeatureEnumGet(pCameraToCheck->interfaceHandle, INTERFACE_TYPE_FEATURE, &typeValue);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not get feature \"%s\". Reason: %s\n", INTERFACE_TYPE_FEATURE, ErrorCodeToMessage(error));
+        return VmbBoolFalse;
+    }
+
+    VmbBool_t gigeCamera = (strcmp(typeValue, GENTL_SFNC_GIGE_TYPE) == 0) || (strcmp(typeValue, ALTERNATIV_GIGE_TYPE) == 0);
+
+    if (!gigeCamera)
+    {
+        printf("Ignoring camera \"%s\" (wrong interface type %s)\n", pCameraToCheck->cameraIdString, typeValue);
+    }
+
+    return gigeCamera;
 }
 
 VmbBool_t HasActionCommandFeatures(VmbHandle_t handle)

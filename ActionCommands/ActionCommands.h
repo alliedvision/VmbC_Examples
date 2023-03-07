@@ -31,11 +31,16 @@
 
 #include <VmbC/VmbCTypeDefinitions.h>
 
+/**
+ * \brief Helper sturct containing the provided command line options.
+*/
 typedef struct ActionCommandsOptions
 {
     VmbBool_t   useAllInterfaces;
     VmbBool_t   sendAsUnicast;
-    char const* cameraId;
+
+    char const* pCameraId;
+
     VmbUint32_t deviceKey;
     VmbUint32_t groupKey;
     VmbUint32_t groupMask;
@@ -44,15 +49,41 @@ typedef struct ActionCommandsOptions
 /**
  * \brief send an Action Command to acquire and grab an image
  *
- * \param[in] options                 struct with command line options and details for the Action Command
+ * \param[in] pOptions  Provided command line options and details for the Action Command
+ * \param[in] pCamera   Information about the used and already opened camera
+ * 
+ * \return An error code indicating success or the type of error that occurred.
  */
 VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCamera);
 
+/**
+ * \brief Configures the camera to be triggered by Action Commands
+ * 
+ * \param[in] camera    Handle to the already opened camera
+ * 
+ * \return An error code indicating success or the type of error that occurred.
+*/
 VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
 
+/**
+ * \brief Configure the Action Command features for later sending as broadcast
+ *
+ * \param[in] handle    Transport Layer or Interface handle used to configure the Action Command features
+ * \param[in] pOptions  Provided command line options and details for the Action Command
+ *
+ * \return An error code indicating success or the type of error that occurred.
+*/
 VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions);
 
+/**
+ * \brief Configure the Action Command features for later sending as unicast directly to the camera
+ *
+ * \param[in] handle        Transport Layer or Interface handle used to configure the Action Command features
+ * \param[in] pOptions      Provided command line options and details for the Action Command
+ * \param[in] pCameraInfo   Information about the used and already opened camera
+ *
+ * \return An error code indicating success or the type of error that occurred.
+*/
 VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo);
-
 
 #endif

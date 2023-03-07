@@ -37,18 +37,33 @@
 
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
+// Globaly stored handle of the used camera (needed for the signal handlers)
 VmbHandle_t g_CameraHandle;
 
+#define VMB_PARAM_PRINT_HELP        "/h"
+#define VMB_PARAM_ON_ALL_INTERFACES "/a"
+#define VMB_PARAM_AS_UNICAST        "/u"
+
+#define VMB_ACTION_KEY              'a'
+#define VMB_QUIT_KEY                'q'
+
+/**
+ * \brief Handling of signals related to forced closing of the example application.
+ * 
+ * Will clean up the API.
+*/
 void HandleForcedClose()
 {
     // It's not recommended to call printf during the signal handling.
     // In this example it is called in order to reduce the complexity.
-    printf("Press 'q' + 'ENTER' to stop the example.\n");
+    printf("Press %c + 'ENTER' to stop the example.\n", VMB_QUIT_KEY);
+
     StopStream(g_CameraHandle);
     VmbCameraClose(g_CameraHandle);
     VmbShutdown();
 }
 
+// OS specific signal handling
 #ifdef _WIN32
 #include <Windows.h>
 BOOL WINAPI ConsoleHandler(DWORD signal)
@@ -73,10 +88,6 @@ void ConsoleHandler(int signal)
 
 #endif
 
-#define VMB_PARAM_PRINT_HELP        "/h"
-#define VMB_PARAM_ON_ALL_INTERFACES "/a"
-#define VMB_PARAM_AS_UNICAST        "/u"
-
 void PrintUsage()
 {
     printf( "Usage: ActionCommands [CameraID] [%s] [%s] [%s]\n"
@@ -96,15 +107,17 @@ VmbError_t ParseCommandLineParameters(ActionCommandsOptions* cmdOptions, VmbBool
 {
     VmbError_t result = VmbErrorSuccess;
 
-    *printHelp                          = VmbBoolFalse;
-    cmdOptions->useAllInterfaces        = VmbBoolFalse;
-    cmdOptions->sendAsUnicast           = VmbBoolFalse;
-    cmdOptions->cameraId                = NULL;
+    *printHelp                      = VmbBoolFalse;
+    cmdOptions->useAllInterfaces    = VmbBoolFalse;
+    cmdOptions->sendAsUnicast       = VmbBoolFalse;
+    cmdOptions->pCameraId           = NULL;
 
     // Action Command information to be set in the camera
-    cmdOptions->deviceKey               = 1;
-    cmdOptions->groupKey                = 1;
-    cmdOptions->groupMask               = 1;
+    cmdOptions->deviceKey           = 1;
+    cmdOptions->groupKey            = 1;
+    cmdOptions->groupMask           = 1;
+
+    // Parsing of the provided command line parameters
 
     char** const paramsEnd = argv + argc;
     for (char** param = argv + 1; result == VmbErrorSuccess && param != paramsEnd; ++param)
@@ -145,13 +158,13 @@ VmbError_t ParseCommandLineParameters(ActionCommandsOptions* cmdOptions, VmbBool
             }
             else
             {
-                if (cmdOptions->cameraId == NULL)
+                if (cmdOptions->pCameraId == NULL)
                 {
-                    cmdOptions->cameraId = *param;
+                    cmdOptions->pCameraId = *param;
                 }
                 else
                 {
-                    printf("Multiple camera ids specified: \"%s\" and \"%s\"\n", cmdOptions->cameraId, *param);
+                    printf("Multiple camera ids specified: \"%s\" and \"%s\"\n", cmdOptions->pCameraId, *param);
                     result = VmbErrorBadParameter;
                 }
             }
@@ -166,13 +179,14 @@ VmbError_t ParseCommandLineParameters(ActionCommandsOptions* cmdOptions, VmbBool
 
 int main(int argc, char* argv[])
 {
-    printf("/////////////////////////////////////////\n"
-           "/// Vmb API Action Commands Example ///\n"
-           "/////////////////////////////////////////\n\n");
+    printf("////////////////////////////////////////\n"
+           "/// Vmb API Action Commands Example ////\n"
+           "////////////////////////////////////////\n\n");
 
     ActionCommandsOptions cmdOptions;
     VmbBool_t printHelp;
     VmbCameraInfo_t cameraToUse;
+    memset(&cameraToUse, 0, sizeof(cameraToUse));
 
     VmbError_t err = ParseCommandLineParameters(&cmdOptions, &printHelp, argc, argv);
     
@@ -194,26 +208,27 @@ int main(int argc, char* argv[])
         return err;
     }
 
-    err = FindCamera(cmdOptions.useAllInterfaces, cmdOptions.cameraId, &g_CameraHandle, &cameraToUse);
+    // Find a camera which can be used by this example or check the compatibility of the given camera
+    err = FindCamera(cmdOptions.useAllInterfaces, cmdOptions.pCameraId, &cameraToUse);
     if (err != VmbErrorSuccess)
     {
-        printf("\nNo camera found which could be used by the example.");
+        printf("\nNo camera found which could be used by the example");
         VmbShutdown();
         return err;
     }
 
     printf("\nUsing camera %s\n", cameraToUse.cameraIdString);
 
-    //Kamera öffnen - Auslagern?
+    // Open the found camera
     err = VmbCameraOpen(cameraToUse.cameraIdString, VmbAccessModeFull, &g_CameraHandle);
     if (err != VmbErrorSuccess)
     {
-        printf("Could not open %s - %s\n", cameraToUse.cameraIdString, ErrorCodeToMessage(err));
+        printf("Could not open %s. Reason: %s\n", cameraToUse.cameraIdString, ErrorCodeToMessage(err));
         VmbShutdown();
         return err;
     }
 
-    //Infos für Handles aktualisieren
+    // Update the camera information (some values are only available after the camera is opened)
     VmbError_t error = VmbCameraInfoQuery(cameraToUse.cameraIdString, &cameraToUse, sizeof(cameraToUse));
     if (error != VmbErrorSuccess)
     {
@@ -223,7 +238,7 @@ int main(int argc, char* argv[])
         return error;
     }
 
-    //Kamera vorbereiten
+    // Prepare the camera to be triggered by received Action Commands
     err = PrepareCameraForActionCommands(g_CameraHandle);
     if (err != VmbErrorSuccess)
     {
@@ -232,7 +247,7 @@ int main(int argc, char* argv[])
         return err;
     }
 
-    //Setup Action Command on camera
+    //Setup the Action Command values on camera
     err = PrepareActionCommand(g_CameraHandle, &cmdOptions);
     if (err != VmbErrorSuccess)
     {
@@ -241,27 +256,28 @@ int main(int argc, char* argv[])
         return err;
     }
 
-    //Stream vorbereiten und starten
+    //Prepare and start the stream
     err = StartStream(g_CameraHandle);
 
     if (err == VmbErrorSuccess)
     {
-        //Ausgabe was zu tun ist
+        printf("\nExample ready to send Action Commands\n Press %c + ENTER to send an Action Command\n Press %c + ENTER to quit\n", VMB_ACTION_KEY, VMB_QUIT_KEY);
+
         int key = 0;
         do
         {
             key = getchar();
-            if (key == 'a')
+            if (key == VMB_ACTION_KEY)
             {
                 err = SendActionCommand(&cmdOptions, &cameraToUse);
             }
-        } while (key != 'q' && (err == VmbErrorSuccess) && (g_CameraHandle != NULL));
+        } while (key != VMB_QUIT_KEY && (err == VmbErrorSuccess) && (g_CameraHandle != NULL));
+        printf("Terminating example...\n");
     }
 
-    //Stream stoppen
+    //Cleanup the API before the example is closed
     StopStream(g_CameraHandle);
 
-    //Kamera schließen
     VmbCameraClose(g_CameraHandle);
 
     VmbShutdown();
