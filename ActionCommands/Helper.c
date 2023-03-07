@@ -156,8 +156,6 @@ VmbError_t CheckProvidedCamera(const char* pCameraId, const VmbBool_t needsAvtGi
 
 VmbError_t CheckCamera(VmbCameraInfo_t* pCameraInfo, const VmbBool_t needsAvtGigETL)
 {
-    VmbBool_t       cameraFound = VmbBoolFalse;
-
     //Check that the camera can be opened with VmbAccessModeFull
     if ((pCameraInfo->permittedAccess & VmbAccessModeFull) != VmbAccessModeFull)
     {
