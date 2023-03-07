@@ -34,6 +34,7 @@
 typedef struct ActionCommandsOptions
 {
     VmbBool_t   useAllInterfaces;
+    VmbBool_t   sendAsUnicast;
     char const* cameraId;
     VmbUint32_t deviceKey;
     VmbUint32_t groupKey;
@@ -50,5 +51,8 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
 VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
 
 VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions);
+
+VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo);
+
 
 #endif

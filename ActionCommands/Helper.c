@@ -160,7 +160,7 @@ VmbError_t FindMatchingCamera(VmbTransportLayerType_t interfaceType, const char*
         }
 
         VmbTransportLayerInfo_t camerasTransportLayer;
-        err = GetTransportLayerByHandle(pTransportLayers, transportLayerCount, &camerasTransportLayer, currentCamera.interfaceHandle);
+        err = GetTransportLayerByHandle(pTransportLayers, transportLayerCount, &camerasTransportLayer, currentCamera.transportLayerHandle);
         if (err != VmbErrorSuccess)
         {
             continue;

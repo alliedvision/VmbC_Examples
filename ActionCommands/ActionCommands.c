@@ -61,13 +61,21 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
 {
     VmbHandle_t handleToUse = (pOptions->useAllInterfaces) ? pCamera->transportLayerHandle : pCamera->interfaceHandle;
 
-    VmbError_t error = PrepareActionCommand(handleToUse, pOptions);
+    VmbError_t error = VmbErrorUnknown;
+
+    if (pOptions->sendAsUnicast)
+    {
+        error = PrepareActionCommandAsUnicast(handleToUse, pOptions, pCamera);
+    }
+    else
+    {
+        error = PrepareActionCommand(handleToUse, pOptions);
+    }
+
     if (error != VmbErrorSuccess)
     {
         return error;
     }
-
-    //Hier evtl. noch die destination ip setzen?
 
     error = VmbFeatureCommandRun(handleToUse, "ActionCommand");
     if (error != VmbErrorSuccess)
@@ -151,4 +159,30 @@ VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOpti
     }
 
     return VmbErrorSuccess;
+}
+
+VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo)
+{
+    VmbError_t error = PrepareActionCommand(handle, pOptions);
+    if (error != VmbErrorSuccess)
+    {
+        return error;
+    }
+
+    VmbInt64_t cameraIp = 0;
+    error = VmbFeatureIntGet(pCameraInfo->localDeviceHandle, "GevDeviceIPAddress", &cameraIp);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not get feature \"GevDeviceIPAddress\". Reason: %s\n", ErrorCodeToMessage(error));
+        return error;
+    }
+
+    error = VmbFeatureIntSet(handle, "GevActionDestinationIPAddress", cameraIp);
+    if (error != VmbErrorSuccess)
+    {
+        printf("Could not set feature \"GevActionDestinationIPAddress\" to %X. Reason: %s\n", (VmbUint32_t)cameraIp, ErrorCodeToMessage(error));
+        return error;
+    }
+
+    return error;
 }

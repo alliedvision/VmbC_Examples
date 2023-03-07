@@ -75,14 +75,20 @@ void ConsoleHandler(int signal)
 
 #define VMB_PARAM_PRINT_HELP        "/h"
 #define VMB_PARAM_ON_ALL_INTERFACES "/a"
+#define VMB_PARAM_AS_UNICAST        "/u"
 
 void PrintUsage()
 {
-    printf( "Usage: ActionCommands [CameraID] [/a] [/h]\n"
+    printf( "Usage: ActionCommands [CameraID] [%s] [%s] [%s]\n"
             "Parameters:    CameraID    ID of the camera to use (using first camera if not specified)\n"
             "               %s          Send the Action Command on all interfaces (requires the AVT GigETL)\n"
+            "               %s          Send the Action Command as unicast directly to the camera (otherwise as broadcast)\n"
             "               %s          Print out help\n",
             VMB_PARAM_ON_ALL_INTERFACES,
+            VMB_PARAM_AS_UNICAST,
+            VMB_PARAM_PRINT_HELP,
+            VMB_PARAM_ON_ALL_INTERFACES,
+            VMB_PARAM_AS_UNICAST,
             VMB_PARAM_PRINT_HELP);
 }
 
@@ -92,6 +98,7 @@ VmbError_t ParseCommandLineParameters(ActionCommandsOptions* cmdOptions, VmbBool
 
     *printHelp                          = VmbBoolFalse;
     cmdOptions->useAllInterfaces        = VmbBoolFalse;
+    cmdOptions->sendAsUnicast           = VmbBoolFalse;
     cmdOptions->cameraId                = NULL;
 
     // Action Command information to be set in the camera
@@ -115,13 +122,23 @@ VmbError_t ParseCommandLineParameters(ActionCommandsOptions* cmdOptions, VmbBool
                 else
                 {
                     *printHelp = VmbBoolTrue;
+                    break;
                 }
             }
-            else if (0 == strcmp(*param, VMB_PARAM_ON_ALL_INTERFACES))
+
+            if (0 == strcmp(*param, VMB_PARAM_ON_ALL_INTERFACES))
             {
                 cmdOptions->useAllInterfaces = VmbBoolTrue;
+                continue;
             }
-            else if (**param == '/')
+
+            if (0 == strcmp(*param, VMB_PARAM_AS_UNICAST))
+            {
+                cmdOptions->sendAsUnicast = VmbBoolTrue;
+                continue;
+            }
+
+            if (**param == '/')
             {
                 printf("unknown command line option: %s\n", *param);
                 result = VmbErrorBadParameter;
