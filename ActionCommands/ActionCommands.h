@@ -36,25 +36,25 @@
  */
 typedef struct ActionCommandsOptions
 {
-    VmbBool_t   useAllInterfaces;
-    VmbBool_t   sendAsUnicast;
+    VmbBool_t           useAllInterfaces;
+    VmbBool_t           sendAsUnicast;
 
-    char const* pCameraId;
+    char const*         pCameraId;
 
-    VmbUint32_t deviceKey;
-    VmbUint32_t groupKey;
-    VmbUint32_t groupMask;
+    const VmbUint32_t   deviceKey;
+    const VmbUint32_t   groupKey;
+    const VmbUint32_t   groupMask;
 } ActionCommandsOptions;
 
 /**
- * \brief send an Action Command to acquire and grab an image
+ * \brief Send an Action Command to acquire and grab an image
  *
  * \param[in] pOptions  Provided command line options and details for the Action Command
  * \param[in] pCamera   Information about the used and already opened camera
  * 
  * \return An error code indicating success or the type of error that occurred.
  */
-VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCamera);
+VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const VmbCameraInfo_t* const pCamera);
 
 /**
  * \brief Configures the camera to be triggered by Action Commands
@@ -63,7 +63,7 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
  * 
  * \return An error code indicating success or the type of error that occurred.
  */
-VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
+VmbError_t PrepareCameraForActionCommands(const VmbHandle_t camera);
 
 /**
  * \brief Configure the Action Command features for later sending as broadcast
@@ -73,7 +73,7 @@ VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera);
  *
  * \return An error code indicating success or the type of error that occurred.
  */
-VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions);
+VmbError_t PrepareActionCommand(const VmbHandle_t handle, const ActionCommandsOptions* const pOptions);
 
 /**
  * \brief Configure the Action Command features for later sending as unicast directly to the camera
@@ -84,6 +84,6 @@ VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOpti
  *
  * \return An error code indicating success or the type of error that occurred.
  */
-VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo);
+VmbError_t PrepareActionCommandAsUnicast(const VmbHandle_t handle, const ActionCommandsOptions* const pOptions, const VmbCameraInfo_t* const pCameraInfo);
 
 #endif

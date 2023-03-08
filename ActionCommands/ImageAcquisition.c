@@ -94,9 +94,9 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
     VmbCaptureFrameQueue(cameraHandle, frame, &FrameCallback);
 }
 
-void AdjustPacketSize(VmbHandle_t cameraHandle)
+void AdjustPacketSize(const VmbHandle_t cameraHandle)
 {
-    //Query the camera information to get the cameras stream handle
+    //Query the camera information to get the camera'sstream handle
     VmbCameraInfo_t info;
     VmbError_t error = VmbCameraInfoQueryByHandle(cameraHandle, &info, sizeof(info));
     if (error != VmbErrorSuccess)
@@ -105,7 +105,7 @@ void AdjustPacketSize(VmbHandle_t cameraHandle)
         return;
     }
 
-    VmbHandle_t stream = info.streamHandles[0];
+    const VmbHandle_t stream = info.streamHandles[0];
 
     /*
     Adjust the packet size used during streaming.
@@ -138,7 +138,7 @@ void AdjustPacketSize(VmbHandle_t cameraHandle)
     printf("GVSPPacketSize adjusted to: %lld\n", packetSize);
 }
 
-VmbError_t StartStream(VmbHandle_t cameraHandle)
+VmbError_t StartStream(const VmbHandle_t cameraHandle)
 {
     AdjustPacketSize(cameraHandle);
 
@@ -216,7 +216,7 @@ VmbError_t StartStream(VmbHandle_t cameraHandle)
     return error;
 }
 
-VmbError_t StopStream(VmbHandle_t cameraHandle)
+VmbError_t StopStream(const VmbHandle_t cameraHandle)
 {
     // Revert the steps previously done during StartStream
 

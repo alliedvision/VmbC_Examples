@@ -57,15 +57,15 @@ void Sleep100Ms()
     #endif
 }
 
-VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCamera)
+VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const VmbCameraInfo_t* const pCamera)
 {
     /*
     Decide which GenTL module is used to send the Action Commands - Interface or Transport Layer.
     Using the Interface module follows the GenTL SFNC standard. The Allied Vision GigETL implements
     the features also in the Transport Layer module. This is useful to send the Action Command to
-    multiple cameras connected to different interfaces.
+    multiple camera'sconnected to different interfaces.
     */
-    VmbHandle_t handleToUse = (pOptions->useAllInterfaces) ? pCamera->transportLayerHandle : pCamera->interfaceHandle;
+    const VmbHandle_t handleToUse = (pOptions->useAllInterfaces) ? pCamera->transportLayerHandle : pCamera->interfaceHandle;
 
     VmbError_t error = VmbErrorUnknown;
 
@@ -125,7 +125,7 @@ VmbError_t SendActionCommand(ActionCommandsOptions* pOptions, VmbCameraInfo_t* p
     return error;
 }
 
-VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera)
+VmbError_t PrepareCameraForActionCommands(const VmbHandle_t camera)
 {
     /*
     The camera must be configured to process Action Commands.
@@ -156,7 +156,7 @@ VmbError_t PrepareCameraForActionCommands(VmbHandle_t camera)
     return VmbErrorSuccess;
 }
 
-VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOptions)
+VmbError_t PrepareActionCommand(const VmbHandle_t handle, const ActionCommandsOptions* const pOptions)
 {
     /*
     The provided Action Command information is stored in the Interface or Transport Layer module.
@@ -169,13 +169,13 @@ VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOpti
         printf("Could not set feature \"ActionDeviceKey\" to %u. Reason: %s\n", pOptions->deviceKey, ErrorCodeToMessage(error));
     }
 
-    VmbFeatureIntSet(handle, "ActionGroupKey", pOptions->groupKey);
+    error = VmbFeatureIntSet(handle, "ActionGroupKey", pOptions->groupKey);
     if (error != VmbErrorSuccess)
     {
         printf("Could not set feature \"ActionGroupKey\" to %u. Reason: %s\n", pOptions->groupKey, ErrorCodeToMessage(error));
     }
 
-    VmbFeatureIntSet(handle, "ActionGroupMask", pOptions->groupMask);
+    error = VmbFeatureIntSet(handle, "ActionGroupMask", pOptions->groupMask);
     if (error != VmbErrorSuccess)
     {
         printf("Could not set feature \"ActionGroupMask\" to %u. Reason: %s\n", pOptions->groupMask, ErrorCodeToMessage(error));
@@ -184,7 +184,7 @@ VmbError_t PrepareActionCommand(VmbHandle_t handle, ActionCommandsOptions* pOpti
     return VmbErrorSuccess;
 }
 
-VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptions* pOptions, VmbCameraInfo_t* pCameraInfo)
+VmbError_t PrepareActionCommandAsUnicast(const VmbHandle_t handle, const ActionCommandsOptions* const pOptions, const VmbCameraInfo_t* const pCameraInfo)
 {
     /*
     The provided Action Command information is stored in the Interface or Transport Layer module.
@@ -200,11 +200,11 @@ VmbError_t PrepareActionCommandAsUnicast(VmbHandle_t handle, ActionCommandsOptio
 
     /*
     Action Commands are send out as broadcast if GevActionDestinationIPAddress is set to 0.
-    The cameras IP address is read from the Local Device module and written to the feature to enable the unicast.
+    The camera's IP address is read from the Local Device module and written to the feature to enable the unicast.
     */
 
     VmbInt64_t cameraIp = 0;
-    error = VmbFeatureIntGet(pCameraInfo->localDeviceHandle, "GevDeviceIPAddress", &cameraIp); //Using GenTL SFNC features to read the cameras IP address.
+    error = VmbFeatureIntGet(pCameraInfo->localDeviceHandle, "GevDeviceIPAddress", &cameraIp); //Using GenTL SFNC features to read the camera's IP address.
     if (error != VmbErrorSuccess)
     {
         printf("Could not get feature \"GevDeviceIPAddress\". Reason: %s\n", ErrorCodeToMessage(error));

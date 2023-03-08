@@ -37,7 +37,7 @@
  *
  * \return An error code indicating success or the type of error that occurred.
 */
-VmbError_t StartStream(VmbHandle_t cameraHandle);
+VmbError_t StartStream(const VmbHandle_t cameraHandle);
 
 /**
  * \brief Stops the stream reverting the steps done during StartStream.
@@ -46,6 +46,6 @@ VmbError_t StartStream(VmbHandle_t cameraHandle);
  *
  * \return An error code indicating success or the type of error that occurred.
 */
-VmbError_t StopStream(VmbHandle_t cameraHandle);
+VmbError_t StopStream(const VmbHandle_t cameraHandle);
 
 #endif
