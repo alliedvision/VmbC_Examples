@@ -123,8 +123,8 @@ VmbError_t FindMatchingCamera(const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* c
 VmbError_t CheckProvidedCamera(const char* const pCameraId, const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* const pCameraInfo)
 {
     VmbCameraInfo_t cameraInfo;
-    VmbError_t error= VmbCameraInfoQuery(pCameraId, &cameraInfo, sizeof(cameraInfo));
-    if (error!= VmbErrorSuccess)
+    VmbError_t error = VmbCameraInfoQuery(pCameraId, &cameraInfo, sizeof(cameraInfo));
+    if (error != VmbErrorSuccess)
     {
         printf("Camera \"%s\" not found\n", pCameraId);
         return error;
@@ -135,8 +135,8 @@ VmbError_t CheckProvidedCamera(const char* const pCameraId, const VmbBool_t need
     The camera must be a GigE Vision camera which is not currently used by another application.
     The Action Commands must be supported by the related Transport Layer.
     */
-    error= CheckCamera(&cameraInfo, needsAvtGigETL);
-    if (error!= VmbErrorSuccess)
+    error = CheckCamera(&cameraInfo, needsAvtGigETL);
+    if (error != VmbErrorSuccess)
     {
         return error;
     }

@@ -63,7 +63,7 @@ VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const 
     Decide which GenTL module is used to send the Action Commands - Interface or Transport Layer.
     Using the Interface module follows the GenTL SFNC standard. The Allied Vision GigETL implements
     the features also in the Transport Layer module. This is useful to send the Action Command to
-    multiple camera'sconnected to different interfaces.
+    multiple cameras connected to different interfaces.
     */
     const VmbHandle_t handleToUse = (pOptions->useAllInterfaces) ? pCamera->transportLayerHandle : pCamera->interfaceHandle;
 
