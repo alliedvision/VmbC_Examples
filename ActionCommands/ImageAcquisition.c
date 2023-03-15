@@ -41,7 +41,7 @@
 VmbFrame_t g_frames[FRAME_COUNT];
 
 /**
- * \brief   The used frame callback, printing information about the receive frame
+ * \brief   The used frame callback, printing information about the received frame
  */
 void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t streamHandle, VmbFrame_t* frame)
 {
@@ -96,7 +96,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
 
 void AdjustPacketSize(const VmbHandle_t cameraHandle)
 {
-    //Query the camera information to get the camera'sstream handle
+    //Query the camera information to get the camera's stream handle
     VmbCameraInfo_t info;
     VmbError_t error = VmbCameraInfoQueryByHandle(cameraHandle, &info, sizeof(info));
     if (error != VmbErrorSuccess)
@@ -109,7 +109,7 @@ void AdjustPacketSize(const VmbHandle_t cameraHandle)
 
     /*
     Adjust the packet size used during streaming.
-    Ignore any error because the feature is only implemented by the Allied Vision GigETL.
+    Ignore any error because the feature is only implemented by the AVT GigE TL.
     */
 
     error = VmbFeatureCommandRun(stream, "GVSPAdjustPacketSize");
@@ -185,7 +185,7 @@ VmbError_t StartStream(const VmbHandle_t cameraHandle)
         return error;
     }
 
-    // Start the capturing
+    // Start capturing
     error = VmbCaptureStart(cameraHandle);
     if (error != VmbErrorSuccess)
     {
@@ -226,7 +226,7 @@ VmbError_t StopStream(const VmbHandle_t cameraHandle)
 
     VmbCaptureQueueFlush(cameraHandle);
 
-    // Try to revoke the frames until the are not used anymore internally
+    // Try to revoke the frames until they are not used anymore internally
     VmbError_t error;
     do
     {

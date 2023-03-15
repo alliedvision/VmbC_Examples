@@ -37,7 +37,7 @@
 
 #include <VmbCExamplesCommon/ErrorCodeToMessage.h>
 
-// Globaly stored handle of the used camera (needed for the signal handlers)
+// Globally stored handle of the used camera (needed for the signal handlers)
 VmbHandle_t g_CameraHandle = NULL;
 
 // Used command line parameters
@@ -62,7 +62,7 @@ VmbHandle_t g_CameraHandle = NULL;
 void HandleForcedClose()
 {
     // It's not recommended to call printf during the signal handling.
-    // In this example it is called in order to reduce the complexity.
+    // In this example it is called to reduce the complexity.
     printf("Press %c + 'ENTER' to stop the example.\n", VMB_QUIT_KEY);
 
     StopStream(g_CameraHandle);
@@ -248,7 +248,7 @@ int main(int argc, char* argv[])
         CLEANUP_AND_RETURN(g_CameraHandle, error);
     }
 
-    //Setup the Action Command values on the camera
+    //Set up the Action Command values on the camera
     error = PrepareActionCommand(g_CameraHandle, &cmdOptions);
     if (error != VmbErrorSuccess)
     {
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
         printf("Terminating example...\n");
     }
 
-    //Cleanup the API before the example is closed
+    //Clean up the API before the example is closed
 
     StopStream(g_CameraHandle);
 

@@ -34,8 +34,8 @@
  * \brief Searches for a camera which can be used by this example.
  *
  * \param[in]   needsAvtGigETL    Sending Action Commands via the Transport Layer module requires an Allied Vision GigE camera
- * \param[in]   pCameraId         Camera ID provided by the user (NULL if not provided). It is check if the camera can be used by this example.
- * \param[out]  pCameraInfo       User provied struct which will be filled with information about the found camera.
+ * \param[in]   pCameraId         Camera ID provided by the user (NULL if not provided). It is checked if the camera can be used by this example.
+ * \param[out]  pCameraInfo       User provided struct which will be filled with information about the found camera.
  *
  * \return An error code indicating success or the type of error that occurred.
  */

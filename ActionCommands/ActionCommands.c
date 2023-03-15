@@ -8,7 +8,7 @@
 
   File:        ActionCommands.c
 
-  Description: The ActionCommands example will grab images asynchronously.
+  Description: The ActionCommands example grabs images asynchronously.
                The acquisition of each image is triggered by an Action Command.
 
 -------------------------------------------------------------------------------
@@ -61,7 +61,7 @@ VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const 
 {
     /*
     Decide which GenTL module is used to send the Action Commands - Interface or Transport Layer.
-    Using the Interface module follows the GenTL SFNC standard. The Allied Vision GigETL implements
+    Using the Interface module follows the GenTL SFNC standard. The AVT GigE TL implements
     the features also in the Transport Layer module. This is useful to send the Action Command to
     multiple cameras connected to different interfaces.
     */
@@ -93,7 +93,7 @@ VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const 
     }
 
     /*
-    Based on the used Transport Layer an acknowledge of the Action Command may be send by the camera to the host
+    Based on the used Transport Layer, an acknowledge of the Action Command may be sent by the camera to the host
     in order to complete the command. It's recommended to query the completion of the Action Command to detect a
     wrong configuration of the related trigger and Action Command features.
     */
@@ -199,7 +199,7 @@ VmbError_t PrepareActionCommandAsUnicast(const VmbHandle_t handle, const ActionC
 
 
     /*
-    Action Commands are send out as broadcast if GevActionDestinationIPAddress is set to 0.
+    Action Commands are sent out as broadcast if GevActionDestinationIPAddress is set to 0.
     The camera's IP address is read from the Local Device module and written to the feature to enable the unicast.
     */
 

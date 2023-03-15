@@ -8,7 +8,7 @@
 
   File:        ActionCommands.h
 
-  Description: The ActionCommands example will grab images asynchronously.
+  Description: The ActionCommands example grabs images asynchronously.
                The acquisition of each image is triggered by an Action Command.
 
 -------------------------------------------------------------------------------

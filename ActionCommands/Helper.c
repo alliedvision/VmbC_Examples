@@ -95,7 +95,7 @@ VmbError_t FindMatchingCamera(const VmbBool_t needsAvtGigETL, VmbCameraInfo_t* c
     /*
     Search the camera list for a camera which can be used for the example.
     The used camera must be a GigE Vision camera which is not currently used by another application.
-    The Action Commands must be supported by the related Transport Layer.
+    Action Commands must be supported by the related Transport Layer.
     */
 
     const VmbError_t error = ListCameras(&pCameras, &cameraCount);
@@ -133,7 +133,7 @@ VmbError_t CheckProvidedCamera(const char* const pCameraId, const VmbBool_t need
     /*
     Check if the given camera can be used by this example.
     The camera must be a GigE Vision camera which is not currently used by another application.
-    The Action Commands must be supported by the related Transport Layer.
+    Action Commands must be supported by the related Transport Layer.
     */
     error = CheckCamera(&cameraInfo, needsAvtGigETL);
     if (error != VmbErrorSuccess)
@@ -162,7 +162,7 @@ VmbError_t CheckCamera(const VmbCameraInfo_t* const pCameraInfo, const VmbBool_t
         return VmbErrorNotFound;
     }
 
-    //Check that the camera'stransport layer supports GenTL SFNC Action Commands
+    //Check that the camera's transport layer supports GenTL SFNC Action Commands
     const VmbBool_t interfaceHasActionCommand = HasActionCommandFeatures(pCameraInfo->interfaceHandle);
     if (!interfaceHasActionCommand)
     {
@@ -170,7 +170,7 @@ VmbError_t CheckCamera(const VmbCameraInfo_t* const pCameraInfo, const VmbBool_t
         return VmbErrorNotFound;
     }
 
-    // Check that the camera belongs to the AVT GigETL if Action Commands in the Transport Layer module are needed
+    // Check that the camera belongs to the AVT GigE TL if Action Commands in the Transport Layer module are needed
     if (needsAvtGigETL && !BelongsToAvtGigETL(pCameraInfo))
     {
         return VmbErrorNotFound;
@@ -187,7 +187,7 @@ VmbBool_t BelongsToAvtGigETL(const VmbCameraInfo_t* const pCameraToCheck)
     memset(buffer, 0, sizeof(buffer));
 
     /*
-    Read the vendor name of the transport layer using the camera'stransport layer handle.
+    Read the vendor name of the transport layer using the camera's transport layer handle.
     Compare the received vendor name with the expected vendor.
     */
 
