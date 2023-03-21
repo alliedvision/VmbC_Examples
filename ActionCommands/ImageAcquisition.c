@@ -41,7 +41,7 @@
 VmbFrame_t g_frames[FRAME_COUNT];
 
 /**
- * \brief   The used frame callback, printing information about the received frame
+ * \brief   The used frame callback, which prints information about the received frame
  */
 void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t streamHandle, VmbFrame_t* frame)
 {

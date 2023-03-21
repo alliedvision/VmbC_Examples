@@ -61,7 +61,7 @@ VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const 
 {
     /*
     Decide which GenTL module is used to send the Action Commands - Interface or Transport Layer.
-    Using the Interface module follows the GenTL SFNC standard. The AVT GigE TL implements
+    Use of the Interface module follows the GenTL SFNC standard. The AVT GigE TL implements
     the features also in the Transport Layer module. This is useful to send the Action Command to
     multiple cameras connected to different interfaces.
     */
@@ -93,7 +93,7 @@ VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const 
     }
 
     /*
-    Based on the used Transport Layer, an acknowledge of the Action Command may be sent by the camera to the host
+    Based on the used Transport Layer, an acknowledgement of the Action Command may be sent by the camera to the host
     in order to complete the command. It's recommended to query the completion of the Action Command to detect a
     wrong configuration of the related trigger and Action Command features.
     */
