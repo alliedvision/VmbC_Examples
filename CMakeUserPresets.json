@@ -63,7 +63,47 @@
       "inherits": ["arm64-debug-template", "arm64"],
       "displayName": "Linux ARM64 Debug Config",
       "description": "Linux ARM64 Debug Config"
-    }
+    },
+    {
+      "name": "macos-vs-template",
+      "hidden": true,
+      "inherits": "macos-template",
+      // VS delivered CMake is broken. Replace it with: 
+      //      rm -rf ~/.vs/cmake/bin && ln -s /Applications/CMake.app/Contents/bin ~/.vs/cmake/bin
+      "binaryDir": "$env{HOME}/.vs/$ms{projectDirName}/build/${presetName}",
+      "environment": {
+        // "VERBOSE":  "1"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}",
+          "intelliSenseMode": "clang-x64",
+          "copySourcesOptions": {
+            "exclusionList": [ ".vs", "build" ]
+          }
+        }
+      }
+    },
+    {
+      "name": "macos",
+      "inherits": "macos-vs-template",
+      "displayName": "macOS Release",
+      "cacheVariables": {
+        "Boost_DIR": { "type": "PATH", "value": "$env{HOME}/boost_1_78_0/macOS-arm64-dynamic/lib/cmake/Boost-1.78.0" }
+      }
+    },
+    {
+      "name": "macos-debug",
+      "inherits": "macos",
+      "displayName": "macOS Debug",
+      "generator": "Xcode",
+      "environment": {
+        //"VERBOSE":  "1"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {"type": "STRING", "value": "Debug" }
+      }
+    },
   ],
   
   "buildPresets": [
@@ -102,6 +142,18 @@
       "name": "arm64-debug",
       "inherits": "build-template",
       "configurePreset": "arm64-debug"
+    },
+    {
+      "name": "macos",
+      "displayName": "macOS Release Build",
+      "configurePreset": "macos",
+      "jobs": 20     
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "macOS Debug Build",
+      "configurePreset": "macos-debug",
+      "jobs": 20
     }
   ]
 }

@@ -8,7 +8,7 @@
   "configurePresets": [
     {
       "name": "config-template",
-      "binaryDir": "${sourceDir}/build-${presetName}",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "hidden": true
     },
     {
@@ -57,6 +57,20 @@
       "hidden": true,
       "displayName": "Debug Config Linux ARM64",
       "description": "ARM64 Cross-compile Makefiles project for Debug configuration "
+    },
+    {
+      "name": "macos-template",
+      "displayName": "Release Config macOS",
+      "inherits": "config-template",
+      "hidden": true,
+      "description": "Makefiles project for Release configuration targeting the host OS",
+      "generator": "Unix Makefiles",
+      "environment": { "MACOSX_DEPLOYMENT_TARGET": "11.7" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": { "type": "STRING", "value": "Release" },
+        "Vmb_DIR": "$env{HOME}/.vs/vmbx/build/macos-debug/VmbAPI_Install_macos-debug/lib/cmake/vmb"
+      },
+      "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
     {
       "name": "win64-template",
