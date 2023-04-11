@@ -10,8 +10,8 @@
       "name": "win64",
       "inherits": "win64-template",
       "environment": {
-        "QT_PATH": "C:/Qt_5_15_x64_Windows",
-        "VMB_API_PATH": "${sourceDir}/VmbAPI"
+        "QT_PATH": "C:/Qt/5.15.2/msvc2019_64",
+        "VMB_API_PATH": "C:/Program Files/Allied Vision/Vimba X/api"
       },
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": {
@@ -26,8 +26,8 @@
       "displayName": "Linux 64 Release Config",
       "description": "Linux 64 Release Config",
       "environment": {
-        "QT_PATH": "/data/Qt_5_15_Install",
-        "VMB_API_PATH": "${sourceDir}/VmbAPI"
+        "QT_PATH": "/path/to/Qt_5_15_Install",
+        "VMB_API_PATH": "/path/to/VimbaX_2023-1/api"
       },
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": {
