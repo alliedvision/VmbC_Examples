@@ -1,6 +1,12 @@
 VmbC Examples
 =============
 
+Programming examples using the Vimba X C API "VmbC".
+
+Beta Disclaimer
+---------------
+THE SOFTWARE IS PRELIMINARY AND STILL IN TESTING AND VERIFICATION PHASE AND IS PROVIDED ON AN “AS IS” AND “AS AVAILABLE” BASIS AND IS BELIEVED TO CONTAIN DEFECTS. A PRIMARY PURPOSE OF THIS EARLY ACCESS IS TO OBTAIN FEEDBACK ON PERFORMANCE AND THE IDENTIFICATION OF DEFECT SOFTWARE, HARDWARE AND DOCUMENTATION.
+
 Compile instructions & tool chain requirements
 ----------------------------------------------
 
@@ -14,7 +20,7 @@ Compile instructions & tool chain requirements
 
 ### 1. Specify VmbAPI and Qt directory
 
-Before running CMake to initialize the project, adjust [`CMakeUserPresets.json`](./CMakeUserPresets.json).
+Before running CMake to initialize the project, rename [`CMakeUserPresets.json.TEMPLATE`](./CMakeUserPresets.json.TEMPLATE) to `CMakeUserPresets.json`.
 
 Depending on your desired configuration and platform, you need to specify the path to your VmbAPI and Qt installation directory.
 
