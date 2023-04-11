@@ -13,7 +13,7 @@ Compile instructions & tool chain requirements
 ### Requirements
 
 * cmake (>= 3.21)
-* VmbAPI Installation directory incl. `FindVmb.cmake` (VmbC, VmbCPP, VmbImageTransform)
+* Vimba X
 * Qt 5.15.x (optional)
 * Linux: gcc/g++ (>= 8.4.0)
 * Windows: Microsoft Visual Studio (>= 2017)
