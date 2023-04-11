@@ -4,19 +4,17 @@ VmbC Examples
 Compile instructions & tool chain requirements
 ----------------------------------------------
 
-> #### <em> Please note that the Visual Studio solutions in the corresponding Examples folders are only for deployment purposes. If you want to build the exapmles with a custom build of VmbAPI (e.g. for debugging), please follow the instructions below. </em>
-
 ### Requirements
 
 * cmake (>= 3.21)
 * VmbAPI Installation directory incl. `FindVmb.cmake` (VmbC, VmbCPP, VmbImageTransform)
-* Qt 5.15.x
+* Qt 5.15.x (optional)
 * Linux: gcc/g++ (>= 8.4.0)
 * Windows: Microsoft Visual Studio (>= 2017)
 
 ### 1. Specify VmbAPI and Qt directory
 
-Before running CMake to initialize the project, we need to adjust [`CMakeUserPresets.json`](./CMakeUserPresets.json).
+Before running CMake to initialize the project, adjust [`CMakeUserPresets.json`](./CMakeUserPresets.json).
 
 Depending on your desired configuration and platform, you need to specify the path to your VmbAPI and Qt installation directory.
 
@@ -27,22 +25,20 @@ Open the file in an editor and adjust the following variables according to your 
 * VmbAPI:
 
     In the configurePreset `win64`, set the value of `VMB_API_PATH` to your local VmbAPI installation.
-    The path must point to the root directory of your VmbAPI installation.
-    The VmbAPI installation may either be a local directory built with VmbAPI's CMake install target or it may be the API directory of the Vimba X installer, e.g.:
+    The path must point to the root directory of your VmbAPI installation, e.g.:
 
     ```
     "VMB_API_PATH": "C:/Program Files/Allied Vision/Vimba X/api/"
     ```
-    The default location is `${sourceDir}/VmbAPI`, which means you may also just unzip the latest `VmbAPI` artifact right into the `VmbC/Examples` directory.
 
 * Qt:
 
-    In addtion, you need to set the Qt search path:
+    If you want to build the Qt examples, you need to set the Qt path:
 
-    In the configurePreset `win64`, set the value of `QT_PATH` to your local Qt installation, e.g. `C:/Qt_5_15_x64_Windows` or `"C:/Qt/5.15.2/msvc2019_64"` (depending on whether you are using a self-compiled version of Qt or the official Qt installer):
+    In the configurePreset `win64`, set the value of `QT_PATH` to your local Qt installation, e.g.:
 
     ```
-    "QT_PATH": "C:/Qt_new/5.15.2/msvc2019_64"
+    "QT_PATH": "C:/Qt/5.15.2/msvc2019_64"
     ```
 
 #### Linux
