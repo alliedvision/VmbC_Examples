@@ -11,13 +11,11 @@
       "inherits": "win64-template",
       "environment": {
         "QT_PATH": "C:/Qt_5_15_x64_Windows",
-        "VMB_API_PATH": "${sourceDir}/VmbAPI"
+        "VMB_API_PATH": "$env{VIMBA_X_HOME}/api"
       },
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": {
-          "type": "PATH",
-          "value": "$env{QT_PATH};$env{VMB_API_PATH}"
-        }
+        "CMAKE_PREFIX_PATH": {"type": "PATH",   "value": "$env{QT_PATH};$env{VMB_API_PATH}" },
+        "CMAKE_BUILD_TYPE":  {"type": "STRING", "value": "Debug" }
       }
     },
     {

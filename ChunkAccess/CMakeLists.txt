@@ -13,10 +13,6 @@ if(NOT TARGET VmbCExamplesCommon)
     add_subdirectory(../Common VmbCExamplesCommon_build)
 endif()
 
-if(NOT WIN32)
-    list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
-endif()
-
 add_executable(ChunkAccess_VmbC
     main.c
     ChunkAccessProg.c

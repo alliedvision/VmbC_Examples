@@ -24,6 +24,14 @@ endfunction()
 # attempt to locate Qt to decide, if we want to add the Qt example
 find_package(Qt5 COMPONENTS Widgets)
 
+if(NOT WIN32)
+    IF(APPLE)
+        list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'@executable_path'")
+    else()
+        list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
+    endif()
+endif()
+
 # Actual examples list
 vmb_c_example(AsynchronousGrab)
 vmb_c_example(ListFeatures FeatureList FeaturesList)

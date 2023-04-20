@@ -62,10 +62,6 @@ list(APPEND HEADERS
     LogEntry.h
 )
 
-if(NOT WIN32)
-    list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
-endif()
-
 add_executable(AsynchronousGrabQt_VmbC
     ${SOURCES}
     ${HEADERS}

@@ -63,12 +63,14 @@
       "displayName": "Release Config macOS",
       "inherits": "config-template",
       "hidden": true,
-      "description": "Makefiles project for Release configuration targeting the host OS",
-      "generator": "Unix Makefiles",
-      "environment": { "MACOSX_DEPLOYMENT_TARGET": "11.7" },
+      "generator": "Xcode",
+      "environment": { 
+        "MACOSX_DEPLOYMENT_TARGET": "11.7",
+        "QT_PATH": "$env{HOME}/qt_5.15.8_install"
+      },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": { "type": "STRING", "value": "Release" },
-        "Vmb_DIR": "$env{HOME}/.vs/vmbx/build/macos-debug/VmbAPI_Install_macos-debug/lib/cmake/vmb"
+        "CMAKE_PREFIX_PATH": { "type": "PATH", "value": "$env{QT_PATH};$env{HOME}/.vs/vmbx/build/macos-debug/Debug/" }
       },
       "condition": { "type": "equals", "lhs": "${hostSystemName}", "rhs": "Darwin" }
     },
