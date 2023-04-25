@@ -7,7 +7,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake"
     include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake)
 endif()
 
-find_package(Vmb REQUIRED COMPONENTS C ImageTransform)
+find_package(Vmb REQUIRED COMPONENTS C ImageTransform NAMES Vmb VmbC VmbCPP VmbImageTransform)
 
 if(NOT TARGET VmbCExamplesCommon)
     add_subdirectory(../Common VmbCExamplesCommon_build)
