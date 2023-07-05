@@ -1,29 +1,6 @@
 /*=============================================================================
-  Copyright (C) 2013 - 2021 Allied Vision Technologies.  All Rights Reserved.
-
-  Redistribution of this file, in original or modified form, without
-  prior written consent of Allied Vision Technologies is prohibited.
-
--------------------------------------------------------------------------------
-
-  File:        main.c
-
-  Description: Implementation of main entry point of AsynchronousGrab example
-               of VmbC.
-
--------------------------------------------------------------------------------
-
-  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
-  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
-  NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
-  DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+  Copyright (C) 2013-2023 Allied Vision Technologies. All Rights Reserved.
+  Subject to the BSD 3-Clause License.
 =============================================================================*/
 
 #include <stdio.h>
@@ -181,7 +158,7 @@ int main(int argc, char* argv[])
     AsynchronousGrabOptions cmdOptions;
     VmbBool_t printHelp;
     VmbError_t err = ParseCommandLineParameters(&cmdOptions, &printHelp, argc, argv);
-    
+
     StreamStatistics streamStatistics = { 0, 0, 0, 0, 0 };
 
     if (err == VmbErrorSuccess && !printHelp)
@@ -197,16 +174,16 @@ int main(int argc, char* argv[])
 
             StopContinuousImageAcquisition();
             printf("\nAcquisition stopped.\n\n");
-            
+
             if (cmdOptions.frameInfos != FrameInfos_Off)
             {
                 printf("Frames complete   = %llu\n", streamStatistics.framesComplete);
                 printf("Frames incomplete = %llu\n", streamStatistics.framesIncomplete);
                 printf("Frames too small  = %llu\n", streamStatistics.framesTooSmall);
                 printf("Frames invalid    = %llu\n\n", streamStatistics.framesInvalid);
-                VmbUint64_t framesTotal = streamStatistics.framesComplete + 
-                                  streamStatistics.framesIncomplete + 
-                                  streamStatistics.framesTooSmall + 
+                VmbUint64_t framesTotal = streamStatistics.framesComplete +
+                                  streamStatistics.framesIncomplete +
+                                  streamStatistics.framesTooSmall +
                                   streamStatistics.framesInvalid;
                 printf("Frames total      = %llu\n", framesTotal);
                 printf("Frames missing    = %llu\n", streamStatistics.framesMissing);

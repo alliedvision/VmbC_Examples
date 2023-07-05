@@ -1,29 +1,6 @@
 /*=============================================================================
-  Copyright (C) 2012 - 2021 Allied Vision Technologies.  All Rights Reserved.
-
-  Redistribution of this file, in original or modified form, without
-  prior written consent of Allied Vision Technologies is prohibited.
-
--------------------------------------------------------------------------------
-
-  File:        ListFeatures.cpp
-
-  Description: The ListFeatures example will list all available features of a
-               module that are found by VmbC.
-
--------------------------------------------------------------------------------
-
-  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
-  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
-  NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
-  DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+  Copyright (C) 2012-2023 Allied Vision Technologies. All Rights Reserved.
+  Subject to the BSD 3-Clause License.
 =============================================================================*/
 
 #include <stdio.h>
@@ -41,7 +18,7 @@
 #include <VmbCExamplesCommon/TransportLayerTypeToString.h>
 
 /**
- * \return \p string or an empty string, if \p string is null  
+ * \return \p string or an empty string, if \p string is null
  */
 char const* PrintableString(char const* string)
 {
@@ -83,7 +60,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                 char* stringBuffer = NULL;
                 size_t stringBufferSize = 0;
 
-                
+
                 VmbFeatureInfo_t* const end = features + featureCount;
 
                 for (VmbFeatureInfo_t* feature = features; feature != end; ++feature)
@@ -191,12 +168,12 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                             break;
                         }
                     }
-                            
+
                     if (VmbErrorSuccess != err)
                     {
                         printf("Could not get feature value. Error code: %s\n", ErrorCodeToMessage(err));
                     }
-                            
+
                     printf("\n");
                 }
 
@@ -328,7 +305,7 @@ VmbHandle_t CameraModuleExtractor(VmbHandle_t remoteDevice, VmbCameraInfo_t* cam
 }
 
 /**
- * \brief list the features of a module determined based on remote device handle, VmbCameraInfo_t struct and \p featureExtractorParam. 
+ * \brief list the features of a module determined based on remote device handle, VmbCameraInfo_t struct and \p featureExtractorParam.
  */
 VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtractor featureExtractor, size_t featureExtractorParam, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {

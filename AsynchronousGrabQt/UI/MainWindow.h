@@ -1,20 +1,8 @@
 /**
- * \date 2021
- * \copyright Allied Vision Technologies.  All Rights Reserved.
+ * \date 2021-2023
+ * \copyright Allied Vision Technologies. All Rights Reserved.
  *
- * \copyright Redistribution of this file, in original or modified form, without
- *            prior written consent of Allied Vision Technologies is prohibited.
- *
- * \warning THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
- * NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
- * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * \copyright Subject to the BSD 3-Clause License.
  *
  * \brief The main window of the AsynchronousGrab example of VmbC.
  */
@@ -73,7 +61,7 @@ public:
     ~MainWindow();
 
     /**
-     * \brief Asynchonously schedule rendering of image 
+     * \brief Asynchonously schedule rendering of image
      */
     void RenderImage(QPixmap image);
 private:
@@ -90,9 +78,9 @@ private:
     std::unique_ptr<ApiController> m_apiController;
 
     bool m_renderingRequired{ false };
-    
+
     /**
-     * \brief the next image to be rendered 
+     * \brief the next image to be rendered
      */
     QPixmap m_queuedImage;
 
@@ -137,7 +125,7 @@ private:
     void SetupUi(VmbC::Examples::ApiController& controller);
 
     /**
-     * \brief initialized the QTableView used for logging 
+     * \brief initialized the QTableView used for logging
      */
     void SetupLogView();
 
@@ -147,7 +135,7 @@ private:
     void StartAcquisition(VmbCameraInfo_t const& cameraInfo);
 
     /**
-     * \brief stop the acquistion 
+     * \brief stop the acquistion
      */
     void StopAcquisition();
 
@@ -170,7 +158,7 @@ private slots:
 
     /**
      * \brief Slot for replacing the pixmap of the label used for rendering.
-     * 
+     *
      * Thread affinity with this object required
      */
     void RenderImage();
