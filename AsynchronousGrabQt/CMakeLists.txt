@@ -124,7 +124,7 @@ target_sources(AsynchronousGrabQt_VmbC PRIVATE
     ${UI_SOURCES}
 )
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
   target_link_options(AsynchronousGrabQt_VmbC PUBLIC -no-pie)
 endif()
 
