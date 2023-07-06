@@ -60,7 +60,7 @@ void printAccessModes(VmbAccessMode_t accessMode)
     printf("\n");
 }
 
-int ListCamerasProg()
+int ListCamerasProg(void)
 {
     PrintVmbVersion();
     VmbError_t err = VmbStartup(NULL);

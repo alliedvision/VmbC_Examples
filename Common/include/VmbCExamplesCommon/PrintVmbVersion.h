@@ -9,6 +9,6 @@
 /**
  * \brief Prints out the version of the Vmb API
  */
-void PrintVmbVersion();
+void PrintVmbVersion(void);
 
 #endif

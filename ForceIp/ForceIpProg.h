@@ -18,10 +18,10 @@
  * but if the operation fails on all these interfaces then the operation tries each Vimba X and Vimba GigE transport layer until success.
  * The configuration will be lost after a power-cycle of the camera.
  *
- * \param[in] mac     The mac address of the desired camera whose ip configuration is to be updated
- * \param[in] ip      The desired ip address
- * \param[in] subnet  The desired subnet mask
- * \param[in] gateway The desired gateway. Optional, can be 0.
+ * \param[in] strMAC       The mac address of the desired camera whose ip configuration is to be updated
+ * \param[in] strIP        The desired ip address
+ * \param[in] strSubnet    The desired subnet mask
+ * \param[in] strGateway   The desired gateway. Optional, can be 0.
  *
  * \return a code to return from main()
 */

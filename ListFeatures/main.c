@@ -99,10 +99,10 @@ VmbFeatureVisibility_t FindVisibilityByEnumConstant(char const* value)
         // input is not a valid integral version of the enum
         return VmbFeatureVisibilityUnknown;
     }
-    return intValue;
+    return (VmbFeatureVisibility_t)intValue;
 }
 
-void PrintUsage()
+void PrintUsage(void)
 {
     printf("Usage:\n\n"
            "  ListFeatures %s                                                    Print this usage information\n"
@@ -143,7 +143,7 @@ void PrintUsage()
 /**
  * Try to apply a locale that allows for UTF-8 string output
  */
-void TrySetUtf8CompatibleLocale()
+void TrySetUtf8CompatibleLocale(void)
 {
     if (
         (setlocale(LC_CTYPE, ".UTF8") == NULL)      // should work for Windows

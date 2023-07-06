@@ -47,7 +47,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
 /**
  * \brief stops image acquisition that was started with StartContinuousImageAcquisition
  */
-void StopContinuousImageAcquisition();
+void StopContinuousImageAcquisition(void);
 
 
 #endif

@@ -62,7 +62,7 @@ void VMB_CALL FrameDoneCallback(const VmbHandle_t hCamera, const VmbHandle_t str
 }
 
 
-int ChunkAccessProg()
+int ChunkAccessProg(void)
 {
     VmbError_t err = VmbStartup(NULL);
     PrintVmbVersion();

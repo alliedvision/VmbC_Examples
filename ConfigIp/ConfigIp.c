@@ -89,7 +89,7 @@ typedef struct CameraOpenResult
   *
   * \param[in] cameraHandle The handle of the desired camera
   * \param[in] ip           The desired IP address
-  * \param[in] subnetMask   The desired subnet mask
+  * \param[in] subnet       The desired subnet mask
   * \param[in] gateway      The desired gateway
   *
   * \return Result of the operation
@@ -185,17 +185,13 @@ VmbError_t WriteInterfaceConfigRegister(const VmbHandle_t cameraHandle, void (*S
  * \brief Modifies an interface configuration to enable persistent IP, for passing to WriteInterfaceConfigRegister()
  *
  * \param[in,out] interfaceConfiguration A pointer to the configuration data in host-byte-order
- *
- * \return Nothing
-*/
+ */
 void SetInterfaceConfigRegisterValue_PersistentIpConfig(VmbUint32_t* const interfaceConfiguration);
 
 /**
  * \brief Modifies an interface configuration to enable DHCP, for passing to WriteInterfaceConfigRegister()
  *
  * \param[in,out] interfaceConfiguration A pointer to the configuration data in host-byte-order
- *
- * \return Nothing
 */
 void SetInterfaceConfigRegisterValue_DhcpIpConfig(VmbUint32_t* const interfaceConfiguration);
 
@@ -203,8 +199,6 @@ void SetInterfaceConfigRegisterValue_DhcpIpConfig(VmbUint32_t* const interfaceCo
  * \brief Modifies an interface configuration to enable LLA, for passing to WriteInterfaceConfigRegister()
  *
  * \param[in,out] interfaceConfiguration A pointer to the configuration data in host-byte-order
- *
- * \return Nothing
 */
 void SetInterfaceConfigRegisterValue_LlaIpConfig(VmbUint32_t* const interfaceConfiguration);
 

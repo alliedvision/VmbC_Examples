@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:ActionCommands/ActionCommands.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:AsynchronousGrab/AsynchronousGrab.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ChunkAccess/ChunkAccess.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ConfigIp/ConfigIp.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ForceIp/ForceIp.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ListCameras/ListCameras.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ListFeatures/ListFeatures.xcodeproj">
+   </FileRef>
+</Workspace>

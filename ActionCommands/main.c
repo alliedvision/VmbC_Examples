@@ -36,7 +36,7 @@ VmbHandle_t g_CameraHandle = NULL;
  *
  * Will clean up the API.
  */
-void HandleForcedClose()
+void HandleForcedClose(void)
 {
     // It's not recommended to call printf during the signal handling.
     // In this example it is called to reduce the complexity.
@@ -79,7 +79,7 @@ void ConsoleHandler(int signal)
                                             VmbShutdown();              \
                                             return error;
 
-void PrintUsage()
+void PrintUsage(void)
 {
     printf( "Usage: ActionCommands [CameraID] [%s] [%s] [%s]\n"
             "Parameters:    CameraID    ID of the camera to use (using first camera if not specified)\n"

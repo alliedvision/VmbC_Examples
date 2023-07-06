@@ -123,11 +123,10 @@ typedef struct TlSearchResult
  * Each found interface will be used until success, otherwise an error is returned.
  * The new configuration will be lost after a power-cycle of the camera.
  *
- * \param[in] interfaceHandle Handle of the interface that should be used to send the command
- * \param[in] mac             The mac address of the camera
- * \param[in] ip              The desired ip address
- * \param[in] subnetMask      The desired subnet mask
- * \param[in] gateway         The desired gateway
+ * \param[in] macValue             The mac address of the camera
+ * \param[in] ipValue              The desired ip address
+ * \param[in] subnetMaskValue      The desired subnet mask
+ * \param[in] gatewayValue         The desired gateway
  *
  * \return Result of the operation
 */
@@ -138,11 +137,10 @@ VmbError_t ForceIpViaInterface(const VmbInt64_t macValue, const VmbInt64_t ipVal
   * Each found Vimba X transport layer will be used until success, otherwise an error is returned.
   * The new configuration will be lost after a power-cycle of the camera.
   *
-  * \param[in] interfaceHandle Handle of the transport layer that should be used to send the command
-  * \param[in] mac             The mac address of the camera
-  * \param[in] ip              The desired ip address
-  * \param[in] subnetMask      The desired subnet mask
-  * \param[in] gateway         The desired gateway
+  * \param[in] macValue             The mac address of the camera
+  * \param[in] ipValue              The desired ip address
+  * \param[in] subnetMaskValue      The desired subnet mask
+  * \param[in] gatewayValue         The desired gateway
   *
   * \return Result of the operation
  */
@@ -166,9 +164,9 @@ VmbError_t SearchCamerasInterface(const VmbInt64_t mac, InterfaceSearchResult** 
  *
  * \param[in]  tls                        The available transport layers
  * \param[in]  tlCount                    The number of available transport layers
- * \param[out] tlVimbaXSearchResults      The Vimba X transport layers to which the camera is connected.
+ * \param[out] tlVimbaXSearchResult      The Vimba X transport layers to which the camera is connected.
  * \param[out] tlVimbaXSearchResultsCount The number of Vimba X transport layers to which the camera is connected
- * \param[out] tlVimbaSearchResults       The Vimba transport layers to which the camera is connected.
+ * \param[out] tlVimbaSearchResult       The Vimba transport layers to which the camera is connected.
  * \param[out] tlVimbaSearchResultsCount  The number of Vimba transport layers to which the camera is connected
  *
  * \return Result of the operation
@@ -195,7 +193,7 @@ VmbError_t SendForceIpViaInterface(const InterfaceSearchResult* interfaceData, c
  * The camera's mac is first communicated to the transport layer.
  * The new configuration will be lost after a power-cycle of the camera.
  *
- * \param[in] tlHande    Handle of the interface that should be used to send the command
+ * \param[in] tlHandle    Handle of the interface that should be used to send the command
  * \param[in] mac        The mac address of the camera
  * \param[in] ip         The desired ip address
  * \param[in] subnetMask The desired subnet mask
@@ -325,7 +323,7 @@ VmbError_t ForceIpViaTl(const VmbInt64_t macValue, const VmbInt64_t ipValue, con
     /*
      * Send a force ip command using the first of the previously found Vimba X transport layers for which the operation succeeds.
      */
-    VmbError_t error;
+    VmbError_t error = VmbErrorSuccess;
     for (VmbUint32_t tlSearchResultsIndex = 0; tlSearchResultsIndex < tlVimbaXSearchResultsCount; tlSearchResultsIndex++)
     {
         error = SendForceIpViaTl(tlVimbaXSearchResults[tlSearchResultsIndex].info.transportLayerHandle, macValue, ipValue, subnetMaskValue, gatewayValue);
@@ -607,7 +605,7 @@ VmbError_t SendForceIpViaTl(const VmbHandle_t tlHandle, const VmbInt64_t mac, co
 /**
  * \brief Suspend the execution of the current thread for 100 milliseconds
  */
-void Sleep100Ms()
+void Sleep100Ms(void)
 {
 #ifdef WIN32
     Sleep(100);

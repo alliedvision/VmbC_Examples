@@ -9,6 +9,6 @@
 /**
  * Starts Vmb, get first connected camera, starts acquisition and dumps chunk data
  */
-int ChunkAccessProg();
+int ChunkAccessProg(void);
 
 #endif

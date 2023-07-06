@@ -25,5 +25,5 @@ unsigned int IpAddressToHostByteOrderedInt(const char* const strIp)
     ip = ntohl(ip);
 #endif
 
-    return ip;
+    return (unsigned int)ip;
 }

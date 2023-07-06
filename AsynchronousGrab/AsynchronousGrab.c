@@ -148,7 +148,7 @@ VmbError_t ProcessFrame(VmbFrame_t * pFrame, VmbBool_t doColorProcessing)
  *
  * \return time indicator in seconds for differential measurements
  */
-double GetTime()
+double GetTime(void)
 {
 #ifdef _WIN32
     LARGE_INTEGER nCounter;
@@ -342,8 +342,6 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
 VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, StreamStatistics* statistics)
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
-    VmbUint32_t         nCount              = 0;                    // Number of found cameras
-    VmbUint32_t         nFoundCount         = 0;                    // Change of found cameras
     VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;    // We open the camera with full access
 
     if(!g_vmbStarted)
@@ -548,7 +546,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
     }
 }
 
-void StopContinuousImageAcquisition()
+void StopContinuousImageAcquisition(void)
 {
     int i = 0;
 
