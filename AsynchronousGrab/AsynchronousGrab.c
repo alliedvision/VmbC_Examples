@@ -106,8 +106,8 @@ VmbError_t ProcessFrame(VmbFrame_t * pFrame, VmbBool_t doColorProcessing)
         return result;
     }
 
-    // the frame buffer will be the images data buffer
-    sourceImage.Data = pFrame->buffer;
+    // Set the `Data` pointer for the conversion source to the start of the image data in the recorded frame
+    sourceImage.Data = pFrame->imageData;
 
     VmbImage destinationImage = {
         .Size = sizeof(destinationImage) // image transformation functions require the size to specified correctly
