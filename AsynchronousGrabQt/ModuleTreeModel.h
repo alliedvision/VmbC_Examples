@@ -95,7 +95,7 @@ namespace VmbC
             Item m_pseudoRoot;
 
             /**
-             * \brief a list of all items of the module  
+             * \brief a list of all items of the module
              */
             std::vector<Item> m_data;
         };

@@ -17,7 +17,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake"
     include(${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/vmb_cmake_prefix_paths.cmake)
 endif()
 
-find_package(Vmb REQUIRED COMPONENTS C ImageTransform)
+find_package(Vmb REQUIRED COMPONENTS C ImageTransform NAMES Vmb VmbC VmbCPP VmbImageTransform)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 set(SOURCES)
@@ -49,10 +49,6 @@ list(APPEND HEADERS
     support/NotNull.h
     LogEntry.h
 )
-
-if(NOT WIN32)
-    list(APPEND CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath,'\$ORIGIN'")
-endif()
 
 add_executable(AsynchronousGrabQt_VmbC
     ${SOURCES}
@@ -128,7 +124,7 @@ target_sources(AsynchronousGrabQt_VmbC PRIVATE
     ${UI_SOURCES}
 )
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
   target_link_options(AsynchronousGrabQt_VmbC PUBLIC -no-pie)
 endif()
 

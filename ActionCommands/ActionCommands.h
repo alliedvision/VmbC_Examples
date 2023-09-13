@@ -28,16 +28,16 @@ typedef struct ActionCommandsOptions
  *
  * \param[in] pOptions  Provided command line options and details for the Action Command
  * \param[in] pCamera   Information about the used and already opened camera
- * 
+ *
  * \return An error code indicating success or the type of error that occurred.
  */
 VmbError_t SendActionCommand(const ActionCommandsOptions* const pOptions, const VmbCameraInfo_t* const pCamera);
 
 /**
  * \brief Configures the camera to be triggered by Action Commands
- * 
+ *
  * \param[in] camera    Handle to the already opened camera
- * 
+ *
  * \return An error code indicating success or the type of error that occurred.
  */
 VmbError_t PrepareCameraForActionCommands(const VmbHandle_t camera);

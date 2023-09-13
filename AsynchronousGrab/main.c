@@ -34,7 +34,7 @@ BOOL WINAPI ConsoleHandler(DWORD signal)
 #define VMB_PARAM_ALLOC_AND_ANNOUNCE "/x"
 #define VMB_PARAM_PRINT_HELP "/h"
 
-void PrintUsage()
+void PrintUsage(void)
 {
     printf("Usage: AsynchronousGrab [CameraID] [/i] [/h]\n"
            "Parameters:   CameraID    ID of the camera to use (using first camera if not specified)\n"
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
     AsynchronousGrabOptions cmdOptions;
     VmbBool_t printHelp;
     VmbError_t err = ParseCommandLineParameters(&cmdOptions, &printHelp, argc, argv);
-    
+
     StreamStatistics streamStatistics = { 0, 0, 0, 0, 0 };
 
     if (err == VmbErrorSuccess && !printHelp)
@@ -174,16 +174,16 @@ int main(int argc, char* argv[])
 
             StopContinuousImageAcquisition();
             printf("\nAcquisition stopped.\n\n");
-            
+
             if (cmdOptions.frameInfos != FrameInfos_Off)
             {
                 printf("Frames complete   = %llu\n", streamStatistics.framesComplete);
                 printf("Frames incomplete = %llu\n", streamStatistics.framesIncomplete);
                 printf("Frames too small  = %llu\n", streamStatistics.framesTooSmall);
                 printf("Frames invalid    = %llu\n\n", streamStatistics.framesInvalid);
-                VmbUint64_t framesTotal = streamStatistics.framesComplete + 
-                                  streamStatistics.framesIncomplete + 
-                                  streamStatistics.framesTooSmall + 
+                VmbUint64_t framesTotal = streamStatistics.framesComplete +
+                                  streamStatistics.framesIncomplete +
+                                  streamStatistics.framesTooSmall +
                                   streamStatistics.framesInvalid;
                 printf("Frames total      = %llu\n", framesTotal);
                 printf("Frames missing    = %llu\n", streamStatistics.framesMissing);

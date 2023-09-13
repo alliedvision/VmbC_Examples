@@ -38,13 +38,13 @@ namespace VmbC
             ~ImageTranscoder();
 
             /**
-             * \brief Asynchronously schedule the conversion of a frame 
+             * \brief Asynchronously schedule the conversion of a frame
              * \param callback the callback to use the old frame that is reenqueued
              */
             void PostImage(VmbHandle_t streamHandle, VmbFrameCallback callback, VmbFrame_t const* frame);
 
             /**
-             * \brief start with the conversion process 
+             * \brief start with the conversion process
              */
             void Start();
 
@@ -59,18 +59,18 @@ namespace VmbC
             void SetOutputSize(QSize size);
         private:
             /**
-             * \brief size of QPixmaps to produce 
+             * \brief size of QPixmaps to produce
              */
             QSize m_outputSize;
 
             /**
-             * \brief mutex for guarding access to m_outputSize 
+             * \brief mutex for guarding access to m_outputSize
              */
             std::mutex m_sizeMutex;
 
             /**
              * \brief object holding all required info about a desired
-             *        conversion 
+             *        conversion
              */
             struct TransformationTask
             {
@@ -80,65 +80,65 @@ namespace VmbC
 
                 /**
                  * \brief set to true to prevent reenqueuing the frame after
-                 *        the conversion 
+                 *        the conversion
                  */
                 bool m_canceled{ false };
-                
+
                 TransformationTask(VmbHandle_t const streamHandle, VmbFrameCallback callback, VmbFrame_t const& frame);
 
                 ~TransformationTask();
             };
 
             /**
-             * \brief the function to use with std::thread 
+             * \brief the function to use with std::thread
              */
             static void TranscodeLoop(ImageTranscoder& transcoder);
 
             /**
              * \brief contains the actual logic used for executing the
-             *        conversions 
+             *        conversions
              */
             void TranscodeLoopMember();
 
             /**
              * \brief execute the conversion of a single image
-             */ 
+             */
             void TranscodeImage(TransformationTask& task);
 
             /**
-             * \brief the object to notify about the conversion results 
+             * \brief the object to notify about the conversion results
              */
             AcquisitionManager& m_acquisitionManager;
 
             /**
-             * \brief mutex guarding the frame data received 
+             * \brief mutex guarding the frame data received
              */
             std::mutex m_inputMutex;
 
             /**
              * \brief condition variable used to notify the background thread
-             *        about new frames; guarded by m_inputMutex  
+             *        about new frames; guarded by m_inputMutex
              */
             std::condition_variable m_inputCondition;
 
             /**
-             * \brief info about the next conversion to do 
+             * \brief info about the next conversion to do
              */
             std::unique_ptr<TransformationTask> m_task;
 
             /**
-             * \brief target image for the conversion 
+             * \brief target image for the conversion
              */
             std::unique_ptr<Image> m_transformTarget;
 
             /**
              * \brief true, if the background thread should terminate; guarded
-             *        by m_inputMutex 
+             *        by m_inputMutex
              */
             bool m_terminated { true };
 
             /**
-             * \brief the background thread 
+             * \brief the background thread
              */
             std::thread m_thread;
         };

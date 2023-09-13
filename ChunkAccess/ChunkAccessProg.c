@@ -62,7 +62,7 @@ void VMB_CALL FrameDoneCallback(const VmbHandle_t hCamera, const VmbHandle_t str
 }
 
 
-int ChunkAccessProg()
+int ChunkAccessProg(void)
 {
     VmbError_t err = VmbStartup(NULL);
     PrintVmbVersion();
@@ -164,7 +164,7 @@ int ChunkAccessProg()
                         frames[i].buffer = (unsigned char*)_aligned_malloc((size_t)payloadSize, (size_t)nStreamBufferAlignment);
 #else
                         frames[i].buffer = (unsigned char*)aligned_alloc((size_t)nStreamBufferAlignment, (size_t)payloadSize);
-#endif      
+#endif
                         frames[i].bufferSize = payloadSize;
                         err = VmbFrameAnnounce(hCamera, &frames[i], sizeof(VmbFrame_t));
                     }

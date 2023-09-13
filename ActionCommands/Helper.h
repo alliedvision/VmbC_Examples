@@ -24,6 +24,6 @@ VmbError_t FindCamera(const VmbBool_t needsAvtGigETL, const char* const pCameraI
  *
  * \return An error code indicating success or the type of error that occurred.
  */
-VmbError_t StartApi();
+VmbError_t StartApi(void);
 
 #endif

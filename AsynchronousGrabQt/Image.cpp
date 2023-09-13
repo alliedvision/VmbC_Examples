@@ -32,7 +32,7 @@ namespace VmbC
         {
             m_image.Size = sizeof(m_image);
             m_image.Data = frame.imageData;
-            
+
             auto error = VmbSetImageInfoFromPixelFormat(frame.pixelFormat, frame.width, frame.height, &m_image);
             if (error != VmbErrorSuccess)
             {

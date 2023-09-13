@@ -18,7 +18,7 @@
 #include <VmbCExamplesCommon/TransportLayerTypeToString.h>
 
 /**
- * \return \p string or an empty string, if \p string is null  
+ * \return \p string or an empty string, if \p string is null
  */
 char const* PrintableString(char const* string)
 {
@@ -60,7 +60,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                 char* stringBuffer = NULL;
                 size_t stringBufferSize = 0;
 
-                
+
                 VmbFeatureInfo_t* const end = features + featureCount;
 
                 for (VmbFeatureInfo_t* feature = features; feature != end; ++feature)
@@ -168,12 +168,12 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                             break;
                         }
                     }
-                            
+
                     if (VmbErrorSuccess != err)
                     {
                         printf("Could not get feature value. Error code: %s\n", ErrorCodeToMessage(err));
                     }
-                            
+
                     printf("\n");
                 }
 
@@ -305,7 +305,7 @@ VmbHandle_t CameraModuleExtractor(VmbHandle_t remoteDevice, VmbCameraInfo_t* cam
 }
 
 /**
- * \brief list the features of a module determined based on remote device handle, VmbCameraInfo_t struct and \p featureExtractorParam. 
+ * \brief list the features of a module determined based on remote device handle, VmbCameraInfo_t struct and \p featureExtractorParam.
  */
 VmbError_t ListCameraRelatedFeatures(char const* cameraId, FeatureModuleExtractor featureExtractor, size_t featureExtractorParam, VmbFeatureVisibility_t printedFeatureMaximumVisibility)
 {

@@ -5,12 +5,12 @@
 
 #ifndef LIST_TRANSPORT_LAYERS_H_
 #define LIST_TRANSPORT_LAYERS_H_
-    
+
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**
  * \brief get a list of transport layers
- * 
+ *
  * \param[out] transportLayers an array of transport layers allocated using malloc
  * \param[out] count the number of transport layers; instead of assigning 0 ::VmbErrorNotFound is returned
  */

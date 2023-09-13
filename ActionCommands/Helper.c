@@ -50,7 +50,7 @@ VmbError_t FindCamera(const VmbBool_t needsAvtGigETL, const char* const pCameraI
     return error;
 }
 
-VmbError_t StartApi()
+VmbError_t StartApi(void)
 {
     const VmbError_t error = VmbStartup(NULL);
     if (error != VmbErrorSuccess)

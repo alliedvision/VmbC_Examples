@@ -10,6 +10,6 @@
  * Starts Vmb, gets all connected cameras, and prints out information about the camera name,
  * model name, serial number, ID and the corresponding interface and transport layer IDs
  */
-int ListCamerasProg();
+int ListCamerasProg(void);
 
 #endif

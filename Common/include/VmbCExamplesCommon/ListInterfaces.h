@@ -5,12 +5,12 @@
 
 #ifndef LIST_INTERFACES_H_
 #define LIST_INTERFACES_H_
-    
+
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**
  * \brief Get the list of interfaces
- * 
+ *
  * \param[out] interfaces an array of interfaces allocated using malloc
  * \param[out] count the number of interfaces; instead of assigning 0 ::VmbErrorNotFound is returned
  */

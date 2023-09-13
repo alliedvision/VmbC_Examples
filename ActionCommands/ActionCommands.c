@@ -22,7 +22,7 @@
 /**
  * \brief Suspend the execution of the current thread for 100 milliseconds
  */
-void Sleep100Ms()
+void Sleep100Ms(void)
 {
     #ifdef WIN32
         Sleep(100);

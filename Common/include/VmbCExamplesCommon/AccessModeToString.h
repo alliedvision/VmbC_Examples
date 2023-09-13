@@ -5,14 +5,14 @@
 
 #ifndef ACCESS_MODE_TO_STRING_H_
 #define ACCESS_MODE_TO_STRING_H_
-    
+
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**
  * \brief Translates Vmb access modes to a readable string
- * 
+ *
  * \param[in] eMode The access mode to be converted to string
- * 
+ *
  * \return A descriptive string representation of the access mode
  */
 const char* AccessModesToString( VmbAccessMode_t eMode );

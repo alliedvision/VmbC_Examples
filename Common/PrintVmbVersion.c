@@ -11,7 +11,7 @@
 
 #include <VmbC/VmbC.h>
 
-void PrintVmbVersion()
+void PrintVmbVersion(void)
 {
     VmbVersionInfo_t    versionInfo;
     VmbError_t          result = VmbVersionQuery(&versionInfo, sizeof(versionInfo));

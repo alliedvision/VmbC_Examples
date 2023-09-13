@@ -37,7 +37,7 @@ namespace VmbC
                 m_data.emplace_back(std::move(md));
             }
             m_data.shrink_to_fit();
-            
+
             // create mapping for ModuleData to Item containing it
             std::unordered_map<ModuleData*, Item*> mapping;
             mapping[nullptr] = &m_pseudoRoot;

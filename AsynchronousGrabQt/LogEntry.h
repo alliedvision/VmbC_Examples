@@ -23,7 +23,7 @@ namespace VmbC
         {
         public:
             LogEntry(std::string const& message, VmbError_t error = VmbErrorSuccess)
-                : m_frame(message), m_errorCode(error) 
+                : m_frame(message), m_errorCode(error)
             {
             }
 

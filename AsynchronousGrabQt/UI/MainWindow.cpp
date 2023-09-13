@@ -118,7 +118,7 @@ void MainWindow::StartStopClicked()
                 {
                     CameraInfoRetrievalVisitor visitor;
                     modelData->Accept(visitor);
-                    
+
                     if (visitor.m_info != nullptr)
                     {
                         StartAcquisition(*(visitor.m_info));
@@ -158,7 +158,7 @@ void MainWindow::RenderImage()
 void MainWindow::SetupUi(VmbC::Examples::ApiController& controller)
 {
     setWindowTitle(Text::WindowTitle(m_apiController->GetVersion()));
-    
+
     QObject::connect(m_ui->m_acquisitionStartStopButton, &QPushButton::clicked, this, &MainWindow::StartStopClicked);
     QObject::connect(this, &MainWindow::ImageReady, this, static_cast<void (MainWindow::*)()>(&MainWindow::RenderImage), Qt::ConnectionType::QueuedConnection);
 }
@@ -238,7 +238,7 @@ void MainWindow::RenderImage(QPixmap image)
         std::lock_guard<std::mutex> lock(m_imageSynchronizer);
 
         m_queuedImage = std::move(image);
-        
+
         if (!m_renderingRequired)
         {
             notify = true;

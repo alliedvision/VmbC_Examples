@@ -30,13 +30,13 @@ namespace VmbC
             VmbException& operator=(VmbException&&) = default;
 
             /**
-             * \brief create an exception with a custom message and a given VmbC error code 
+             * \brief create an exception with a custom message and a given VmbC error code
              */
             VmbException(std::string const& message, VmbError_t exitCode = VmbErrorOther);
 
             /**
              * \brief create an exception with a standardized message for
-             *        failure of a VmbC API function 
+             *        failure of a VmbC API function
              * \param[in] errorCode the error code returned by the function
              * \param[in] functionName the name of the function returning the error
              */

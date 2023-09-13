@@ -17,6 +17,6 @@ int main( int argc, char* argv[] )
     {
         printf( "No parameters expected. Execution will not be affected by the provided parameter(s).\n\n" );
     }
-    
+
     return ListCamerasProg();
 }

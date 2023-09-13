@@ -24,6 +24,17 @@ endfunction()
 # attempt to locate Qt to decide, if we want to add the Qt example
 find_package(Qt5 COMPONENTS Widgets)
 
+if(NOT WIN32)
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+    set(CMAKE_SKIP_BUILD_RPATH TRUE)
+    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+    IF(APPLE)
+        set(CMAKE_INSTALL_RPATH "@executable_path")
+    else()
+        set(CMAKE_INSTALL_RPATH "$ORIGIN")
+    endif()
+endif()
+
 # Actual examples list
 vmb_c_example(AsynchronousGrab)
 vmb_c_example(ListFeatures FeatureList FeaturesList)

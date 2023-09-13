@@ -41,7 +41,7 @@ static VisibilityOption const VisibilityOptions[4] =
 
 /**
  * Try finding the visibility option as string
- * 
+ *
  * \return the visibility or VmbFeatureVisibilityUnknown, if it isn't found
  */
 VmbFeatureVisibility_t FindVisibilityByFullName(char const* value)
@@ -60,7 +60,7 @@ VmbFeatureVisibility_t FindVisibilityByFullName(char const* value)
 
 /**
  * Try finding the visibility option as string
- * 
+ *
  * \return the visibility or VmbFeatureVisibilityUnknown, if it isn't found
  */
 VmbFeatureVisibility_t FindVisibilityByShortName(char const* value)
@@ -86,7 +86,7 @@ VmbFeatureVisibility_t FindVisibilityByShortName(char const* value)
 
 /**
  * Try finding the visibility option as string
- * 
+ *
  * \return the visibility, if parsed successfully or VmbFeatureVisibilityUnknown
  */
 VmbFeatureVisibility_t FindVisibilityByEnumConstant(char const* value)
@@ -99,10 +99,10 @@ VmbFeatureVisibility_t FindVisibilityByEnumConstant(char const* value)
         // input is not a valid integral version of the enum
         return VmbFeatureVisibilityUnknown;
     }
-    return intValue;
+    return (VmbFeatureVisibility_t)intValue;
 }
 
-void PrintUsage()
+void PrintUsage(void)
 {
     printf("Usage:\n\n"
            "  ListFeatures %s                                                    Print this usage information\n"
@@ -141,9 +141,9 @@ void PrintUsage()
 }
 
 /**
- * Try to apply a locale that allows for UTF-8 string output 
+ * Try to apply a locale that allows for UTF-8 string output
  */
-void TrySetUtf8CompatibleLocale()
+void TrySetUtf8CompatibleLocale(void)
 {
     if (
         (setlocale(LC_CTYPE, ".UTF8") == NULL)      // should work for Windows

@@ -17,7 +17,7 @@ namespace VmbC
 
         /**
          * \brief class for managing the initialization and deinitialization of
-         *        the Vmb C library 
+         *        the Vmb C library
          */
         class VmbLibraryLifetime
         {

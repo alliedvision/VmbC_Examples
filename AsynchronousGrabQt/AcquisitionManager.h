@@ -41,7 +41,7 @@ namespace VmbC
             static constexpr VmbUint32_t BufferCount = 10;
 
             /**
-             * \return true, if currently an acquisition is running 
+             * \return true, if currently an acquisition is running
              */
             bool IsAcquisitionActive() const noexcept
             {
@@ -49,7 +49,7 @@ namespace VmbC
             }
 
             /**
-             * \brief start the acquistion for a given camera 
+             * \brief start the acquistion for a given camera
              */
             void StartAcquisition(VmbCameraInfo_t const& cameraInfo);
 
@@ -63,13 +63,13 @@ namespace VmbC
             ~AcquisitionManager();
 
             /**
-             * \brief notifies this object about a frame available for rendering 
+             * \brief notifies this object about a frame available for rendering
              */
             void ConvertedFrameReceived(QPixmap image);
 
             /**
              * \brief informs this object about the change of the desired output
-             *        size 
+             *        size
              */
             void SetOutputSize(QSize size);
 
@@ -79,13 +79,13 @@ namespace VmbC
             class StreamLifetime;
 
             /**
-             * \brief class responsible for opening/closing a camera 
+             * \brief class responsible for opening/closing a camera
              */
             class CameraAccessLifetime
             {
             public:
                 /**
-                 * \brief opens the camera and starts the acquisition immediately 
+                 * \brief opens the camera and starts the acquisition immediately
                  */
                 CameraAccessLifetime(VmbCameraInfo_t const& camInfo, AcquisitionManager& acquisitionManager);
 
@@ -104,7 +104,7 @@ namespace VmbC
             class AcquisitionLifetime;
 
             /**
-             * \brief handles acquiring any crucial information for a stream required for the acquistion 
+             * \brief handles acquiring any crucial information for a stream required for the acquistion
              */
             class StreamLifetime
             {
@@ -118,7 +118,7 @@ namespace VmbC
             };
 
             /**
-             * \brief manages a VmbFrame_t and its memory 
+             * \brief manages a VmbFrame_t and its memory
              */
             struct Frame
             {
@@ -135,7 +135,7 @@ namespace VmbC
             };
 
             /**
-             * \brief handles starting/stopping of a stream 
+             * \brief handles starting/stopping of a stream
              */
             class AcquisitionLifetime
             {
@@ -154,17 +154,17 @@ namespace VmbC
             std::unique_ptr<CameraAccessLifetime> m_openCamera;
 
             /**
-             * \brief Object used for transforming frames to QPixmaps 
+             * \brief Object used for transforming frames to QPixmaps
              */
             ImageTranscoder m_imageTranscoder;
 
             /**
-             * \brief callback to receive the notification about new frames from VmbC 
+             * \brief callback to receive the notification about new frames from VmbC
              */
             static void VMB_CALL FrameCallback(VmbHandle_t cameraHandle, VmbHandle_t streamHandle, VmbFrame_t* frame);
 
             /**
-             * \brief member function that receives the notification new frames from VmbC  
+             * \brief member function that receives the notification new frames from VmbC
              */
             void FrameReceived(VmbHandle_t const cameraHandle, VmbFrame_t const* frame);
         };

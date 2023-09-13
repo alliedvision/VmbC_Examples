@@ -177,7 +177,7 @@ namespace VmbC
             }
 
             /**
-             * \brief helper class for determining the image formats to use in the conversion 
+             * \brief helper class for determining the image formats to use in the conversion
              */
             class ImageFormats
             {
@@ -225,7 +225,7 @@ namespace VmbC
             QPixmap pixmap = QPixmap::fromImage(qImage, Qt::ImageConversionFlag::ColorOnly);
 
             QSize size;
-           
+
             {
                 std::lock_guard<std::mutex> lock(m_sizeMutex);
                 size = m_outputSize;

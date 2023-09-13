@@ -36,9 +36,9 @@ typedef struct FrameStatistics
 
 /**
  * \brief starts image acquisition on a given camera
- * 
+ *
  * Note: Vmb has to be uninitialized and the camera has to allow access mode full
- * 
+ *
  * \param[in] options                 struct with command line options (e.g. frameInfos, enableColorProcessing, allocAndAnnounce etc.)
  * \param[in] statistics              struct with stream statistics (framesReceived, framesMissing)
  */
@@ -47,7 +47,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
 /**
  * \brief stops image acquisition that was started with StartContinuousImageAcquisition
  */
-void StopContinuousImageAcquisition();
+void StopContinuousImageAcquisition(void);
 
 
 #endif

@@ -5,7 +5,7 @@
 
 #ifndef TRANSPORT_LAYER_TYPE_TO_STRING_H_
 #define TRANSPORT_LAYER_TYPE_TO_STRING_H_
-    
+
 #include <VmbC/VmbCTypeDefinitions.h>
 
 /**

@@ -61,7 +61,7 @@ public:
     ~MainWindow();
 
     /**
-     * \brief Asynchonously schedule rendering of image 
+     * \brief Asynchonously schedule rendering of image
      */
     void RenderImage(QPixmap image);
 private:
@@ -78,9 +78,9 @@ private:
     std::unique_ptr<ApiController> m_apiController;
 
     bool m_renderingRequired{ false };
-    
+
     /**
-     * \brief the next image to be rendered 
+     * \brief the next image to be rendered
      */
     QPixmap m_queuedImage;
 
@@ -125,7 +125,7 @@ private:
     void SetupUi(VmbC::Examples::ApiController& controller);
 
     /**
-     * \brief initialized the QTableView used for logging 
+     * \brief initialized the QTableView used for logging
      */
     void SetupLogView();
 
@@ -135,7 +135,7 @@ private:
     void StartAcquisition(VmbCameraInfo_t const& cameraInfo);
 
     /**
-     * \brief stop the acquistion 
+     * \brief stop the acquistion
      */
     void StopAcquisition();
 
@@ -158,7 +158,7 @@ private slots:
 
     /**
      * \brief Slot for replacing the pixmap of the label used for rendering.
-     * 
+     *
      * Thread affinity with this object required
      */
     void RenderImage();

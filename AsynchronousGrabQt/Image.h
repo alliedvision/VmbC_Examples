@@ -52,7 +52,7 @@ namespace VmbC
 
             /**
              * \brief gets the bytes used for one image line for use in the transformation target/QImage constructor.
-             * 
+             *
              * \warning This function does not work properly for images using a number of bits per pixel that is not divisible by 8.
              *          We only use it to determine the size of RGBA/BGRA images in this example.
              */
@@ -62,7 +62,7 @@ namespace VmbC
             }
 
             /**
-             * \brief gets readonly access to the raw image data 
+             * \brief gets readonly access to the raw image data
              */
             unsigned char const* GetData() const noexcept
             {
@@ -79,7 +79,7 @@ namespace VmbC
             VmbPixelFormat_t m_pixelFormat;
 
             /**
-             * \brief the size of the currently owned buffer in bytes 
+             * \brief the size of the currently owned buffer in bytes
              */
             size_t m_capacity { 0 };
 

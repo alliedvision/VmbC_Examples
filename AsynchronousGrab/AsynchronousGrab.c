@@ -47,7 +47,7 @@ VmbUint64_t             g_frameID                  = 0;                 // ID of
 VmbBool_t               g_frameIdValid             = VmbBoolFalse;      // Remember if there was a last ID
 mtx_t                   g_frameInfoMutex;                               // mutex guarding access to the frame global info
 
-volatile atomic_flag    g_shutdown                 = ATOMIC_FLAG_INIT;  // flag set to true, if a thread initiates the shutdown 
+volatile atomic_flag    g_shutdown                 = ATOMIC_FLAG_INIT;  // flag set to true, if a thread initiates the shutdown
 
 VmbBool_t               g_bUseAllocAndAnnouce      = VmbBoolFalse;      // Holds the optional decision about frame alloc and announce mode to access it from StopContinuousImageAcquisition()
 
@@ -59,7 +59,7 @@ double          g_frequency                = 0.0;              //Frequency of ti
 
 /**
  * \brief Purpose: convert frames to RGB24 format and apply color processing if desired
- * 
+ *
  * \param[in] pFrame frame to process data might be destroyed dependent on transform function used
  */
 VmbError_t ProcessFrame(VmbFrame_t * pFrame, VmbBool_t doColorProcessing)
@@ -148,7 +148,7 @@ VmbError_t ProcessFrame(VmbFrame_t * pFrame, VmbBool_t doColorProcessing)
  *
  * \return time indicator in seconds for differential measurements
  */
-double GetTime()
+double GetTime(void)
 {
 #ifdef _WIN32
     LARGE_INTEGER nCounter;
@@ -163,7 +163,7 @@ double GetTime()
 
 /**
  *\brief called from Vmb if a frame is ready for user processing
- * 
+ *
  * \param[in] cameraHandle handle to camera that supplied the frame
  * \param[in] streamHandle handle to stream that supplied the frame
  * \param[in] frame pointer to frame structure that can hold valid data
@@ -286,7 +286,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
             printf("Incomplete");
             break;
 
-        case VmbFrameStatusTooSmall:  
+        case VmbFrameStatusTooSmall:
             printf("Too small");
             break;
 
@@ -342,8 +342,6 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
 VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, StreamStatistics* statistics)
 {
     VmbError_t          err                 = VmbErrorSuccess;      // The function result
-    VmbUint32_t         nCount              = 0;                    // Number of found cameras
-    VmbUint32_t         nFoundCount         = 0;                    // Change of found cameras
     VmbAccessMode_t     cameraAccessMode    = VmbAccessModeFull;    // We open the camera with full access
 
     if(!g_vmbStarted)
@@ -377,7 +375,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
         if (VmbErrorSuccess == err)
         {
             g_vmbStarted = VmbBoolTrue;
-            
+
             VmbUint32_t cameraCount = 0;
             char const* cameraId = options->cameraId;
 
@@ -438,6 +436,10 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                     VmbInt64_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
                     if (VmbErrorSuccess != VmbFeatureIntGet(stream, "StreamBufferAlignment", &nStreamBufferAlignment))
                         nStreamBufferAlignment = 1;
+#ifdef __APPLE__
+                    if (nStreamBufferAlignment < sizeof(void*))
+                        nStreamBufferAlignment = sizeof(void*);
+#endif
 
                     if (nStreamBufferAlignment < 1)
                         nStreamBufferAlignment = 1;
@@ -544,7 +546,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
     }
 }
 
-void StopContinuousImageAcquisition()
+void StopContinuousImageAcquisition(void)
 {
     int i = 0;
 
