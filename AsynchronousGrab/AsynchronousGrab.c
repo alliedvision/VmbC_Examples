@@ -324,7 +324,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
         printf("\n");
     }
 
-    if (options->showRgbValue)
+    if (options->showRgbValue && frame->receiveStatus == VmbFrameStatusComplete)
     {
         ProcessFrame(frame, options->enableColorProcessing);
     }
