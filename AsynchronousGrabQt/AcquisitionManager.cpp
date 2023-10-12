@@ -319,10 +319,13 @@ namespace VmbC
             {
                 throw VmbException("payload size outside of allowed range");
             }
+            // We enforce an alignment of sizeof(void*) since aligned_alloc for macOS does not accept 1 as alignment value
+            size_t alignment = (((sizeof(void*)-1) + ((bufferAlignment > 0) ? bufferAlignment : 1)) / sizeof(void*)) * sizeof(void*);
+            size_t alignedPayloadSize = (((sizeof(void*)-1) + payloadSize) / sizeof(void*)) * sizeof(void*);
 #ifdef _WIN32
-            m_frame.buffer = (unsigned char*)_aligned_malloc(payloadSize,bufferAlignment);
+            m_frame.buffer = (unsigned char*)_aligned_malloc(alignedPayloadSize, alignment);
 #else
-            m_frame.buffer = (unsigned char*)aligned_alloc(bufferAlignment, payloadSize);
+            m_frame.buffer = (unsigned char*)aligned_alloc(alignment, alignedPayloadSize);
 #endif
             if (m_frame.buffer == nullptr)
             {

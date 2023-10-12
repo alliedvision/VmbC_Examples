@@ -436,16 +436,12 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                     VmbInt64_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
                     if (VmbErrorSuccess != VmbFeatureIntGet(stream, "StreamBufferAlignment", &nStreamBufferAlignment))
                         nStreamBufferAlignment = 1;
-#ifdef __APPLE__
-                    if (nStreamBufferAlignment < sizeof(void*))
-                        nStreamBufferAlignment = sizeof(void*);
-#endif
 
-                    if (nStreamBufferAlignment < 1)
-                        nStreamBufferAlignment = 1;
+                    // We enforce an alignment of sizeof(void*) since aligned_alloc for macOS does not accept 1 as alignment value
+                    size_t alignment = (((sizeof(void*)-1) + ((nStreamBufferAlignment > 0) ? nStreamBufferAlignment : 1)) / sizeof(void*)) * sizeof(void*);
 
                     if (!options->allocAndAnnounce)
-                        printf("StreamBufferAlignment=%lld\n", nStreamBufferAlignment);
+                        printf("StreamBufferAlignment=%lld (%lld)\n", nStreamBufferAlignment, alignment);
 
                     if (VmbErrorSuccess == err)
                     {
@@ -455,6 +451,8 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                         err = VmbPayloadSizeGet(g_cameraHandle, &payloadSize);
                         if (VmbErrorSuccess == err)
                         {
+                            size_t alignedPayloadSize = (((sizeof(void*)-1) + payloadSize) / sizeof(void*)) * sizeof(void*);
+
                             for (size_t i = 0; i < NUM_FRAMES; i++)
                             {
                                 if (options->allocAndAnnounce)
@@ -464,10 +462,10 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                                 else
                                 {
 #ifdef _WIN32
-                                    g_frames[i].buffer = (unsigned char*)_aligned_malloc((size_t)payloadSize, (size_t)nStreamBufferAlignment);
+                                    g_frames[i].buffer = (unsigned char*)_aligned_malloc(alignedPayloadSize, alignment);
 #else
-                                    g_frames[i].buffer = (unsigned char*)aligned_alloc((size_t)nStreamBufferAlignment, (size_t)payloadSize);
-#endif
+                                    g_frames[i].buffer = (unsigned char*)aligned_alloc(alignment, alignedPayloadSize);
+ #endif
                                     if (NULL == g_frames[i].buffer)
                                     {
                                         err = VmbErrorResources;
