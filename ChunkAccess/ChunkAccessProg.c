@@ -99,8 +99,6 @@ int ChunkAccessProg(void)
 
                     // activate chunk features
                     err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolFalse);
-                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "FrameID");
-                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Timestamp");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Width");
