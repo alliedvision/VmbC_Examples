@@ -293,7 +293,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
         }
 
         printf("Frame ID: %llu Status: %s Size: %ux%u Format: 0x%08X FPS: %.2f\n",
-            frameIdAvailable ? frame->frameID : 0.0,
+            frameIdAvailable ? frame->frameID : 0,
             status,
             sizeAvailable ? frame->width : 0,
             sizeAvailable ? frame->height : 0,
