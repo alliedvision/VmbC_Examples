@@ -265,63 +265,40 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
 
     if(showFrameInfos)
     {
-        printf("Frame ID:");
-        if(VmbFrameFlagsFrameID & frame->receiveFlags)
-        {
-            printf("%llu", frame->frameID);
-        }
-        else
-        {
-            printf("?");
-        }
+        bool frameIdAvailable = VmbFrameFlagsFrameID & frame->receiveFlags;
+        bool sizeAvailable = VmbFrameFlagsDimension & frame->receiveFlags;
 
-        printf(" Status:");
+        const char* status = "?";
         switch(frame->receiveStatus)
         {
         case VmbFrameStatusComplete:
-            printf("Complete");
+            status = "Complete";
             break;
 
         case VmbFrameStatusIncomplete:
-            printf("Incomplete");
+            status = "Incomplete";
             break;
 
         case VmbFrameStatusTooSmall:
-            printf("Too small");
+            status = "Too small";
             break;
 
         case VmbFrameStatusInvalid:
-            printf("Invalid");
+            status = "Invalid";
             break;
 
         default:
-            printf("?");
+            status = "?";
             break;
         }
 
-        printf(" Size:");
-        if(VmbFrameFlagsDimension & frame->receiveFlags)
-        {
-            printf("%ux%u", frame->width, frame->height);
-        }
-        else
-        {
-            printf("?x?");
-        }
-
-        printf(" Format:0x%08X", frame->pixelFormat);
-
-        printf(" FPS:");
-        if(fpsValid)
-        {
-            printf("%.2f", fps);
-        }
-        else
-        {
-            printf("?");
-        }
-
-        printf("\n");
+        printf("Frame ID: %llu Status: %s Size: %ux%u Format: 0x%08X FPS: %.2f\n",
+            frameIdAvailable ? frame->frameID : 0,
+            status,
+            sizeAvailable ? frame->width : 0,
+            sizeAvailable ? frame->height : 0,
+            frame->pixelFormat,
+            fpsValid ? fps : 0.0);
     }
 
     if (options->showRgbValue && frame->receiveStatus == VmbFrameStatusComplete)
@@ -435,13 +412,17 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                     // Evaluate required alignment for frame buffer in case announce frame method is used
                     VmbInt64_t nStreamBufferAlignment = 1;  // Required alignment of the frame buffer
                     if (VmbErrorSuccess != VmbFeatureIntGet(stream, "StreamBufferAlignment", &nStreamBufferAlignment))
+                    {
                         nStreamBufferAlignment = 1;
+                    }
 
                     // We enforce an alignment of sizeof(void*) since aligned_alloc for macOS does not accept 1 as alignment value
                     size_t alignment = (((sizeof(void*)-1) + ((nStreamBufferAlignment > 0) ? nStreamBufferAlignment : 1)) / sizeof(void*)) * sizeof(void*);
 
                     if (!options->allocAndAnnounce)
+                    {
                         printf("StreamBufferAlignment=%lld (%lld)\n", nStreamBufferAlignment, alignment);
+                    }
 
                     if (VmbErrorSuccess == err)
                     {
