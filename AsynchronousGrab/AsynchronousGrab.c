@@ -265,8 +265,8 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
 
     if(showFrameInfos)
     {
-        bool frameIdAvailable = VmbFrameFlagsFrameID & frame->receiveFlags;
-        bool sizeAvailable = VmbFrameFlagsDimension & frame->receiveFlags;
+        VmbBool_t frameIdAvailable = VmbFrameFlagsFrameID & frame->receiveFlags;
+        VmbBool_t sizeAvailable = VmbFrameFlagsDimension & frame->receiveFlags;
 
         const char* status = "?";
         switch(frame->receiveStatus)
@@ -292,7 +292,7 @@ void VMB_CALL FrameCallback(const VmbHandle_t cameraHandle, const VmbHandle_t st
             break;
         }
 
-        printf("Frame ID: %llu Status: %s Size: %ux%u Format: 0x%08X FPS: %.2f\n",
+        printf("Frame ID: %4llu Status: %s Size: %ux%u Format: 0x%08X FPS: %.2f\n",
             frameIdAvailable ? frame->frameID : 0,
             status,
             sizeAvailable ? frame->width : 0,
