@@ -181,7 +181,7 @@ int ChunkAccessProg(void)
                         printf("AcquisitionStart...\n");
                         err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
 
-                        printf("Wait 1000ms...\n");
+                        printf("Wait 5000ms...\n");
 #ifdef _WIN32
                         Sleep(5000);
 #else
