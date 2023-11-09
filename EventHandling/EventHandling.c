@@ -1,29 +1,6 @@
 /*=============================================================================
-  Copyright (C) 2023 Allied Vision Technologies.  All Rights Reserved.
-
-  Redistribution of this file, in original or modified form, without
-  prior written consent of Allied Vision Technologies is prohibited.
-
--------------------------------------------------------------------------------
-
-  File:        EventHandling.cpp
-
-  Description: The EventHandling example will demonstrate the camera event 
-               notification functionality of VmbC.
-
--------------------------------------------------------------------------------
-
-  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
-  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF TITLE,
-  NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR  PURPOSE ARE
-  DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+  Copyright (C) 2012-2023 Allied Vision Technologies. All Rights Reserved.
+  Subject to the BSD 3-Clause License.
 =============================================================================*/
 
 #include <stdio.h>
@@ -44,57 +21,72 @@ void VMB_CALL EventCB(VmbHandle_t handle, const char* name, void* context)
 }
 
 
-int CameraEventDemo(void)
+int CameraEventDemo(char const* cameraId)
 {         
-    // Initialize the Vimba API
+    // Initialize the Vmb API
     VmbError_t err = VmbStartup(NULL);
     if (err == VmbErrorSuccess)
     {
-        // Get a list of cameras currently connected to the system
-        VmbCameraInfo_t* cameras = NULL;
-        VmbUint32_t cameraCount;        
-        err = ListCameras(&cameras, &cameraCount);
+        VmbHandle_t cameraHandle = NULL;
 
-        if (err == VmbErrorSuccess && cameraCount > 0)
+        // No camera ID provided
+        if ((cameraId == NULL) || (cameraId[0] == '\0'))
         {
-            // Use the first camera found in the list
-            VmbCameraInfo_t* selectedCamera = cameras;
-            VmbHandle_t cameraHandle = NULL;
+            // Get a list of cameras currently connected to the system
+            VmbCameraInfo_t* cameras = NULL;
+            VmbUint32_t cameraCount;
+            err = ListCameras(&cameras, &cameraCount);
 
-            // Open the camera
-            err = VmbCameraOpen(selectedCamera->cameraIdString, VmbAccessModeFull, &cameraHandle);
-            
+            if (err == VmbErrorSuccess && cameraCount > 0)
+            {
+                // Use the first camera found in the list
+                VmbCameraInfo_t* selectedCamera = cameras;
+                
+                // Open the camera
+                err = VmbCameraOpen(selectedCamera->cameraIdString, VmbAccessModeFull, &cameraHandle);
+            }
+            else
+            {
+                printf("Error! Could not get a list of cameras or no cameras detected. Error code: %d\n", err);
+            }
+
+            // Deallocate the memory for the camera list
+            free(cameras);
+        }
+        // Camera ID provided by user
+        else
+        {
+            // Open the specified camera
+            err = VmbCameraOpen(cameraId, VmbAccessModeFull, &cameraHandle); 
+        }
+
+        if (err == VmbErrorSuccess && cameraHandle != NULL)
+        {
+            // Activate the notification for the desired camera event
+            err = ActivateNotification(cameraHandle);
             if (err == VmbErrorSuccess)
             {
-                // Activate the notification for the desired camera event
-                err = ActivateNotification(cameraHandle);
+                // Register the event callback function
+                err = RegisterEventCallback(cameraHandle);
                 if (err == VmbErrorSuccess)
                 {
-                    // Register the event callback function
-                    err = RegisterEventCallback(cameraHandle);
-                    if (err == VmbErrorSuccess)
-                    {
-                        // Start acquisition on the camera to trigger the event
-                        printf("Starting acquisition to trigger event...\n");
-                        err = VmbFeatureCommandRun(cameraHandle, "AcquisitionStart");
-                    }
+                    // Start acquisition on the camera to trigger the event
+                    printf("Starting acquisition to trigger event...\n");
+                    err = VmbFeatureCommandRun(cameraHandle, "AcquisitionStart");
                 }
             }
         }
         else
         {
-            printf("Error! Could not get a list of cameras or no cameras detected. Error code: %d\n", err);
+            printf("Could not open camera or no camera available. Error code: %d\n", err);
         }
 
-        // Deallocate the memory for the camera list
-        free(cameras);
-
-        // Close Vimba
+        // Close Vmb
         VmbShutdown();
     }
     else
     {
-        printf("Could not start Vimba system. Error code: %d\n", err);
+        printf("Could not start Vmb system. Error code: %d\n", err);
     }
 
     return (err == VmbErrorSuccess ? 0 : 1);
