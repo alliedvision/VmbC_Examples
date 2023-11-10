@@ -9,9 +9,9 @@
 #include <VmbC/VmbCommonTypes.h>
 
 /**
-* \brief Demonstrate the camera event functionality of VmbCPP
+* \brief Demonstrate the camera event functionality of VmbC
 */
-int CameraEventDemo(void);
+int CameraEventDemo(char const* cameraId);
 
 /**
 * \brief Helper function to activate camera event notifications
