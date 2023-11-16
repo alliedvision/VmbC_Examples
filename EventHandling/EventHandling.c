@@ -81,6 +81,9 @@ int CameraEventDemo(char const* cameraId)
             printf("Could not open camera or no camera available. Error code: %d\n", err);
         }
 
+        // Stop acquisition
+        VmbFeatureCommandRun(cameraHandle, "AcquisitionStop");
+
         // Close Vmb
         VmbShutdown();
     }
@@ -104,7 +107,7 @@ VmbErrorType ActivateNotification(VmbHandle_t cameraHandle)
     if (err == VmbErrorSuccess)
     {
         // EventNotification is used to enable/disable the notification of the event specified by EventSelector.
-        err = VmbFeatureEnumSet(cameraHandle, "EventNotification", "On");        
+        err = VmbFeatureEnumSet(cameraHandle, "EventNotification", "On");
     }
 
     return err;
