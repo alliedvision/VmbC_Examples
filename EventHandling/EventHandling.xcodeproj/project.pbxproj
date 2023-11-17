@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		128AC1C82B061D650014E0FB /* EventHandling.c in Sources */ = {isa = PBXBuildFile; fileRef = 128AC1C52B061D650014E0FB /* EventHandling.c */; };
+		128AC1C92B061D650014E0FB /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 128AC1C62B061D650014E0FB /* main.c */; };
 		12D0D76E2A56CA950046A4FA /* TransportLayerTypeToString.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D7652A56CA950046A4FA /* TransportLayerTypeToString.c */; };
 		12D0D76F2A56CA950046A4FA /* ListTransportLayers.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D7662A56CA950046A4FA /* ListTransportLayers.c */; };
 		12D0D7702A56CA950046A4FA /* ErrorCodeToMessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D7672A56CA950046A4FA /* ErrorCodeToMessage.c */; };
@@ -16,48 +18,8 @@
 		12D0D7742A56CA950046A4FA /* ListInterfaces.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D76B2A56CA950046A4FA /* ListInterfaces.c */; };
 		12D0D7752A56CA950046A4FA /* AccessModeToString.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D76C2A56CA950046A4FA /* AccessModeToString.c */; };
 		12D0D7762A56CA950046A4FA /* PrintVmbVersion.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D76D2A56CA950046A4FA /* PrintVmbVersion.c */; };
-		12D0D7812A56CC4C0046A4FA /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D77F2A56CC4C0046A4FA /* main.c */; };
-		12D0D7822A56CC4C0046A4FA /* ListFeatures.c in Sources */ = {isa = PBXBuildFile; fileRef = 12D0D7802A56CC4C0046A4FA /* ListFeatures.c */; };
-		12D0D78E2A56D0560046A4FA /* VmbC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12D0D77A2A56CB200046A4FA /* VmbC.framework */; };
+		12D0D77B2A56CB200046A4FA /* VmbC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12D0D77A2A56CB200046A4FA /* VmbC.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		121EDDB52A56F1F100A88900 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDD962A56EDE000A88900;
-			remoteInfo = ConfigIp;
-		};
-		121EDDCF2A56F49100A88900 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDD962A56EDE000A88900;
-			remoteInfo = ForceIp;
-		};
-		121EDDD52A56F49800A88900 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDD962A56EDE000A88900;
-			remoteInfo = ForceIp;
-		};
-		128DC0D72B061B24006EBB49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDDB02A56F1E800A88900;
-			remoteInfo = EventHandling;
-		};
-		128DC0DF2B061B38006EBB49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDDB02A56F1E800A88900;
-			remoteInfo = EventHandling;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		12ED06D82A56BC5900D29352 /* CopyFiles */ = {
@@ -72,12 +34,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		121EDDAF2A56F1E800A88900 /* ListFeatures */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ListFeatures; sourceTree = BUILT_PRODUCTS_DIR; };
-		121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConfigIp.xcodeproj; path = ../ConfigIp/ConfigIp.xcodeproj; sourceTree = "<group>"; };
-		121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ForceIp.xcodeproj; path = ../ForceIp/ForceIp.xcodeproj; sourceTree = "<group>"; };
-		121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ForceIp.xcodeproj; path = ../ForceIp/ForceIp.xcodeproj; sourceTree = "<group>"; };
-		128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EventHandling.xcodeproj; path = ../EventHandling/EventHandling.xcodeproj; sourceTree = "<group>"; };
-		128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EventHandling.xcodeproj; path = ../EventHandling/EventHandling.xcodeproj; sourceTree = "<group>"; };
+		121EDDB02A56F1E800A88900 /* EventHandling */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EventHandling; sourceTree = BUILT_PRODUCTS_DIR; };
+		128AC1C52B061D650014E0FB /* EventHandling.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = EventHandling.c; sourceTree = SOURCE_ROOT; };
+		128AC1C62B061D650014E0FB /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = SOURCE_ROOT; };
+		128AC1C72B061D650014E0FB /* EventHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventHandling.h; sourceTree = SOURCE_ROOT; };
 		12D0D7652A56CA950046A4FA /* TransportLayerTypeToString.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = TransportLayerTypeToString.c; path = ../Common/TransportLayerTypeToString.c; sourceTree = "<group>"; };
 		12D0D7662A56CA950046A4FA /* ListTransportLayers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ListTransportLayers.c; path = ../Common/ListTransportLayers.c; sourceTree = "<group>"; };
 		12D0D7672A56CA950046A4FA /* ErrorCodeToMessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ErrorCodeToMessage.c; path = ../Common/ErrorCodeToMessage.c; sourceTree = "<group>"; };
@@ -88,9 +48,6 @@
 		12D0D76C2A56CA950046A4FA /* AccessModeToString.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = AccessModeToString.c; path = ../Common/AccessModeToString.c; sourceTree = "<group>"; };
 		12D0D76D2A56CA950046A4FA /* PrintVmbVersion.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = PrintVmbVersion.c; path = ../Common/PrintVmbVersion.c; sourceTree = "<group>"; };
 		12D0D77A2A56CB200046A4FA /* VmbC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VmbC.framework; path = ../../../../../../../../Library/Frameworks/VmbC.framework; sourceTree = "<group>"; };
-		12D0D77E2A56CC4C0046A4FA /* ListFeatures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ListFeatures.h; sourceTree = "<group>"; };
-		12D0D77F2A56CC4C0046A4FA /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		12D0D7802A56CC4C0046A4FA /* ListFeatures.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ListFeatures.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,51 +55,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12D0D78E2A56D0560046A4FA /* VmbC.framework in Frameworks */,
+				12D0D77B2A56CB200046A4FA /* VmbC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		121EDDB22A56F1F100A88900 /* Products */ = {
+		126B76492B061889006B47EF /* EventHandling */ = {
 			isa = PBXGroup;
 			children = (
-				121EDDB62A56F1F100A88900 /* ConfigIp */,
+				128AC1C52B061D650014E0FB /* EventHandling.c */,
+				128AC1C72B061D650014E0FB /* EventHandling.h */,
+				128AC1C62B061D650014E0FB /* main.c */,
 			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		121EDDCB2A56F49100A88900 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				121EDDD02A56F49100A88900 /* ForceIp */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		121EDDD22A56F49800A88900 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				121EDDD62A56F49800A88900 /* ForceIp */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		128DC0D32B061B24006EBB49 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				128DC0D82B061B24006EBB49 /* EventHandling */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		128DC0DC2B061B38006EBB49 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				128DC0E02B061B38006EBB49 /* EventHandling */,
-			);
-			name = Products;
+			path = EventHandling;
 			sourceTree = "<group>";
 		};
 		12D0D7622A56C95C0046A4FA /* Common */ = {
@@ -161,16 +88,6 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
-		12D0D7632A56C9850046A4FA /* ListFeatures */ = {
-			isa = PBXGroup;
-			children = (
-				12D0D7802A56CC4C0046A4FA /* ListFeatures.c */,
-				12D0D77E2A56CC4C0046A4FA /* ListFeatures.h */,
-				12D0D77F2A56CC4C0046A4FA /* main.c */,
-			);
-			name = ListFeatures;
-			sourceTree = "<group>";
-		};
 		12D0D7792A56CB200046A4FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -182,24 +99,19 @@
 		12ED06D12A56BC5900D29352 = {
 			isa = PBXGroup;
 			children = (
-				128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */,
-				128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */,
-				121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */,
-				121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */,
-				121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */,
-				12D0D7632A56C9850046A4FA /* ListFeatures */,
 				12D0D7622A56C95C0046A4FA /* Common */,
+				126B76492B061889006B47EF /* EventHandling */,
+				121EDDB02A56F1E800A88900 /* EventHandling */,
 				12D0D7792A56CB200046A4FA /* Frameworks */,
-				121EDDAF2A56F1E800A88900 /* ListFeatures */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		12ED06D92A56BC5900D29352 /* ListFeatures */ = {
+		12ED06D92A56BC5900D29352 /* EventHandling */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 12ED06E12A56BC5900D29352 /* Build configuration list for PBXNativeTarget "ListFeatures" */;
+			buildConfigurationList = 12ED06E12A56BC5900D29352 /* Build configuration list for PBXNativeTarget "EventHandling" */;
 			buildPhases = (
 				12ED06D62A56BC5900D29352 /* Sources */,
 				12ED06D72A56BC5900D29352 /* Frameworks */,
@@ -209,9 +121,9 @@
 			);
 			dependencies = (
 			);
-			name = ListFeatures;
+			name = EventHandling;
 			productName = ListCameras;
-			productReference = 121EDDAF2A56F1E800A88900 /* ListFeatures */;
+			productReference = 121EDDB02A56F1E800A88900 /* EventHandling */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -228,7 +140,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 12ED06D52A56BC5900D29352 /* Build configuration list for PBXProject "ListFeatures" */;
+			buildConfigurationList = 12ED06D52A56BC5900D29352 /* Build configuration list for PBXProject "EventHandling" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -239,87 +151,27 @@
 			mainGroup = 12ED06D12A56BC5900D29352;
 			productRefGroup = 12ED06D12A56BC5900D29352;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 121EDDB22A56F1F100A88900 /* Products */;
-					ProjectRef = 121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */;
-				},
-				{
-					ProductGroup = 128DC0D32B061B24006EBB49 /* Products */;
-					ProjectRef = 128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */;
-				},
-				{
-					ProductGroup = 128DC0DC2B061B38006EBB49 /* Products */;
-					ProjectRef = 128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */;
-				},
-				{
-					ProductGroup = 121EDDD22A56F49800A88900 /* Products */;
-					ProjectRef = 121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */;
-				},
-				{
-					ProductGroup = 121EDDCB2A56F49100A88900 /* Products */;
-					ProjectRef = 121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
-				12ED06D92A56BC5900D29352 /* ListFeatures */,
+				12ED06D92A56BC5900D29352 /* EventHandling */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		121EDDB62A56F1F100A88900 /* ConfigIp */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = ConfigIp;
-			remoteRef = 121EDDB52A56F1F100A88900 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		121EDDD02A56F49100A88900 /* ForceIp */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = ForceIp;
-			remoteRef = 121EDDCF2A56F49100A88900 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		121EDDD62A56F49800A88900 /* ForceIp */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = ForceIp;
-			remoteRef = 121EDDD52A56F49800A88900 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		128DC0D82B061B24006EBB49 /* EventHandling */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = EventHandling;
-			remoteRef = 128DC0D72B061B24006EBB49 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		128DC0E02B061B38006EBB49 /* EventHandling */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = EventHandling;
-			remoteRef = 128DC0DF2B061B38006EBB49 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		12ED06D62A56BC5900D29352 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12D0D7812A56CC4C0046A4FA /* main.c in Sources */,
 				12D0D7742A56CA950046A4FA /* ListInterfaces.c in Sources */,
 				12D0D7732A56CA950046A4FA /* VmbThreads_Darwin.c in Sources */,
 				12D0D7712A56CA950046A4FA /* ListCameras.c in Sources */,
-				12D0D7822A56CC4C0046A4FA /* ListFeatures.c in Sources */,
 				12D0D7752A56CA950046A4FA /* AccessModeToString.c in Sources */,
 				12D0D7702A56CA950046A4FA /* ErrorCodeToMessage.c in Sources */,
+				128AC1C82B061D650014E0FB /* EventHandling.c in Sources */,
 				12D0D76E2A56CA950046A4FA /* TransportLayerTypeToString.c in Sources */,
 				12D0D7762A56CA950046A4FA /* PrintVmbVersion.c in Sources */,
+				128AC1C92B061D650014E0FB /* main.c in Sources */,
 				12D0D76F2A56CA950046A4FA /* ListTransportLayers.c in Sources */,
 				12D0D7722A56CA950046A4FA /* IpAddressToHostByteOrderedInt.c in Sources */,
 			);
@@ -466,7 +318,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		12ED06D52A56BC5900D29352 /* Build configuration list for PBXProject "ListFeatures" */ = {
+		12ED06D52A56BC5900D29352 /* Build configuration list for PBXProject "EventHandling" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				12ED06DF2A56BC5900D29352 /* Debug */,
@@ -475,7 +327,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		12ED06E12A56BC5900D29352 /* Build configuration list for PBXNativeTarget "ListFeatures" */ = {
+		12ED06E12A56BC5900D29352 /* Build configuration list for PBXNativeTarget "EventHandling" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				12ED06E22A56BC5900D29352 /* Debug */,
