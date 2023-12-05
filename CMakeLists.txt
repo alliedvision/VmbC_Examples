@@ -24,17 +24,6 @@ endfunction()
 # attempt to locate Qt to decide, if we want to add the Qt example
 find_package(Qt5 COMPONENTS Widgets)
 
-if(NOT WIN32)
-    set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-    set(CMAKE_SKIP_BUILD_RPATH TRUE)
-    set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-    IF(APPLE)
-        set(CMAKE_INSTALL_RPATH "@executable_path")
-    else()
-        set(CMAKE_INSTALL_RPATH "$ORIGIN")
-    endif()
-endif()
-
 # Actual examples list
 vmb_c_example(AsynchronousGrab)
 vmb_c_example(ListFeatures FeatureList FeaturesList)
@@ -72,3 +61,58 @@ endif()
 foreach(_EXAMPLE IN LISTS VMB_C_ALL_EXAMPLES)
     add_subdirectory(${_EXAMPLE})
 endforeach()
+
+# collect all targets for installation
+function(get_all_targets var)
+    set(targets)
+    get_all_targets_recursive(targets ${CMAKE_CURRENT_SOURCE_DIR})
+    set(${var} ${targets} PARENT_SCOPE)
+endfunction()
+
+macro(get_all_targets_recursive targets dir)
+    get_property(subdirectories DIRECTORY ${dir} PROPERTY SUBDIRECTORIES)
+    foreach(subdir ${subdirectories})
+        get_all_targets_recursive(${targets} ${subdir})
+    endforeach()
+
+    get_property(current_targets DIRECTORY ${dir} PROPERTY BUILDSYSTEM_TARGETS)
+    list(APPEND ${targets} ${current_targets})
+endmacro()
+
+get_all_targets(ALL_TARGETS)
+list(REMOVE_ITEM ALL_TARGETS "VmbCExamplesCommon")
+install(TARGETS ${ALL_TARGETS} DESTINATION bin)
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" "${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt" DESTINATION src)
+
+# exclude platform depending build files
+if(WIN32)
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Common" DESTINATION src)
+    foreach(_EXAMPLE IN LISTS VMB_C_ALL_EXAMPLES)
+        install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${_EXAMPLE}" DESTINATION src
+            PATTERN "*.xcodeproj" EXCLUDE
+            PATTERN "*.xcworkspace" EXCLUDE
+        )
+    endforeach()
+else()
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Common" DESTINATION src
+        PATTERN "build_vs" EXCLUDE
+    )
+    if(APPLE)
+        foreach(_EXAMPLE IN LISTS VMB_C_ALL_EXAMPLES)
+            install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${_EXAMPLE}" DESTINATION src
+                PATTERN "*.sln" EXCLUDE
+                PATTERN "*.vcxproj*" EXCLUDE
+            )
+        endforeach()
+    else() # Linux
+        foreach(_EXAMPLE IN LISTS VMB_C_ALL_EXAMPLES)
+            install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${_EXAMPLE}" DESTINATION src
+                PATTERN "*.sln" EXCLUDE
+                PATTERN "*.vcxproj*" EXCLUDE
+                PATTERN "*.xcodeproj" EXCLUDE
+                PATTERN "*.xcworkspace" EXCLUDE
+            )
+        endforeach()
+    endif()
+endif()
