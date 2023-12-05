@@ -24,17 +24,15 @@
 VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userContext)
 {
     VmbError_t err = VmbErrorSuccess;
-    VmbInt64_t id = 0, ts = 0, w = 0, h = 0;
+    VmbInt64_t ts = 0, w = 0, h = 0;
 
     err = VmbFeatureIntGet(featureAccessHandle, "ChunkWidth", &w);
 
     err = VmbFeatureIntGet(featureAccessHandle, "ChunkHeight", &h);
 
-    err = VmbFeatureIntGet(featureAccessHandle, "ChunkFrameID", &id);
-
     err = VmbFeatureIntGet(featureAccessHandle, "ChunkTimestamp", &ts);
 
-    printf("  Chunk Data: id=%2.2lld ts=%lld width=%lld height=%lld\n", id, ts, w, h);
+    printf("  Chunk Data: ts=%lld width=%lld height=%lld\n", ts, w, h);
 
     return err;
 }
@@ -99,8 +97,6 @@ int ChunkAccessProg(void)
 
                     // activate chunk features
                     err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolFalse);
-                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "FrameID");
-                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Timestamp");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Width");
@@ -185,11 +181,11 @@ int ChunkAccessProg(void)
                         printf("AcquisitionStart...\n");
                         err = VmbFeatureCommandRun(hCamera, "AcquisitionStart");
 
-                        printf("Wait 1000ms...\n");
+                        printf("Wait 5000ms...\n");
 #ifdef _WIN32
-                        Sleep(1000);
+                        Sleep(5000);
 #else
-                        usleep(100000);
+                        usleep(500000);
 #endif
                         // Stop acquisition on the camera
                         printf("AcquisitionStop...\n");

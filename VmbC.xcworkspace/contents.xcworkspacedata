@@ -14,6 +14,9 @@
       location = "group:ConfigIp/ConfigIp.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:EventHandling/EventHandling.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:ForceIp/ForceIp.xcodeproj">
    </FileRef>
    <FileRef
