@@ -81,7 +81,7 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
-		12D0D7632A56C9850046A4FA /* AsynchronousGrab */ = {
+		12D0D7632A56C9850046A4FA /* ConfigIp */ = {
 			isa = PBXGroup;
 			children = (
 				121EDDAA2A56F14800A88900 /* ConfigIp.c */,
@@ -90,7 +90,7 @@
 				121EDDAB2A56F14800A88900 /* ConfigIpProg.h */,
 				121EDDA92A56F14800A88900 /* main.c */,
 			);
-			name = AsynchronousGrab;
+			name = ConfigIp;
 			sourceTree = "<group>";
 		};
 		12D0D7792A56CB200046A4FA /* Frameworks */ = {
@@ -104,7 +104,7 @@
 		12ED06D12A56BC5900D29352 = {
 			isa = PBXGroup;
 			children = (
-				12D0D7632A56C9850046A4FA /* AsynchronousGrab */,
+				12D0D7632A56C9850046A4FA /* ConfigIp */,
 				12D0D7622A56C95C0046A4FA /* Common */,
 				12D0D7792A56CB200046A4FA /* Frameworks */,
 				121EDD962A56EDE000A88900 /* ConfigIp */,

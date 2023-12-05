@@ -21,44 +21,6 @@
 		12D0D78E2A56D0560046A4FA /* VmbC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 12D0D77A2A56CB200046A4FA /* VmbC.framework */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		121EDDB52A56F1F100A88900 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDD962A56EDE000A88900;
-			remoteInfo = ConfigIp;
-		};
-		121EDDCF2A56F49100A88900 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDD962A56EDE000A88900;
-			remoteInfo = ForceIp;
-		};
-		121EDDD52A56F49800A88900 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDD962A56EDE000A88900;
-			remoteInfo = ForceIp;
-		};
-		128DC0D72B061B24006EBB49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDDB02A56F1E800A88900;
-			remoteInfo = EventHandling;
-		};
-		128DC0DF2B061B38006EBB49 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 121EDDB02A56F1E800A88900;
-			remoteInfo = EventHandling;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		12ED06D82A56BC5900D29352 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -73,11 +35,6 @@
 
 /* Begin PBXFileReference section */
 		121EDDAF2A56F1E800A88900 /* ListFeatures */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ListFeatures; sourceTree = BUILT_PRODUCTS_DIR; };
-		121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConfigIp.xcodeproj; path = ../ConfigIp/ConfigIp.xcodeproj; sourceTree = "<group>"; };
-		121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ForceIp.xcodeproj; path = ../ForceIp/ForceIp.xcodeproj; sourceTree = "<group>"; };
-		121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ForceIp.xcodeproj; path = ../ForceIp/ForceIp.xcodeproj; sourceTree = "<group>"; };
-		128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EventHandling.xcodeproj; path = ../EventHandling/EventHandling.xcodeproj; sourceTree = "<group>"; };
-		128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EventHandling.xcodeproj; path = ../EventHandling/EventHandling.xcodeproj; sourceTree = "<group>"; };
 		12D0D7652A56CA950046A4FA /* TransportLayerTypeToString.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = TransportLayerTypeToString.c; path = ../Common/TransportLayerTypeToString.c; sourceTree = "<group>"; };
 		12D0D7662A56CA950046A4FA /* ListTransportLayers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ListTransportLayers.c; path = ../Common/ListTransportLayers.c; sourceTree = "<group>"; };
 		12D0D7672A56CA950046A4FA /* ErrorCodeToMessage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ErrorCodeToMessage.c; path = ../Common/ErrorCodeToMessage.c; sourceTree = "<group>"; };
@@ -105,46 +62,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		121EDDB22A56F1F100A88900 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				121EDDB62A56F1F100A88900 /* ConfigIp */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		121EDDCB2A56F49100A88900 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				121EDDD02A56F49100A88900 /* ForceIp */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		121EDDD22A56F49800A88900 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				121EDDD62A56F49800A88900 /* ForceIp */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		128DC0D32B061B24006EBB49 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				128DC0D82B061B24006EBB49 /* EventHandling */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		128DC0DC2B061B38006EBB49 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				128DC0E02B061B38006EBB49 /* EventHandling */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		12D0D7622A56C95C0046A4FA /* Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -182,11 +99,6 @@
 		12ED06D12A56BC5900D29352 = {
 			isa = PBXGroup;
 			children = (
-				128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */,
-				128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */,
-				121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */,
-				121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */,
-				121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */,
 				12D0D7632A56C9850046A4FA /* ListFeatures */,
 				12D0D7622A56C95C0046A4FA /* Common */,
 				12D0D7792A56CB200046A4FA /* Frameworks */,
@@ -239,72 +151,12 @@
 			mainGroup = 12ED06D12A56BC5900D29352;
 			productRefGroup = 12ED06D12A56BC5900D29352;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 121EDDB22A56F1F100A88900 /* Products */;
-					ProjectRef = 121EDDB12A56F1F100A88900 /* ConfigIp.xcodeproj */;
-				},
-				{
-					ProductGroup = 128DC0D32B061B24006EBB49 /* Products */;
-					ProjectRef = 128DC0D22B061B24006EBB49 /* EventHandling.xcodeproj */;
-				},
-				{
-					ProductGroup = 128DC0DC2B061B38006EBB49 /* Products */;
-					ProjectRef = 128DC0DB2B061B38006EBB49 /* EventHandling.xcodeproj */;
-				},
-				{
-					ProductGroup = 121EDDD22A56F49800A88900 /* Products */;
-					ProjectRef = 121EDDD12A56F49800A88900 /* ForceIp.xcodeproj */;
-				},
-				{
-					ProductGroup = 121EDDCB2A56F49100A88900 /* Products */;
-					ProjectRef = 121EDDCA2A56F49100A88900 /* ForceIp.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				12ED06D92A56BC5900D29352 /* ListFeatures */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		121EDDB62A56F1F100A88900 /* ConfigIp */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = ConfigIp;
-			remoteRef = 121EDDB52A56F1F100A88900 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		121EDDD02A56F49100A88900 /* ForceIp */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = ForceIp;
-			remoteRef = 121EDDCF2A56F49100A88900 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		121EDDD62A56F49800A88900 /* ForceIp */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = ForceIp;
-			remoteRef = 121EDDD52A56F49800A88900 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		128DC0D82B061B24006EBB49 /* EventHandling */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = EventHandling;
-			remoteRef = 128DC0D72B061B24006EBB49 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		128DC0E02B061B38006EBB49 /* EventHandling */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = EventHandling;
-			remoteRef = 128DC0DF2B061B38006EBB49 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		12ED06D62A56BC5900D29352 /* Sources */ = {

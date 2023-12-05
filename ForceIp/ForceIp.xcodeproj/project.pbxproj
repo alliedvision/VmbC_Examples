@@ -81,7 +81,7 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
-		12D0D7632A56C9850046A4FA /* AsynchronousGrab */ = {
+		12D0D7632A56C9850046A4FA /* ForceIp */ = {
 			isa = PBXGroup;
 			children = (
 				121EDDC32A56F35500A88900 /* ForceIp.c */,
@@ -90,7 +90,7 @@
 				121EDDC52A56F35600A88900 /* ForceIpProg.h */,
 				121EDDC22A56F35500A88900 /* main.c */,
 			);
-			name = AsynchronousGrab;
+			name = ForceIp;
 			sourceTree = "<group>";
 		};
 		12D0D7792A56CB200046A4FA /* Frameworks */ = {
@@ -104,7 +104,7 @@
 		12ED06D12A56BC5900D29352 = {
 			isa = PBXGroup;
 			children = (
-				12D0D7632A56C9850046A4FA /* AsynchronousGrab */,
+				12D0D7632A56C9850046A4FA /* ForceIp */,
 				12D0D7622A56C95C0046A4FA /* Common */,
 				12D0D7792A56CB200046A4FA /* Frameworks */,
 				121EDD962A56EDE000A88900 /* ForceIp */,

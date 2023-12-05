@@ -78,14 +78,14 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
-		12D0D7632A56C9850046A4FA /* AsynchronousGrab */ = {
+		12D0D7632A56C9850046A4FA /* ChunkAccess */ = {
 			isa = PBXGroup;
 			children = (
 				121EDD992A56EFB700A88900 /* ChunkAccessProg.c */,
 				121EDD9A2A56EFB700A88900 /* ChunkAccessProg.h */,
 				121EDD9B2A56EFB700A88900 /* main.c */,
 			);
-			name = AsynchronousGrab;
+			name = ChunkAccess;
 			sourceTree = "<group>";
 		};
 		12D0D7792A56CB200046A4FA /* Frameworks */ = {
@@ -99,7 +99,7 @@
 		12ED06D12A56BC5900D29352 = {
 			isa = PBXGroup;
 			children = (
-				12D0D7632A56C9850046A4FA /* AsynchronousGrab */,
+				12D0D7632A56C9850046A4FA /* ChunkAccess */,
 				12D0D7622A56C95C0046A4FA /* Common */,
 				12D0D7792A56CB200046A4FA /* Frameworks */,
 				121EDD962A56EDE000A88900 /* ChunkAccess */,
