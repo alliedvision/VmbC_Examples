@@ -69,7 +69,7 @@
 				128AC1C72B061D650014E0FB /* EventHandling.h */,
 				128AC1C62B061D650014E0FB /* main.c */,
 			);
-			path = EventHandling;
+			name = EventHandling;
 			sourceTree = "<group>";
 		};
 		12D0D7622A56C95C0046A4FA /* Common */ = {
