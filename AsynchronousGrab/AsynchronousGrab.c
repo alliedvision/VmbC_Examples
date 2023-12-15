@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "AsynchronousGrab.h"
 
@@ -416,12 +417,20 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                         nStreamBufferAlignment = 1;
                     }
 
+                    const size_t requestedAlignment = (nStreamBufferAlignment > 0) ? nStreamBufferAlignment : 1;
+                    const size_t requestedMask = (requestedAlignment - 1);
+
+                    // Alignment must be power of 2
+                    assert(((requestedAlignment & requestedMask) == 0));
+
+                    // Pointer size will always be a power of 2
                     // We enforce an alignment of sizeof(void*) since aligned_alloc for macOS does not accept 1 as alignment value
-                    size_t alignment = (((sizeof(void*)-1) + ((nStreamBufferAlignment > 0) ? nStreamBufferAlignment : 1)) / sizeof(void*)) * sizeof(void*);
+                    const size_t mask = (sizeof(void *) - 1) | requestedMask;
+                    const size_t alignment = mask + 1;
 
                     if (!options->allocAndAnnounce)
                     {
-                        printf("StreamBufferAlignment=%lld (%lld)\n", nStreamBufferAlignment, alignment);
+                        printf("StreamBufferAlignment=%lld (%ld)\n", nStreamBufferAlignment, alignment);
                     }
 
                     if (VmbErrorSuccess == err)
@@ -432,7 +441,14 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                         err = VmbPayloadSizeGet(g_cameraHandle, &payloadSize);
                         if (VmbErrorSuccess == err)
                         {
-                            size_t alignedPayloadSize = (((sizeof(void*)-1) + payloadSize) / sizeof(void*)) * sizeof(void*);
+                            const size_t offset = payloadSize & mask;
+                            const size_t offsetToNext = (alignment - offset) & mask;
+                            const size_t alignedPayloadSize = payloadSize + offsetToNext;
+
+                            if (!options->allocAndAnnounce)
+                            {
+                                printf("PayloadSize=%u (%lu)\n", payloadSize, alignedPayloadSize);
+                            }
 
                             for (size_t i = 0; i < NUM_FRAMES; i++)
                             {
@@ -453,7 +469,7 @@ VmbError_t StartContinuousImageAcquisition(AsynchronousGrabOptions* options, Str
                                         break;
                                     }
                                 }
-                                g_frames[i].bufferSize = payloadSize;
+                                g_frames[i].bufferSize = (requestedAlignment > 1) ? alignedPayloadSize : payloadSize;
                                 g_frames[i].context[FRAME_CONTEXT_OPTIONS_INDEX] = options;
                                 g_frames[i].context[FRAME_CONTEXT_STREAM_STATISTICS_INDEX] = statistics;
 
