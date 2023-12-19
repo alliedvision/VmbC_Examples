@@ -319,9 +319,20 @@ namespace VmbC
             {
                 throw VmbException("payload size outside of allowed range");
             }
+
+            const size_t requestedAlignment = (bufferAlignment > 0) ? bufferAlignment : 1;
+            const size_t requestedMask = (requestedAlignment - 1);
+
+            // Alignment must be power of 2
+            assert(((requestedAlignment & requestedMask) == 0));
+
+            // Pointer size will always be a power of 2
             // We enforce an alignment of sizeof(void*) since aligned_alloc for macOS does not accept 1 as alignment value
-            size_t alignment = (((sizeof(void*)-1) + ((bufferAlignment > 0) ? bufferAlignment : 1)) / sizeof(void*)) * sizeof(void*);
-            size_t alignedPayloadSize = (((sizeof(void*)-1) + payloadSize) / sizeof(void*)) * sizeof(void*);
+            const size_t mask = (sizeof(void *) - 1) | requestedMask;
+            const size_t alignment = mask + 1;
+            const size_t offset = payloadSize & mask;
+            const size_t offsetToNext = (alignment - offset) & mask;
+            const size_t alignedPayloadSize = payloadSize + offsetToNext;
 #ifdef _WIN32
             m_frame.buffer = (unsigned char*)_aligned_malloc(alignedPayloadSize, alignment);
 #else
@@ -331,7 +342,7 @@ namespace VmbC
             {
                 throw VmbException("Unable to allocate memory for frame", VmbErrorResources);
             }
-            m_frame.bufferSize = static_cast<VmbUint32_t>(payloadSize);
+            m_frame.bufferSize = VmbUint32_t(requestedAlignment > 1 ? alignedPayloadSize : payloadSize);
         }
 
         AcquisitionManager::Frame::~Frame()

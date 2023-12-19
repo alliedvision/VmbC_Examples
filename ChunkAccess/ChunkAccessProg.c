@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #ifdef _WIN32
     #include <Windows.h>
 #else
@@ -151,9 +152,19 @@ int ChunkAccessProg(void)
                     if (VmbErrorSuccess != VmbFeatureIntGet(cameraInfo.streamHandles[0], "StreamBufferAlignment", &nStreamBufferAlignment))
                         nStreamBufferAlignment = 1;
 
+                    const size_t requestedAlignment = (nStreamBufferAlignment > 0) ? nStreamBufferAlignment : 1;
+                    const size_t requestedMask = (requestedAlignment - 1);
+
+                    // Alignment must be power of 2
+                    assert(((requestedAlignment & requestedMask) == 0));
+
+                    // Pointer size will always be a power of 2
                     // We enforce an alignment of sizeof(void*) since aligned_alloc for macOS does not accept 1 as alignment value
-                    size_t alignment = (((sizeof(void*)-1) + ((nStreamBufferAlignment > 0) ? nStreamBufferAlignment : 1)) / sizeof(void*)) * sizeof(void*);
-                    size_t alignedPayloadSize = (((sizeof(void*)-1) + payloadSize) / sizeof(void*)) * sizeof(void*);
+                    const size_t mask = (sizeof(void *) - 1) | requestedMask;
+                    const size_t alignment = mask + 1;
+                    const size_t offset = payloadSize & mask;
+                    const size_t offsetToNext = (alignment - offset) & mask;
+                    const size_t alignedPayloadSize = payloadSize + offsetToNext;
 
                     for (int i = 0; i < NUM_FRAMES; ++i)
                     {
@@ -162,7 +173,7 @@ int ChunkAccessProg(void)
 #else
                         frames[i].buffer = (unsigned char*)aligned_alloc(alignment, alignedPayloadSize);
 #endif
-                        frames[i].bufferSize = payloadSize;
+                        frames[i].bufferSize = (requestedAlignment > 1) ? alignedPayloadSize : payloadSize;
                         err = VmbFrameAnnounce(hCamera, &frames[i], sizeof(VmbFrame_t));
                     }
 
