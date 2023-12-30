@@ -96,7 +96,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                             err = VmbFeatureBoolGet(moduleHandle, feature->name, &value);
                             if (VmbErrorSuccess == err)
                             {
-                                printf("%d\n", value);
+                                printf("%d (Bool)\n", value);
                             }
                             break;
                         }
@@ -106,7 +106,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                             err = VmbFeatureEnumGet(moduleHandle, feature->name, &value);
                             if (VmbErrorSuccess == err)
                             {
-                                printf("%s\n", value);
+                                printf("%s (Enum)\n", value);
                             }
                             break;
                         }
@@ -116,7 +116,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                             err = VmbFeatureFloatGet(moduleHandle, feature->name, &value);
                             if (err == VmbErrorSuccess)
                             {
-                                printf("%f\n", value);
+                                printf("%f (Float)\n", value);
                             }
                             break;
                         }
@@ -126,7 +126,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                             err = VmbFeatureIntGet(moduleHandle, feature->name, &value);
                             if (err == VmbErrorSuccess)
                             {
-                                printf("%lld\n", value);
+                                printf("%lld (Int)\n", value);
                             }
                             break;
                         }
@@ -152,7 +152,7 @@ VmbError_t ListFeatures(VmbHandle_t const moduleHandle, VmbFeatureVisibility_t p
                                     err = VmbFeatureStringGet(moduleHandle, feature->name, stringBuffer, size, &size);
                                     if (VmbErrorSuccess == err)
                                     {
-                                        printf("%s\n", stringBuffer);
+                                        printf("%s (String)\n", stringBuffer);
                                     }
                                 }
                                 else
