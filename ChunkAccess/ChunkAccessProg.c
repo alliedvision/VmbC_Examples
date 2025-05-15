@@ -25,7 +25,7 @@
 VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userContext)
 {
     VmbError_t err = VmbErrorSuccess;
-    VmbInt64_t ts = 0, w = 0, h = 0;
+    VmbInt64_t ts = 0, w = 0, h = 0, fc = 0;
 
     err = VmbFeatureIntGet(featureAccessHandle, "ChunkWidth", &w);
 
@@ -33,7 +33,9 @@ VmbError_t VMB_CALL ChunkCallback(VmbHandle_t featureAccessHandle, void* userCon
 
     err = VmbFeatureIntGet(featureAccessHandle, "ChunkTimestamp", &ts);
 
-    printf("  Chunk Data: ts=%lld width=%lld height=%lld\n", ts, w, h);
+    err = VmbFeatureIntGet(featureAccessHandle, "ChunkAcquisitionFrameCount", &fc);
+
+    printf("  Chunk Data: ts=%lld width=%lld height=%lld frame=%lld\n", ts, w, h, fc);
 
     return err;
 }
@@ -96,6 +98,15 @@ int ChunkAccessProg(void)
                         cameraInfo.modelName,
                         cameraInfo.serialString);
 
+                    // check if the ChunkEnable feature can be written
+                    // for some legacy cameras it is enabled by default and can't be changed
+                    VmbBool_t writeableChunkEnable = VmbBoolTrue;
+                    err = VmbFeatureAccessQuery(hCamera, "ChunkEnable", 0, &writeableChunkEnable);
+                    if ((err == VmbErrorSuccess) && !writeableChunkEnable)
+                    {
+                        printf("Legacy chunk mode detected. Camera's chunk data is fixed.\nIndividual configuration with \"ChunkEnable\" is not possible (READ-ONLY).\n");
+                    }
+
                     // activate chunk features
                     err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolFalse);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Timestamp");
@@ -103,6 +114,8 @@ int ChunkAccessProg(void)
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Width");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "Height");
+                    err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
+                    err = VmbFeatureEnumSet(hCamera, "ChunkSelector", "AcquisitionFrameCount");
                     err = VmbFeatureBoolSet(hCamera, "ChunkEnable", VmbBoolTrue);
                     err = VmbFeatureBoolSet(hCamera, "ChunkModeActive", VmbBoolTrue);
 
